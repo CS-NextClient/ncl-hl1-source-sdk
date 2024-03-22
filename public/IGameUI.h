@@ -1,8 +1,9 @@
 #ifndef IGAMEUI_GS_H
 #define IGAMEUI_GS_H
 #include <interface.h>
-
-struct cl_enginefunc_t;
+#include <vmodes.h>
+#include <quakedef.h>
+#include <APIProxy.h>
 
 class IGameUI : public IBaseInterface
 {

@@ -31,6 +31,13 @@ class Button;
 class IDraggerEvent;
 class FastSortListPanelItem;
 
+struct ListPanelItemImage
+{
+    int				m_nImageIndex = -1;
+    int				m_nImageIndexSelected = -1;
+    IImage			*m_pIcon = nullptr;
+};
+
 //-----------------------------------------------------------------------------
 // Purpose: Generic class for ListPanel items
 //-----------------------------------------------------------------------------
@@ -146,7 +153,7 @@ public:
 	// sets whether the dataitem is visible or not
 	// it is removed from the row list when it becomes invisible, but stays in the indexes
 	// this is much faster than a normal remove
-	virtual void SetItemVisible(int itemID, bool state);
+	virtual void SetItemVisible(int itemID, bool state, bool resort = true);
 	virtual void SetItemDisabled(int itemID, bool state );
 	bool IsItemVisible( int itemID );
 

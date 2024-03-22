@@ -59,7 +59,6 @@
 #include "vgui_controls/FocusNavGroup.h"
 #include "vgui_controls/Frame.h"
 #include "vgui_controls/GraphPanel.h"
-#include "vgui_controls/HTML.h"
 #include "vgui_controls/Image.h"
 #include "vgui_controls/ImageList.h"
 #include "vgui_controls/ImagePanel.h"

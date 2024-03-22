@@ -1,4 +1,4 @@
-//===== Copyright © 1996-2005, Valve Corporation, All rights reserved. ========//
+//===== Copyright ï¿½ 1996-2005, Valve Corporation, All rights reserved. ========//
 //
 // Purpose: 
 //
@@ -440,11 +440,11 @@ public:
 	CScopeMsg( const char *pszScope )
 	{
 		m_pszScope = pszScope;
-		Msg( "%s { ", pszScope );
+		Msg( _T("%s { "), pszScope );
 	}
 	~CScopeMsg()
 	{
-		Msg( "} %s", m_pszScope );
+		Msg( _T("} %s"), m_pszScope );
 	}
 	const char *m_pszScope;
 };

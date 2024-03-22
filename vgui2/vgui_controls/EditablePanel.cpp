@@ -891,16 +891,26 @@ void EditablePanel::SetControlVisible(const char *controlName, bool visible)
 		control->SetVisible(visible);
 	}
 }
-	
+
+void EditablePanel::SetControlString(const char *controlName, const char *string)
+{
+    SetControlString(controlName, string, true);
+}
+
+void EditablePanel::SetControlStringNoLocalize(const char *controlName, const char *string)
+{
+    SetControlString(controlName, string, false);
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Shortcut function to set data in child controls
 //-----------------------------------------------------------------------------
-void EditablePanel::SetControlString(const char *controlName, const char *string)
+void EditablePanel::SetControlString(const char *controlName, const char *string, bool localize)
 {
 	Panel *control = FindChildByName(controlName);
 	if (control)
 	{
-		if (string[0] == '#')
+		if (localize && string[0] == '#')
 		{
 			const wchar_t *wszText = g_pVGuiLocalize->Find(string);
 			if (wszText)

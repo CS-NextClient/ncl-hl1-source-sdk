@@ -61,9 +61,9 @@ public:
 		SetDefaultBorder(pScheme->GetBorder("ScrollBarButtonBorder"));
         SetDepressedBorder(pScheme->GetBorder("ScrollBarButtonDepressedBorder"));
 		
-		SetDefaultColor(GetSchemeColor("ScrollBarButton.FgColor", pScheme), GetSchemeColor("ScrollBarButton.BgColor", pScheme));
-		SetArmedColor(GetSchemeColor("ScrollBarButton.ArmedFgColor", pScheme), GetSchemeColor("ScrollBarButton.ArmedBgColor", pScheme));
-		SetDepressedColor(GetSchemeColor("ScrollBarButton.DepressedFgColor", pScheme), GetSchemeColor("ScrollBarButton.DepressedBgColor", pScheme));
+		SetDefaultColor(GetSchemeColor("ScrollBarButton.FgColor", GetFgColor(), pScheme), GetSchemeColor("ScrollBarButton.BgColor", GetBgColor(), pScheme));
+		SetArmedColor(GetSchemeColor("ScrollBarButton.ArmedFgColor", GetFgColor(), pScheme), GetSchemeColor("ScrollBarButton.ArmedBgColor", GetBgColor(), pScheme));
+		SetDepressedColor(GetSchemeColor("ScrollBarButton.DepressedFgColor", GetFgColor(), pScheme), GetSchemeColor("ScrollBarButton.DepressedBgColor", GetBgColor(), pScheme));
 	}
 
 	// Don't request focus.
@@ -189,24 +189,24 @@ void ScrollBar::ApplySchemeSettings(IScheme *pScheme)
 
 	const char *resourceString = pScheme->GetResourceString("ScrollBar.Wide");
 
-	if (resourceString)
-	{
-		int value = atoi(resourceString);
-		if (IsProportional())
-		{
-			value = scheme()->GetProportionalScaledValue(value);
-		}
+	int value = 16;
+	if (Q_strlen(resourceString))
+		value = atoi(resourceString);
 
-		if (_slider && _slider->IsVertical())
-		{
-			// we're vertical, so reset the width
-			SetSize( value, GetTall() );
-		}
-		else
-		{
-			// we're horizontal, so the width means the height
-			SetSize( GetWide(), value );
-		}
+	if (IsProportional())
+	{
+		value = scheme()->GetProportionalScaledValue(value);
+	}
+
+	if (_slider && _slider->IsVertical())
+	{
+		// we're vertical, so reset the width
+		SetSize( value, GetTall() );
+	}
+	else
+	{
+		// we're horizontal, so the width means the height
+		SetSize( GetWide(), value );
 	}
 
 	UpdateButtonsForImages();

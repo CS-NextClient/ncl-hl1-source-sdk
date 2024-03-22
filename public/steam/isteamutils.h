@@ -1,4 +1,4 @@
-//====== Copyright � 1996-2008, Valve Corporation, All rights reserved. =======
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: interface to utility functions in Steam
 //
@@ -139,7 +139,7 @@ public:
 #endif
 
 #ifdef _PS3
-	virtual void PostPS3SysutilCallback( uint64_t status, uint64_t param, void* userdata ) = 0;
+	virtual void PostPS3SysutilCallback( uint64 status, uint64 param, void* userdata ) = 0;
 	virtual bool BIsReadyToShutdown() = 0;
 	virtual bool BIsPSNOnline() = 0;
 
@@ -149,23 +149,17 @@ public:
 #endif
 
 	// Activates the Big Picture text input dialog which only supports gamepad input
-	virtual bool ShowGamepadTextInput( EGamepadTextInputMode eInputMode, EGamepadTextInputLineMode eLineInputMode, const char *pchDescription, uint32 unCharMax, const char *pchExistingText ) = 0;
+	virtual bool ShowGamepadTextInput( EGamepadTextInputMode eInputMode, EGamepadTextInputLineMode eLineInputMode, const char *pchDescription, uint32 unCharMax ) = 0;
 
 	// Returns previously entered text & length
 	virtual uint32 GetEnteredGamepadTextLength() = 0;
-	virtual bool GetEnteredGamepadTextInput( char *pchText, uint32 cchText ) = 0;
+	virtual bool GetEnteredGamepadTextInput( char *pchText, uint32 cchText ) = 0;	
 
 	// returns the language the steam client is running in, you probably want ISteamApps::GetCurrentGameLanguage instead, this is for very special usage cases
 	virtual const char *GetSteamUILanguage() = 0;
-
-	// returns true if Steam itself is running in VR mode
-	virtual bool IsSteamRunningInVR() = 0;
-	
-	// Sets the inset of the overlay notification from the corner specified by SetOverlayNotificationPosition.
-	virtual void SetOverlayNotificationInset( int nHorizontalInset, int nVerticalInset ) = 0;
 };
 
-#define STEAMUTILS_INTERFACE_VERSION "SteamUtils007"
+#define STEAMUTILS_INTERFACE_VERSION "SteamUtils006"
 
 
 // callbacks

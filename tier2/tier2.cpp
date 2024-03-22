@@ -22,7 +22,7 @@ IEngineVGui *g_pEngineVGui;
 IGameUIFuncs *g_pGameUIFuncs;
 IGameConsole *g_pGameConsole;
 IGameUI *g_pGameUI;
-vgui2::ISurface *g_pVGuiSurface;
+SurfaceEx *g_pVGuiSurface;
 vgui2::IInputInternal *g_pVGuiInput;
 vgui2::IVGui *g_pVGui;
 vgui2::IPanel *g_pVGuiPanel;
@@ -33,7 +33,7 @@ vgui2::ISystem *g_pVGuiSystem;
 static bool s_bConnected = false;
 void SteamAPI_InitForGoldSrc();
 
-void ConnectTier2Libraries(CreateInterfaceFn *pFactoryList, int nFactoryCount)
+void ConnectTier2Libraries(CreateInterfaceFn *pFactoryList, int nFactoryCount, void* pMainWindow)
 {
 	if (s_bConnected)
 		return;
@@ -42,11 +42,9 @@ void ConnectTier2Libraries(CreateInterfaceFn *pFactoryList, int nFactoryCount)
 
 	if (!KV_InitKeyValuesSystem(pFactoryList, nFactoryCount))
 	{
-		Error("tier2: Failed to initialize KeyValues\n");
+		Error(_T("tier2: Failed to initialize KeyValues\n"));
 		Assert(false);
 	}
-
-	SteamAPI_InitForGoldSrc();
 
 	for (int i = 0; i < nFactoryCount; ++i)
 	{
@@ -76,7 +74,7 @@ void ConnectTier2Libraries(CreateInterfaceFn *pFactoryList, int nFactoryCount)
 		}
 		if (!g_pVGuiSurface)
 		{
-			g_pVGuiSurface = (vgui2::ISurface *)pFactoryList[i](VGUI_SURFACE_INTERFACE_VERSION_GS, NULL);
+			g_pVGuiSurface = new SurfaceEx((vgui2::ISurface *)pFactoryList[i](VGUI_SURFACE_INTERFACE_VERSION_GS, NULL), pMainWindow);
 		}
 		if (!g_pVGuiInput)
 		{
@@ -109,6 +107,25 @@ void DisconnectTier2Libraries()
 {
 	if (!s_bConnected)
 		return;
+
+    g_pFullFileSystem = nullptr;
+    g_pBaseUI = nullptr;
+    g_pEngineVGui = nullptr;
+    g_pGameUIFuncs = nullptr;
+    g_pGameConsole = nullptr;
+    g_pGameUI = nullptr;
+
+    delete g_pVGuiSurface;
+    g_pVGuiSurface = nullptr;
+
+    g_pVGuiInput = nullptr;
+    g_pVGui = nullptr;
+    g_pVGuiPanel = nullptr;
+    g_pVGuiLocalize = nullptr;
+    g_pVGuiSchemeManager = nullptr;
+    g_pVGuiSystem = nullptr;
+
+    KV_UninitializeKeyValuesSystem();
 
 	s_bConnected = false;
 }

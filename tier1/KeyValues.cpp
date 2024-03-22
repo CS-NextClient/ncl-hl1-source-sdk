@@ -24,10 +24,8 @@
 #include <Color.h>
 #include <stdlib.h>
 #include "tier0/dbg.h"
-#include "tier0/mem.h"
 #include "utlvector.h"
 #include "utlbuffer.h"
-//#include "common/MinMax.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
@@ -69,7 +67,7 @@ public:
 			m_errorStack[m_errorIndex] = symName;
 		}
 		m_errorIndex++;
-		m_maxErrorIndex = max( m_maxErrorIndex, (m_errorIndex-1) );
+		m_maxErrorIndex = std::max( m_maxErrorIndex, (m_errorIndex-1) );
 		return m_errorIndex-1;
 	}
 
@@ -90,18 +88,18 @@ public:
 	// Hit an error, report it and the parsing stack for context
 	void ReportError( const char *pError )
 	{
-		Msg( "KeyValues Error: %s in file %s\n", pError, m_pFilename );
+		Msg( _T("KeyValues Error: %s in file %s\n"), pError, m_pFilename );
 		for ( int i = 0; i < m_maxErrorIndex; i++ )
 		{
 			if ( m_errorStack[i] != INVALID_KEY_SYMBOL )
 			{
 				if ( i < m_errorIndex )
 				{
-					Msg( "%s, ", keyvalues()->GetStringForSymbol(m_errorStack[i]) );
+					Msg( _T("%s, "), keyvalues()->GetStringForSymbol(m_errorStack[i]) );
 				}
 				else
 				{
-					Msg( "(*%s*), ", keyvalues()->GetStringForSymbol(m_errorStack[i]) );
+					Msg( _T("(*%s*), "), keyvalues()->GetStringForSymbol(m_errorStack[i]) );
 				}
 			}
 		}
@@ -1168,7 +1166,7 @@ const wchar_t *KeyValues::GetWString( const char *keyName, const wchar_t *defaul
 		case TYPE_STRING:
 		{
 			static wchar_t wbuftemp[512]; // convert to wide	
-			int result = Q_UTF8ToUnicode( dat->m_pszValue, wbuftemp, sizeof( wbuftemp ) );
+			int result = Q_UTF8ToUnicode( dat->m_pszValue, wbuftemp, sizeof( wbuftemp ), STRINGCONVERT_SKIP ); // STRINGCONVERT_ASSERT_SKIP
 
 			if( result > 0 )
 			{

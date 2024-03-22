@@ -9,8 +9,10 @@
 #ifndef PLATFORM_H
 #define PLATFORM_H
 
+#include <cwchar>
 #include "wchartypes.h"
 #include "basetypes.h"
+#include "osconfig.h"
 #include "tier0/valve_off.h"
 
 #ifdef _WIN32
@@ -275,12 +277,13 @@ FIXME: Enable this when we no longer fear change =)
 
 #elif POSIX
 #define _vsnprintf vsnprintf
+#define _vswprintf vswprintf
 
-typedef unsigned int DWORD;
-typedef unsigned short WORD;
-typedef void * HINSTANCE;
 #define _MAX_PATH PATH_MAX
 #define __cdecl
+#define __stdcall __attribute__((stdcall))
+#define __thiscall __attribute__((thiscall))
+#define __fastcall __attribute__((fastcall))
 #define __declspec
 
 // Defines MAX_PATH
@@ -459,24 +462,6 @@ typedef void * HINSTANCE;
 #error "Unsupported Platform."
 #endif
 
-// Used for standard calling conventions
-#ifdef _WIN32
-	#define  STDCALL				__stdcall
-	#define  FASTCALL				__fastcall
-	#define  FORCEINLINE			__forceinline	
-	// GCC 3.4.1 has a bug in supporting forced inline of templated functions
-	// this macro lets us not force inlining in that case
-	#define  FORCEINLINE_TEMPLATE		__forceinline	
-#else
-	#define  STDCALL
-	#define  FASTCALL 
-	#define  FORCEINLINE			__attribute__ ((always_inline)) inline
-	// GCC 3.4.1 has a bug in supporting forced inline of templated functions
-	// this macro lets us not force inlining in that case
-	#define  FORCEINLINE_TEMPLATE
-	#define  __stdcall			__attribute__ ((__stdcall__)) 
-#endif
-
 // Force a function call site -not- to inlined. (useful for profiling)
 #define DONT_INLINE(a) (((int)(a)+1)?(a):(a))
 
@@ -573,8 +558,6 @@ typedef void * HINSTANCE;
 #define _wtoi(arg) wcstol(arg, NULL, 10)
 #define _wtoi64(arg) wcstoll(arg, NULL, 10)
 
-typedef uint32 HMODULE;
-typedef void *HANDLE;
 #endif
 
 #ifndef WIN32
@@ -831,7 +814,11 @@ FORCEINLINE void StoreLittleDWord( unsigned long *base, unsigned int dwordIndex,
 	#define PLATFORM_INTERFACE	DLL_EXPORT
 	#define PLATFORM_OVERLOAD	DLL_GLOBAL_EXPORT
 #else
-	#define PLATFORM_INTERFACE	DLL_IMPORT
+    #ifdef WIN32
+        #define PLATFORM_INTERFACE	DLL_IMPORT
+    #else
+        #define PLATFORM_INTERFACE	DLL_GLOBAL_IMPORT
+    #endif
 	#define PLATFORM_OVERLOAD	DLL_GLOBAL_IMPORT
 #endif
 

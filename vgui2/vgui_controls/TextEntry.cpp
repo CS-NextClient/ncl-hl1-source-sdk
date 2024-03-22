@@ -129,17 +129,17 @@ void TextEntry::ApplySchemeSettings(IScheme *pScheme)
 {
 	BaseClass::ApplySchemeSettings(pScheme);
 	
-	SetFgColor(GetSchemeColor("TextEntry.TextColor", pScheme));
-	SetBgColor(GetSchemeColor("TextEntry.BgColor", pScheme));
+	SetFgColor(GetSchemeColor("TextEntry.TextColor", GetSchemeColor("WindowFgColor", pScheme), pScheme));
+	SetBgColor(GetSchemeColor("TextEntry.BgColor", GetSchemeColor("WindowBgColor", pScheme), pScheme));
 	
-	_cursorColor = GetSchemeColor("TextEntry.CursorColor", pScheme);
-	_disabledFgColor = GetSchemeColor("TextEntry.DisabledTextColor", pScheme);
-	_disabledBgColor = GetSchemeColor("TextEntry.DisabledBgColor", pScheme);
+	_cursorColor = GetSchemeColor("TextEntry.CursorColor", GetSchemeColor("TextCursorColor", pScheme), pScheme);
+	_disabledFgColor = GetSchemeColor("TextEntry.DisabledTextColor", GetSchemeColor("WindowDisabledFgColor", pScheme), pScheme);
+	_disabledBgColor = GetSchemeColor("TextEntry.DisabledBgColor", GetSchemeColor("ControlBG", pScheme), pScheme);
 	
-	_selectionTextColor = GetSchemeColor("TextEntry.SelectedTextColor", GetFgColor(), pScheme);
-	_selectionColor = GetSchemeColor("TextEntry.SelectedBgColor", pScheme);
-	_defaultSelectionBG2Color = GetSchemeColor("TextEntry.OutOfFocusSelectedBgColor", pScheme);
-	_focusEdgeColor = GetSchemeColor("TextEntry.FocusEdgeColor", Color(0, 0, 0, 0), pScheme);
+	_selectionTextColor = GetSchemeColor("TextEntry.SelectedTextColor", GetSchemeColor("SelectionFgColor", GetFgColor(), pScheme), pScheme);
+	_selectionColor = GetSchemeColor("TextEntry.SelectedBgColor", GetSchemeColor("SelectionBgColor", pScheme), pScheme);
+	_defaultSelectionBG2Color = GetSchemeColor("TextEntry.OutOfFocusSelectedBgColor", GetSchemeColor("SelectionBG2", pScheme), pScheme);
+	_focusEdgeColor = GetSchemeColor("TextEntry.FocusEdgeColor", GetSchemeColor("BorderSelection", Color(0, 0, 0, 0), pScheme), pScheme);
 
 	SetBorder( pScheme->GetBorder("ButtonDepressedBorder"));
 
@@ -3642,7 +3642,7 @@ void TextEntry::GetText(OUT_Z_BYTECAP(bufLenInBytes) wchar_t *wbuf, int bufLenIn
 	int len = m_TextStream.Count();
 	if (m_TextStream.Count())
 	{
-		int terminator = min(len, (bufLenInBytes / (int)sizeof(wchar_t)) - 1);
+		int terminator = std::min(len, (bufLenInBytes / (int)sizeof(wchar_t)) - 1);
 		wcsncpy(wbuf, m_TextStream.Base(), terminator);
 		wbuf[terminator] = 0;
 	}
@@ -3655,18 +3655,18 @@ void TextEntry::GetText(OUT_Z_BYTECAP(bufLenInBytes) wchar_t *wbuf, int bufLenIn
 void TextEntry::GetTextRange( wchar_t *buf, int from, int numchars )
 {
 	int len = m_TextStream.Count();
-	int cpChars = max( 0, min( numchars, len - from ) );
+	int cpChars = std::max( 0, std::min( numchars, len - from ) );
 	
-	wcsncpy( buf, m_TextStream.Base() + max( 0, min( len, from ) ), cpChars );
+	wcsncpy( buf, m_TextStream.Base() + std::max( 0, std::min( len, from ) ), cpChars );
 	buf[ cpChars ] = 0;
 }
 
 void TextEntry::GetTextRange( char *buf, int from, int numchars )
 {
 	int len = m_TextStream.Count();
-	int cpChars = max( 0, min( numchars, len - from ) );
+	int cpChars = std::max( 0, std::min( numchars, len - from ) );
 
-	g_pVGuiLocalize->ConvertUnicodeToANSI( m_TextStream.Base() + max( 0, min( len, from ) ), buf, cpChars + 1 );
+	g_pVGuiLocalize->ConvertUnicodeToANSI( m_TextStream.Base() + std::max( 0, std::min( len, from ) ), buf, cpChars + 1 );
 	buf[ cpChars ] = 0;
 }
 

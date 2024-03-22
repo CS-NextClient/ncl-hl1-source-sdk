@@ -246,11 +246,11 @@ void RichText::ApplySchemeSettings(IScheme *pScheme)
 	_font = pScheme->GetFont("Default", IsProportional() );
 	m_hFontUnderline = pScheme->GetFont("DefaultUnderline", IsProportional() );
 	
-	SetFgColor(GetSchemeColor("RichText.TextColor", pScheme));
-	SetBgColor(GetSchemeColor("RichText.BgColor", pScheme));
+	SetFgColor(GetSchemeColor("RichText.TextColor", GetSchemeColor("WindowFgColor", pScheme), pScheme));
+	SetBgColor(GetSchemeColor("RichText.BgColor", GetSchemeColor("WindowBgColor", pScheme), pScheme));
 	
 	_selectionTextColor = GetSchemeColor("RichText.SelectedTextColor", GetFgColor(), pScheme);
-	_selectionColor = GetSchemeColor("RichText.SelectedBgColor", pScheme);
+	_selectionColor = GetSchemeColor("RichText.SelectedBgColor", GetSchemeColor("SelectionBgColor", pScheme), pScheme);
 
 	if ( Q_strlen( pScheme->GetResourceString( "RichText.InsetX" ) ) )
 	{
@@ -2097,6 +2097,36 @@ void RichText::InsertString(const char *text)
 	InsertString(unicode);
 }
 
+void RichText::InsertString(const char *begin, const char *end)
+{
+    Assert(begin <= end);
+
+    if (begin == end)
+        return;
+
+    // We don't support localization for range without null terminator,
+    // because of ILocalize has no suitable methods
+    if (begin[0] == '#' && *(end - 1) == '\0')
+    {
+        wchar_t unicode[ 1024 ];
+        ResolveLocalizedTextAndVariables( begin, unicode, sizeof( unicode ) );
+        InsertString( unicode );
+        return;
+    }
+
+    // upgrade the ansi text to unicode to display it
+    int len = end - begin;
+    uchar16* utf16 = (uchar16 *)_alloca((len + 1) * sizeof(uchar16));
+    int written = Q_UTF8ToUTF16(begin, end, utf16, ((len + 1) * sizeof(uchar16)));
+
+    wchar_t* wsz_text = (wchar_t *)_alloca((written + 1) * sizeof(wchar_t));
+    for (int i = 0; i < written; i++)
+        wsz_text[i] = utf16[i];
+    wsz_text[written] = '\0';
+
+    InsertString(wsz_text);
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Insertsa a unicode string into the buffer
 //-----------------------------------------------------------------------------
@@ -2106,6 +2136,18 @@ void RichText::InsertString(const wchar_t *wszText)
 	for (const wchar_t *ch = wszText; *ch != 0; ++ch)
 	{
 		InsertChar(*ch);
+	}
+	InvalidateLayout();
+	m_bRecalcLineBreaks = true;
+	Repaint();
+}
+
+void RichText::InsertString(const wchar_t *begin, const wchar_t *end)
+{
+	// insert the whole string
+	for (; begin != end; begin++)
+	{
+		InsertChar(*begin);
 	}
 	InvalidateLayout();
 	m_bRecalcLineBreaks = true;
@@ -2432,7 +2474,7 @@ void RichText::ApplySettings(KeyValues *inResourceData)
 			FileHandle_t f = g_pFullFileSystem->Open( textfilename, "rt" );
 			if (!f)
 			{
-				Warning( "RichText: textfile parameter '%s' not found.\n", textfilename );
+				Warning( _T("RichText: textfile parameter '%s' not found.\n"), textfilename );
 				return;
 			}
 
@@ -2591,12 +2633,12 @@ int RichText::ParseTextStringForUrls( const char *text, int startPos, char *pchU
 			// get the url
 			i += Q_strlen( "<a href=" );
 			const char *pchURLEnd = Q_strstr( text + i, ">" );
-			Q_strncpy( pchURL, text + i, min( pchURLEnd - text - i + 1, cchURL ) ); 
+			Q_strncpy( pchURL, text + i, std::min( pchURLEnd - text - i + 1, cchURL ) );
 			i += ( pchURLEnd - text - i + 1 );
             
 			// get the url text
 			pchURLEnd = Q_strstr( text, "</a>" );
-			Q_strncpy( pchURLText, text + i, min( pchURLEnd - text - i + 1, cchURLText ) ); 
+			Q_strncpy( pchURLText, text + i, std::min( pchURLEnd - text - i + 1, cchURLText ) );
 			i += ( pchURLEnd - text - i );
 			i += Q_strlen( "</a>" );
 

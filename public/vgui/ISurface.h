@@ -419,17 +419,6 @@ public:
 	//virtual void DrawUnicodeString( const wchar_t *pwString, FontDrawType_t drawType = FONT_DRAW_DEFAULT ) = 0;
 };
 
-//GoldSource doesn't use these, but provide the functions anyway so code is still there. - Solokiller
-
-inline float DrawGetAlphaMultiplier()
-{
-	return 1;
-}
-
-inline void DrawSetAlphaMultiplier( float )
-{
-}
-
 }
 
 /**

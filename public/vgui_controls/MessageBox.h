@@ -62,6 +62,7 @@ public:
  	void SetCancelButtonText(const char *buttonText);
 	void SetCancelButtonText(const wchar_t *wszButtonText);
 	void SetCancelCommand( KeyValues *command );
+	void RequestFocusOnCancelButton();
 
 	// Toggles visibility of the close box.
 	virtual void DisableCloseButton(bool state);

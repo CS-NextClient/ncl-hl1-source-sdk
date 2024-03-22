@@ -25,19 +25,23 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-vgui2::KeyCode KeyCode_VirtualKeyToVGUI( int key )
+using namespace vgui2;
+
+KeyCode KeyCode_VirtualKeyToVGUI( int key )
 {
-	// Some tools load vgui for localization and never use input
-	if ( !g_pVGuiSystem)
-		return vgui2::KEY_NONE;
-	return g_pVGuiSystem->KeyCode_VirtualKeyToVGUI( key );
+	return system()->KeyCode_VirtualKeyToVGUI( key );
 }
 
-int KeyCode_VGUIToVirtualKey( vgui2::KeyCode code )
+int KeyCode_VGUIToVirtualKey( KeyCode code )
 {
-	// Some tools load vgui for localization and never use input
-	if ( !g_pVGuiSystem)
-		return VK_RETURN;
+	auto vk = system()->KeyCode_VGUIToVirtualKey(code);
 
-	return g_pVGuiSystem->KeyCode_VirtualKeyToVGUI( code );
+	switch(code) {
+		case KEY_LEFT: vk = VK_LEFT; break;
+		case KEY_RIGHT: vk = VK_RIGHT; break;
+		case KEY_PERIOD: vk = VK_OEM_PERIOD; break;
+		case KEY_MINUS: vk = VK_OEM_MINUS; break;
+	}
+	
+	return vk;
 }

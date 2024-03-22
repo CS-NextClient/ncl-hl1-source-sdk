@@ -400,7 +400,7 @@ I CUtlMultiList<T,I>::Alloc( )
 		if ( !IndexInRange( m_MaxElementIndex ) )
 		{
 			// We rarely if ever handle alloc failure. Continuing leads to corruption.
-			Error( "CUtlMultiList overflow! (exhausted index range)\n" );
+			Error( _T("CUtlMultiList overflow! (exhausted index range)\n") );
 			return InvalidIndex();
 		}
 
@@ -415,7 +415,7 @@ I CUtlMultiList<T,I>::Alloc( )
 			if ( m_MaxElementIndex >= m_Memory.NumAllocated() )
 			{
 				// We rarely if ever handle alloc failure. Continuing leads to corruption.
-				Error( "CUtlMultiList overflow! (exhausted memory allocator)\n" );
+				Error( _T("CUtlMultiList overflow! (exhausted memory allocator)\n") );
 				return InvalidIndex();
 			}
 		}

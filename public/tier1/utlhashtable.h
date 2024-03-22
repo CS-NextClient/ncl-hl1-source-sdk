@@ -156,10 +156,10 @@ protected:
 
 public:
 	explicit CUtlHashtable( int minimumSize = 32 )
-		: m_nUsed(0), m_nMinSize(max(8, minimumSize)), m_bSizeLocked(false), m_eq(), m_hash() { }
+		: m_nUsed(0), m_nMinSize(std::max(8, minimumSize)), m_bSizeLocked(false), m_eq(), m_hash() { }
 
 	CUtlHashtable( int minimumSize, const KeyHashT &hash, KeyIsEqualT const &eq = KeyIsEqualT() )
-		: m_nUsed(0), m_nMinSize(max(8, minimumSize)), m_bSizeLocked(false), m_eq(eq), m_hash(hash) { }
+		: m_nUsed(0), m_nMinSize(std::max(8, minimumSize)), m_bSizeLocked(false), m_eq(eq), m_hash(hash) { }
 
 	CUtlHashtable( entry_t* pMemory, unsigned int nCount, const KeyHashT &hash = KeyHashT(), KeyIsEqualT const &eq = KeyIsEqualT() )
 		: m_nUsed(0), m_nMinSize(8), m_bSizeLocked(false), m_eq(eq), m_hash(hash) { SetExternalBuffer( pMemory, nCount ); }
@@ -299,7 +299,7 @@ void CUtlHashtable<KeyT, ValueT, KeyHashT, KeyIsEqualT, AltKeyT>::DoRealloc( int
 {
 	Assert( !m_bSizeLocked ); 
 
-	size = SmallestPowerOfTwoGreaterOrEqual( max( m_nMinSize, size ) );
+	size = SmallestPowerOfTwoGreaterOrEqual( std::max( m_nMinSize, size ) );
 	Assert( size > 0 && (uint)size <= entry_t::IdealIndex( ~0, 0x1FFFFFFF ) ); // reasonable power of 2
 	Assert( size > m_nUsed );
 

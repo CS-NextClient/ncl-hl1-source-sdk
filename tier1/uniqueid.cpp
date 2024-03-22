@@ -11,7 +11,8 @@
 
 #ifdef IS_WINDOWS_PC
 #undef ARRAYSIZE
-#include <windows.h> // UUIDCreate
+#include <Windows.h>
+#include <Rpc.h> // UUIDCreate
 #else
 #include "checksum_crc.h"
 #endif

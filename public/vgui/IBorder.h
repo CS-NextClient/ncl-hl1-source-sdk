@@ -37,14 +37,6 @@ public:
 	virtual void ApplySchemeSettings(IScheme *pScheme, KeyValues *inResourceData) = 0;
 	virtual const char *GetName() = 0;
 	virtual void SetName(const char *name) = 0;
-
-	//enum backgroundtype_e
-	//{
-	//	BACKGROUND_FILLED,
-	//	BACKGROUND_TEXTURED,
-	//	BACKGROUND_ROUNDEDCORNERS,
-	//};
-	//virtual backgroundtype_e GetBackgroundType() = 0;
 	
 	enum sides_e
 	{

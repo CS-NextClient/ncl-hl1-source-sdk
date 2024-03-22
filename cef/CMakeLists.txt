@@ -1,0 +1,177 @@
+set( CEF_HEADER_FILES
+	include/cef.h
+	include/cef_capi.h
+	include/cef_nplugin.h
+	include/cef_nplugin_capi.h
+	include/cef_runnable.h
+	include/cef_version.h
+	include/cef_wrapper.h
+	include/internal/cef_string_map.h
+	include/internal/cef_string_multimap.h
+	include/internal/cef_string_types.h
+	include/internal/cef_string_wrappers.h
+	include/internal/cef_time.h
+	include/internal/cef_tuple.h
+	include/internal/cef_types.h
+	include/internal/cef_types_win.h
+	include/internal/cef_types_wrappers.h
+	include/internal/cef_win.h
+	include/internal/cef_build.h
+	include/internal/cef_export.h
+	include/internal/cef_nplugin_types.h
+	include/internal/cef_ptr.h
+	include/internal/cef_string.h
+	include/internal/cef_string_list.h
+	include/internal/npapi/port.h
+	include/internal/npapi/basictypes.h
+	include/internal/npapi/build_config.h
+	include/internal/npapi/npapi.h
+	include/internal/npapi/npapi_extensions.h
+	include/internal/npapi/npfunctions.h
+	include/internal/npapi/nphostapi.h
+	include/internal/npapi/npruntime.h
+	include/internal/npapi/nptypes.h
+
+	cef_utils.h
+	cef_utils/promise_like.h
+	cef_utils/promise_like.cpp
+	cef_utils/function_task.h
+	cef_utils/function_handler.h
+	cef_utils/context_capture.h
+
+	libcef_dll/cef_logging.h
+	libcef_dll/transfer_util.cpp
+	libcef_dll/transfer_util.h
+	libcef_dll/cpptoc/cookie_visitor_cpptoc.h
+	libcef_dll/cpptoc/cpptoc.h
+	libcef_dll/cpptoc/display_handler_cpptoc.cc
+	libcef_dll/cpptoc/display_handler_cpptoc.h
+	libcef_dll/cpptoc/domevent_listener_cpptoc.cc
+	libcef_dll/cpptoc/domevent_listener_cpptoc.h
+	libcef_dll/cpptoc/domvisitor_cpptoc.cc
+	libcef_dll/cpptoc/domvisitor_cpptoc.h
+	libcef_dll/cpptoc/download_handler_cpptoc.cc
+	libcef_dll/cpptoc/download_handler_cpptoc.h
+	libcef_dll/cpptoc/drag_handler_cpptoc.cc
+	libcef_dll/cpptoc/drag_handler_cpptoc.h
+	libcef_dll/cpptoc/find_handler_cpptoc.cc
+	libcef_dll/cpptoc/find_handler_cpptoc.h
+	libcef_dll/cpptoc/focus_handler_cpptoc.cc
+	libcef_dll/cpptoc/focus_handler_cpptoc.h
+	libcef_dll/cpptoc/jsdialog_handler_cpptoc.cc
+	libcef_dll/cpptoc/jsdialog_handler_cpptoc.h
+	libcef_dll/cpptoc/keyboard_handler_cpptoc.cc
+	libcef_dll/cpptoc/keyboard_handler_cpptoc.h
+	libcef_dll/cpptoc/life_span_handler_cpptoc.cc
+	libcef_dll/cpptoc/life_span_handler_cpptoc.h
+	libcef_dll/cpptoc/load_handler_cpptoc.cc
+	libcef_dll/cpptoc/load_handler_cpptoc.h
+	libcef_dll/cpptoc/menu_handler_cpptoc.cc
+	libcef_dll/cpptoc/menu_handler_cpptoc.h
+	libcef_dll/cpptoc/print_handler_cpptoc.cc
+	libcef_dll/cpptoc/print_handler_cpptoc.h
+	libcef_dll/cpptoc/proxy_handler_cpptoc.cc
+	libcef_dll/cpptoc/proxy_handler_cpptoc.h
+	libcef_dll/cpptoc/read_handler_cpptoc.cc
+	libcef_dll/cpptoc/read_handler_cpptoc.h
+	libcef_dll/cpptoc/render_handler_cpptoc.cc
+	libcef_dll/cpptoc/render_handler_cpptoc.h
+	libcef_dll/cpptoc/request_handler_cpptoc.cc
+	libcef_dll/cpptoc/request_handler_cpptoc.h
+	libcef_dll/cpptoc/scheme_handler_cpptoc.cc
+	libcef_dll/cpptoc/scheme_handler_cpptoc.h
+	libcef_dll/cpptoc/scheme_handler_factory_cpptoc.cc
+	libcef_dll/cpptoc/scheme_handler_factory_cpptoc.h
+	libcef_dll/cpptoc/storage_visitor_cpptoc.cc
+	libcef_dll/cpptoc/storage_visitor_cpptoc.h
+	libcef_dll/cpptoc/task_cpptoc.cc
+	libcef_dll/cpptoc/task_cpptoc.h
+	libcef_dll/cpptoc/v8accessor_cpptoc.cc
+	libcef_dll/cpptoc/v8accessor_cpptoc.h
+	libcef_dll/cpptoc/v8context_handler_cpptoc.cc
+	libcef_dll/cpptoc/v8context_handler_cpptoc.h
+	libcef_dll/cpptoc/v8handler_cpptoc.cc
+	libcef_dll/cpptoc/v8handler_cpptoc.h
+	libcef_dll/cpptoc/web_urlrequest_client_cpptoc.cc
+	libcef_dll/cpptoc/web_urlrequest_client_cpptoc.h
+	libcef_dll/cpptoc/write_handler_cpptoc.cc
+	libcef_dll/cpptoc/write_handler_cpptoc.h
+	libcef_dll/cpptoc/app_cpptoc.cc
+	libcef_dll/cpptoc/app_cpptoc.h
+	libcef_dll/cpptoc/base_cpptoc.h
+	libcef_dll/cpptoc/client_cpptoc.cc
+	libcef_dll/cpptoc/client_cpptoc.h
+	libcef_dll/cpptoc/content_filter_cpptoc.cc
+	libcef_dll/cpptoc/content_filter_cpptoc.h
+	libcef_dll/cpptoc/cookie_visitor_cpptoc.cc
+	libcef_dll/ctocpp/base_ctocpp.h
+	libcef_dll/ctocpp/browser_ctocpp.cc
+	libcef_dll/ctocpp/browser_ctocpp.h
+	libcef_dll/ctocpp/command_line_ctocpp.cc
+	libcef_dll/ctocpp/command_line_ctocpp.h
+	libcef_dll/ctocpp/ctocpp.h
+	libcef_dll/ctocpp/domdocument_ctocpp.cc
+	libcef_dll/ctocpp/domdocument_ctocpp.h
+	libcef_dll/ctocpp/domevent_ctocpp.cc
+	libcef_dll/ctocpp/domevent_ctocpp.h
+	libcef_dll/ctocpp/domnode_ctocpp.cc
+	libcef_dll/ctocpp/domnode_ctocpp.h
+	libcef_dll/ctocpp/drag_data_ctocpp.cc
+	libcef_dll/ctocpp/drag_data_ctocpp.h
+	libcef_dll/ctocpp/frame_ctocpp.cc
+	libcef_dll/ctocpp/frame_ctocpp.h
+	libcef_dll/ctocpp/post_data_ctocpp.cc
+	libcef_dll/ctocpp/post_data_ctocpp.h
+	libcef_dll/ctocpp/post_data_element_ctocpp.cc
+	libcef_dll/ctocpp/post_data_element_ctocpp.h
+	libcef_dll/ctocpp/request_ctocpp.cc
+	libcef_dll/ctocpp/request_ctocpp.h
+	libcef_dll/ctocpp/response_ctocpp.cc
+	libcef_dll/ctocpp/response_ctocpp.h
+	libcef_dll/ctocpp/scheme_handler_callback_ctocpp.cc
+	libcef_dll/ctocpp/scheme_handler_callback_ctocpp.h
+	libcef_dll/ctocpp/stream_reader_ctocpp.cc
+	libcef_dll/ctocpp/stream_reader_ctocpp.h
+	libcef_dll/ctocpp/stream_writer_ctocpp.cc
+	libcef_dll/ctocpp/stream_writer_ctocpp.h
+	libcef_dll/ctocpp/v8context_ctocpp.cc
+	libcef_dll/ctocpp/v8context_ctocpp.h
+	libcef_dll/ctocpp/v8exception_ctocpp.cc
+	libcef_dll/ctocpp/v8exception_ctocpp.h
+	libcef_dll/ctocpp/v8value_ctocpp.cc
+	libcef_dll/ctocpp/v8value_ctocpp.h
+	libcef_dll/ctocpp/web_urlrequest_ctocpp.cc
+	libcef_dll/ctocpp/web_urlrequest_ctocpp.h
+	libcef_dll/ctocpp/xml_reader_ctocpp.cc
+	libcef_dll/ctocpp/xml_reader_ctocpp.h
+	libcef_dll/ctocpp/zip_reader_ctocpp.cc
+	libcef_dll/ctocpp/zip_reader_ctocpp.h
+	libcef_dll/wrapper/cef_byte_read_handler.cc
+	libcef_dll/wrapper/cef_xml_object.cc
+	libcef_dll/wrapper/cef_zip_archive.cc
+	libcef_dll/wrapper/libcef_dll_wrapper.cc
+	libcef_dll/wrapper/libcef_dll_wrapper2.cc
+)
+
+set( CEF_DEFINES 
+	USING_CEF_SHARED
+	NOMINMAX
+	NDEBUG
+)
+
+add_library( libcef_dll STATIC
+	${CEF_HEADER_FILES}
+	${CEF_SOURCE_FILES}
+)
+
+target_include_directories( libcef_dll PRIVATE
+	${CMAKE_CURRENT_SOURCE_DIR}
+	${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+target_compile_definitions( libcef_dll PRIVATE
+	${CEF_DEFINES}
+)
+
+find_package( libcef MODULE REQUIRED )
+target_link_libraries( libcef_dll PRIVATE libcef )

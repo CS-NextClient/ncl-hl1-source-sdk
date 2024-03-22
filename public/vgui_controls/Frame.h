@@ -239,7 +239,6 @@ private:
 	bool	_moveable : 1;
 	bool	 m_bHasFocus : 1;
 	bool	_flashWindow : 1;
-	bool	_nextFlashState : 1;
 	bool	_drawTitleBar : 1;
 	bool	m_bPreviouslyVisible : 1;
 	bool	m_bFadingOut : 1;

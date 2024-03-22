@@ -22,7 +22,7 @@
 namespace
 {
 bool g_bIsInited = false;
-ISteamClient017 *g_pSteamClient017 = nullptr;
+ISteamClient *g_pSteamClient012 = nullptr;
 
 #ifdef SOURCE_SDK_MIN_STEAM_API
 typedef void (S_CALLTYPE *RegisterCallResultFn)(class CCallbackBase *pCallback, SteamAPICall_t hAPICall);
@@ -55,9 +55,9 @@ void LoadSteamAPIFuncsInRuntime()
 }
 #endif
 
-void LoadSteamClient017()
+void LoadSteamClient012()
 {
-	if (g_pSteamClient017)
+	if (g_pSteamClient012)
 		return;
 
 	CSysModule *steamClientModule = nullptr;
@@ -94,13 +94,13 @@ void LoadSteamClient017()
 	}
 	catch (const std::exception &e)
 	{
-		Warning("Failed to read /proc/self/maps: %s\n", e.what());
+		Warning(_T("Failed to read /proc/self/maps: %s\n"), e.what());
 		return;
 	}
 
 	if (libpath.empty())
 	{
-		Warning("Failed to get full path to steamclient.so\n");
+		Warning(_T("Failed to get full path to steamclient.so\n"));
 		return;
 	}
 
@@ -154,7 +154,7 @@ void LoadSteamClient017()
 	if (!factory)
 		return;
 
-	g_pSteamClient017 = (ISteamClient017 *)factory(STEAMCLIENT017_INTERFACE_VERSION, nullptr);
+    g_pSteamClient012 = (ISteamClient *)factory(STEAMCLIENT_INTERFACE_VERSION, nullptr);
 }
 }
 
@@ -178,16 +178,16 @@ void SteamAPI_InitForGoldSrc()
 	if (!SteamAPI_IsAvailable())
 		return;
 
-	LoadSteamClient017();
+    LoadSteamClient012();
 #endif
 }
 
 //------------------------------------------------------------------
 // steam_api.h
 //------------------------------------------------------------------
-ISteamClient017 *SteamClient017()
+ISteamClient *SteamClient012()
 {
-    return g_pSteamClient017;
+    return g_pSteamClient012;
 }
 
 bool SteamAPI_IsAvailable()

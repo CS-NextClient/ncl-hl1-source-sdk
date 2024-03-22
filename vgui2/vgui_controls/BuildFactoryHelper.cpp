@@ -24,7 +24,7 @@ CBuildFactoryHelper::CBuildFactoryHelper( char const *className, PANELCREATEFUNC
 	// Make this fatal
 	if ( HasFactory( className ) )
 	{
-		Error( "CBuildFactoryHelper:  Factory for '%s' already exists!!!!\n", className );
+		Error( _T("CBuildFactoryHelper:  Factory for '%s' already exists!!!!\n"), className );
 	}
 
 	//List is empty, or element belongs at front, insert here

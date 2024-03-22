@@ -100,16 +100,17 @@ RadioButton::~RadioButton()
 void RadioButton::ApplySchemeSettings(IScheme *pScheme)
 {
 	BaseClass::ApplySchemeSettings(pScheme);
-	_radioBoxImage->_bgColor = GetSchemeColor("CheckButton.BgColor", Color(150, 150, 150, 0), pScheme);
-	_radioBoxImage->_borderColor1 = GetSchemeColor("CheckButton.Border1", Color(20, 20, 20, 0), pScheme);
-	_radioBoxImage->_borderColor2 = GetSchemeColor("CheckButton.Border2", Color(90, 90, 90, 0), pScheme);
-	_radioBoxImage->_checkColor = GetSchemeColor("CheckButton.Check", Color(20, 20, 20, 0), pScheme);
 
-	SetFgColor(GetSchemeColor("RadioButton.TextColor", pScheme));
-	_selectedFgColor = GetSchemeColor("RadioButton.SelectedTextColor", GetSchemeColor("ControlText", pScheme), pScheme);
+	_radioBoxImage->_bgColor = GetSchemeColor("CheckButton.BgColor", GetSchemeColor("CheckBgColor", Color(150, 150, 150, 0), pScheme), pScheme);
+	_radioBoxImage->_borderColor1 = GetSchemeColor("CheckButton.Border1", GetSchemeColor("CheckButtonBorder1", Color(20, 20, 20, 0), pScheme), pScheme);
+	_radioBoxImage->_borderColor2 = GetSchemeColor("CheckButton.Border2", GetSchemeColor("CheckButtonBorder2", Color(90, 90, 90, 0), pScheme), pScheme);
+	_radioBoxImage->_checkColor = GetSchemeColor("CheckButton.Check", GetSchemeColor("CheckButtonCheck", Color(20, 20, 20, 0), pScheme), pScheme);
+
+	auto bwSelectedFgColor = GetSchemeColor("BrightControlText", GetSchemeColor("ControlText", pScheme), pScheme);
+	_selectedFgColor = GetSchemeColor("RadioButton.SelectedTextColor", GetSchemeColor("BrightControlText", bwSelectedFgColor, pScheme), pScheme);
 
 	SetDefaultColor( GetFgColor(), GetBgColor() );
-
+	SetFgColor(GetSchemeColor("RadioButton.TextColor", GetSchemeColor("FgColor", pScheme), pScheme));
 	SetArmedColor( GetSchemeColor("RadioButton.ArmedTextColor", pScheme), GetButtonArmedBgColor() );
 
 	SetContentAlignment(a_west);
@@ -304,16 +305,6 @@ void RadioButton::OnRadioButtonChecked(int tabPosition)
 void RadioButton::Paint()
 {
 	BaseClass::Paint();
-
-	/*
-	if (HasFocus())
-	{
-		int tx0, ty0, tx1, ty1;
-		_textImage->GetPos(tx0, ty0);
-		_textImage->GetSize(tx1, ty1);
-		DrawFocusBorder(tx0, ty0, tx0 + tx1, ty0 + ty1);
-	}
-	*/
 }
 
 //-----------------------------------------------------------------------------

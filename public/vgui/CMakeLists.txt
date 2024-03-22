@@ -3,8 +3,8 @@ add_sources(
 	Cursor.h
 	Dar.h
 	IBorder.h
+	IBorderEx.h
 	IClientPanel.h
-	IHTML.h
 	IImage.h
 	IInput.h
 	IInputInternal.h

@@ -319,8 +319,8 @@ void ScrollBarSlider::ApplySchemeSettings(IScheme *pScheme)
 {
 	BaseClass::ApplySchemeSettings(pScheme);
 
-	SetFgColor(GetSchemeColor("ScrollBarSlider.FgColor", pScheme));
-	SetBgColor(GetSchemeColor("ScrollBarSlider.BgColor", pScheme));
+	SetFgColor(GetSchemeColor("ScrollBarSlider.FgColor", GetSchemeColor("ScrollBarSlider/ScrollBarSliderFgColor", pScheme), pScheme));
+	SetBgColor(GetSchemeColor("ScrollBarSlider.BgColor", GetSchemeColor("ScrollBarSlider/ScrollBarSliderBgColor", pScheme), pScheme));
 
 	IBorder *newBorder = pScheme->GetBorder("ScrollBarSliderBorder");
 
@@ -377,7 +377,7 @@ void ScrollBarSlider::Paint()
 		// border
 		if (_ScrollBarSliderBorder)
 		{
-			_ScrollBarSliderBorder->Paint(0, _nobPos[0], wide, _nobPos[1]);
+			_ScrollBarSliderBorder->Paint(0, _nobPos[0], wide - 1, _nobPos[1]);
 		}
 	}
 	else

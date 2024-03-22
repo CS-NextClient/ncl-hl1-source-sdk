@@ -46,12 +46,20 @@ void ComboBoxButton::ApplySchemeSettings(IScheme *pScheme)
 	SetTextInset(3, 0);
 #endif
 	SetDefaultBorder(pScheme->GetBorder("ScrollBarButtonBorder"));
+
+	auto bwFgDefaultColor = GetSchemeColor("MenuButton/ButtonArrowColor", pScheme);
+	auto bwBgDefaultColor = GetSchemeColor("MenuButton/ButtonBgColor", pScheme);
+	auto bwFgArmedColor = GetSchemeColor("MenuButton/ArmedArrowColor", pScheme);
+	auto bwBgArmedColor = bwBgDefaultColor;
+	auto bwFgDepressedColor = bwFgArmedColor;
+	auto bwBgDepressedColor = bwBgDefaultColor;
+	auto bwFgDisabledBgColor = GetSchemeColor("ControlBG", pScheme);
 	
 	// arrow changes color but the background doesnt.
-	SetDefaultColor(GetSchemeColor("ComboBoxButton.ArrowColor", pScheme), GetSchemeColor("ComboBoxButton.BgColor", pScheme));
-	SetArmedColor(GetSchemeColor("ComboBoxButton.ArmedArrowColor", pScheme), GetSchemeColor("ComboBoxButton.BgColor", pScheme));
-	SetDepressedColor(GetSchemeColor("ComboBoxButton.ArmedArrowColor", pScheme), GetSchemeColor("ComboBoxButton.BgColor", pScheme));
-	m_DisabledBgColor = GetSchemeColor("ComboBoxButton.DisabledBgColor", pScheme);
+	SetDefaultColor(GetSchemeColor("ComboBoxButton.ArrowColor", bwFgDefaultColor, pScheme), GetSchemeColor("ComboBoxButton.BgColor", bwBgDefaultColor, pScheme));
+	SetArmedColor(GetSchemeColor("ComboBoxButton.ArmedArrowColor", bwFgArmedColor, pScheme), GetSchemeColor("ComboBoxButton.BgColor", bwBgArmedColor, pScheme));
+	SetDepressedColor(GetSchemeColor("ComboBoxButton.ArmedArrowColor", bwFgDepressedColor, pScheme), GetSchemeColor("ComboBoxButton.BgColor", bwBgDepressedColor, pScheme));
+	m_DisabledBgColor = GetSchemeColor("ComboBoxButton.DisabledBgColor", bwFgDisabledBgColor, pScheme);
 }
 
 IBorder * ComboBoxButton::GetBorder(bool depressed, bool armed, bool selected, bool keyfocus)
@@ -93,7 +101,7 @@ ComboBox::ComboBox(Panel *parent, const char *panelName, int numLines, bool allo
 	// create the drop-down menu
 	m_pDropDown = new Menu(this, NULL);
 	m_pDropDown->AddActionSignalTarget(this);
-	m_pDropDown->SetTypeAheadMode( Menu::TYPE_AHEAD_MODE );
+	m_pDropDown->SetTypeAheadMode( Menu::COMPAT_MODE );
 
 	// button to Activate menu
 	m_pButton = new ComboBoxButton(this, "Button", "u");
@@ -239,6 +247,11 @@ int ComboBox::GetItemCount() const
 	return m_pDropDown->GetItemCount();
 }
 
+int ComboBox::GetRowByItemId(int itemID) const
+{
+    return m_pDropDown->GetRowByItemId(itemID);
+}
+
 int ComboBox::GetItemIDFromRow( int row )
 {
 	// valid from [0, GetItemCount)
@@ -323,14 +336,14 @@ void ComboBox::PerformLayout()
 	HFont buttonFont = m_pButton->GetFont();
 	int fontTall = surface()->GetFontTall( buttonFont );
 
-	int buttonSize = min( tall, fontTall );
+	int buttonSize = std::min( tall, fontTall );
 	
 	int buttonY = ( ( tall - 1 ) - buttonSize ) / 2;
 
 	// Some dropdown button icons in our games are wider than they are taller. We need to factor that in.
 	int button_wide, button_tall;
 	m_pButton->GetContentSize(button_wide, button_tall);
-	button_wide = max( buttonSize, button_wide );
+	button_wide = std::max( buttonSize, button_wide );
 
 	m_pButton->SetBounds( wide - button_wide, buttonY, button_wide, buttonSize );
 	if ( IsEditable() )

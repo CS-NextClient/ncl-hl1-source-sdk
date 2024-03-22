@@ -769,7 +769,7 @@ void Menu::PerformLayout()
 		AddScrollBar();
 
 		// This fills in m_VisibleSortedItems as needed
-		MakeItemsVisibleInScrollRange( m_iNumVisibleLines, min( fullHeightWouldRequire, workTall ) );
+		MakeItemsVisibleInScrollRange( m_iNumVisibleLines, std::min( fullHeightWouldRequire, workTall ) );
 	}
 	else
 	{
@@ -1874,8 +1874,8 @@ void Menu::ApplySchemeSettings(IScheme *pScheme)
 {
 	BaseClass::ApplySchemeSettings(pScheme);
 	
-	SetFgColor(GetSchemeColor("Menu.TextColor", pScheme));
-	SetBgColor(GetSchemeColor("Menu.BgColor", pScheme));
+	SetFgColor(GetSchemeColor("Menu.TextColor", GetSchemeColor("Menu/FgColor", pScheme), pScheme));
+	SetBgColor(GetSchemeColor("Menu.BgColor", GetSchemeColor("Menu/BgColor", pScheme), pScheme));
 
 	_borderDark = pScheme->GetColor("BorderDark", Color(255, 255, 255, 0));
 
@@ -1886,7 +1886,7 @@ void Menu::ApplySchemeSettings(IScheme *pScheme)
 			int wide, tall;
 			m_MenuItems[i]->GetCheckImageSize( wide, tall );
 
-			m_iCheckImageWidth = max ( m_iCheckImageWidth, wide );
+			m_iCheckImageWidth = std::max ( m_iCheckImageWidth, wide );
 		}
 	}
 	_recalculateWidth = true;
@@ -2121,6 +2121,17 @@ int Menu::GetMenuID(int index)
 	return m_SortedItems[index];
 }
 
+int Menu::GetRowByItemId(int itemID) const
+{
+    for (int i = 0; i < m_SortedItems.Count(); i++)
+    {
+        if (m_SortedItems[i] == itemID)
+            return i;
+    }
+
+    return -1;
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Return the number of items currently visible in the menu list
 //-----------------------------------------------------------------------------
@@ -2315,6 +2326,8 @@ void Menu::SetCurrentlySelectedItem(int itemID)
 void Menu::SetCurrentlyHighlightedItem(int itemID)
 {
 	SetCurrentlySelectedItem(itemID);
+	SilentActivateItem(itemID);
+
 	int row = m_SortedItems.Find(itemID);
 	// If we have no items, then row will be -1. The dev console, for example...
 	Assert( ( m_SortedItems.Count() == 0 ) || ( row != -1 ) );
@@ -2596,7 +2609,11 @@ void Menu::SetFont( HFont font )
 	m_hItemFont = font;
 	if ( font )
 	{
-		m_iMenuItemHeight = surface()->GetFontTall( font ) + 2;
+		int font_tall = surface()->GetFontTall( font ) + 2;
+        if (font_tall > m_iMenuItemHeight)
+        {
+            m_iMenuItemHeight = font_tall;
+        }
 	}
 	InvalidateLayout();
 }

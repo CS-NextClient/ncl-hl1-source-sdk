@@ -111,27 +111,21 @@ inline void ThreadPause()
 //
 //-----------------------------------------------------------------------------
 
-#ifdef _WIN32
-#define NOINLINE
-#elif POSIX
-#define NOINLINE __attribute__ ((noinline))
-#endif
+TT_INTERFACE NOINLINE long ThreadInterlockedIncrement( long volatile * );
+TT_INTERFACE NOINLINE long ThreadInterlockedDecrement( long volatile * );
+TT_INTERFACE NOINLINE long ThreadInterlockedExchange( long volatile *, long value );
+TT_INTERFACE NOINLINE long ThreadInterlockedExchangeAdd( long volatile *, long value );
+TT_INTERFACE NOINLINE long ThreadInterlockedCompareExchange( long volatile *, long value, long comperand );
 
-TT_INTERFACE long ThreadInterlockedIncrement( long volatile * ) NOINLINE;
-TT_INTERFACE long ThreadInterlockedDecrement( long volatile * ) NOINLINE;
-TT_INTERFACE long ThreadInterlockedExchange( long volatile *, long value ) NOINLINE;
-TT_INTERFACE long ThreadInterlockedExchangeAdd( long volatile *, long value ) NOINLINE;
-TT_INTERFACE long ThreadInterlockedCompareExchange( long volatile *, long value, long comperand ) NOINLINE;
+TT_INTERFACE NOINLINE void *ThreadInterlockedExchangePointer( void * volatile *, void *value );
+TT_INTERFACE NOINLINE void *ThreadInterlockedCompareExchangePointer( void * volatile *, void *value, void *comperand );
 
-TT_INTERFACE void *ThreadInterlockedExchangePointer( void * volatile *, void *value ) NOINLINE;
-TT_INTERFACE void *ThreadInterlockedCompareExchangePointer( void * volatile *, void *value, void *comperand ) NOINLINE;
-
-TT_INTERFACE int64 ThreadInterlockedIncrement64( int64 volatile * ) NOINLINE;
-TT_INTERFACE int64 ThreadInterlockedDecrement64( int64 volatile * ) NOINLINE;
-TT_INTERFACE int64 ThreadInterlockedCompareExchange64( int64 volatile *, int64 value, int64 comperand ) NOINLINE;
-TT_INTERFACE int64 ThreadInterlockedExchange64( int64 volatile *, int64 value ) NOINLINE;
-TT_INTERFACE int64 ThreadInterlockedExchangeAdd64( int64 volatile *, int64 value ) NOINLINE;
-TT_INTERFACE bool ThreadInterlockedAssignIf64(volatile int64 *pDest, int64 value, int64 comperand ) NOINLINE;
+TT_INTERFACE NOINLINE int64 ThreadInterlockedIncrement64( int64 volatile * );
+TT_INTERFACE NOINLINE int64 ThreadInterlockedDecrement64( int64 volatile * );
+TT_INTERFACE NOINLINE int64 ThreadInterlockedCompareExchange64( int64 volatile *, int64 value, int64 comperand );
+TT_INTERFACE NOINLINE int64 ThreadInterlockedExchange64( int64 volatile *, int64 value );
+TT_INTERFACE NOINLINE int64 ThreadInterlockedExchangeAdd64( int64 volatile *, int64 value );
+TT_INTERFACE NOINLINE bool ThreadInterlockedAssignIf64(volatile int64 *pDest, int64 value, int64 comperand );
 
 //-----------------------------------------------------------------------------
 // Encapsulation of a thread local datum (needed because THREAD_LOCAL doesn't
@@ -215,12 +209,12 @@ public:
 	operator const T *()          							{ return (T *)Get(); }
 	operator T *()											{ return (T *)Get(); }
 
-	int			operator=( int i )							{ AssertMsg( i == 0, "Only NULL allowed on integer assign" ); Set( NULL ); return 0; }
+	int			operator=( int i )							{ AssertMsg( i == 0, _T("Only NULL allowed on integer assign" ) ); Set( NULL ); return 0; }
 	T *			operator=( T *p )							{ Set( p ); return p; }
 
 	bool        operator !() const							{ return (!Get()); }
-	bool        operator!=( int i ) const					{ AssertMsg( i == 0, "Only NULL allowed on integer compare" ); return (Get() != NULL); }
-	bool        operator==( int i ) const					{ AssertMsg( i == 0, "Only NULL allowed on integer compare" ); return (Get() == NULL); }
+	bool        operator!=( int i ) const					{ AssertMsg( i == 0, _T("Only NULL allowed on integer compare" ) ); return (Get() != NULL); }
+	bool        operator==( int i ) const					{ AssertMsg( i == 0, _T("Only NULL allowed on integer compare" ) ); return (Get() == NULL); }
 	bool		operator==( const void *p ) const			{ return (Get() == p); }
 	bool		operator!=( const void *p ) const			{ return (Get() != p); }
 	bool		operator==( const T *p ) const				{ return operator==((void*)p); }
@@ -547,13 +541,12 @@ public:
 		m_lock.Unlock();
 	}
 
+    // Disallow copying
+    CAutoLockT(const CAutoLockT<MUTEX_TYPE>& other) = delete;
+    CAutoLockT<MUTEX_TYPE>& operator=(const CAutoLockT<MUTEX_TYPE>& other) = delete;
 
 private:
 	MUTEX_TYPE &m_lock;
-
-	// Disallow copying
-	CAutoLockT<MUTEX_TYPE>( const CAutoLockT<MUTEX_TYPE> & );
-	CAutoLockT<MUTEX_TYPE> &operator=( const CAutoLockT<MUTEX_TYPE> & );
 };
 
 typedef CAutoLockT<CThreadMutex> CAutoLock;
@@ -1004,7 +997,7 @@ inline void CThreadMutex::Lock()
 #ifdef THREAD_MUTEX_TRACING_ENABLED
 	uint thisThreadID = ThreadGetCurrentId();
 	if ( m_bTrace && m_currentOwnerID && ( m_currentOwnerID != thisThreadID ) )
-		Msg( "Thread %u about to wait for lock %x owned by %u\n", ThreadGetCurrentId(), (CRITICAL_SECTION *)&m_CriticalSection, m_currentOwnerID );
+		Msg( _T("Thread %u about to wait for lock %x owned by %u\n"), ThreadGetCurrentId(), (CRITICAL_SECTION *)&m_CriticalSection, m_currentOwnerID );
 #endif
 
 	VCRHook_EnterCriticalSection((CRITICAL_SECTION *)&m_CriticalSection);
@@ -1015,7 +1008,7 @@ inline void CThreadMutex::Lock()
 		// we now own it for the first time.  Set owner information
 		m_currentOwnerID = thisThreadID;
 		if ( m_bTrace )
-			Msg( "Thread %u now owns lock 0x%x\n", m_currentOwnerID, (CRITICAL_SECTION *)&m_CriticalSection );
+			Msg( _T("Thread %u now owns lock 0x%x\n"), m_currentOwnerID, (CRITICAL_SECTION *)&m_CriticalSection );
 	}
 	m_lockCount++;
 #endif
@@ -1026,12 +1019,12 @@ inline void CThreadMutex::Lock()
 inline void CThreadMutex::Unlock()
 {
 #ifdef THREAD_MUTEX_TRACING_ENABLED
-	AssertMsg( m_lockCount >= 1, "Invalid unlock of thread lock" );
+	AssertMsg( m_lockCount >= 1, _T("Invalid unlock of thread lock") );
 	m_lockCount--;
 	if (m_lockCount == 0)
 	{
 		if ( m_bTrace )
-			Msg( "Thread %u releasing lock 0x%x\n", m_currentOwnerID, (CRITICAL_SECTION *)&m_CriticalSection );
+			Msg( _T("Thread %u releasing lock 0x%x\n"), m_currentOwnerID, (CRITICAL_SECTION *)&m_CriticalSection );
 		m_currentOwnerID = 0;
 	}
 #endif
@@ -1045,7 +1038,7 @@ inline bool CThreadMutex::AssertOwnedByCurrentThread()
 #ifdef THREAD_MUTEX_TRACING_ENABLED
 	if (ThreadGetCurrentId() == m_currentOwnerID)
 		return true;
-	AssertMsg3( 0, "Expected thread %u as owner of lock 0x%x, but %u owns", ThreadGetCurrentId(), (CRITICAL_SECTION *)&m_CriticalSection, m_currentOwnerID );
+	AssertMsg3( 0, _T("Expected thread %u as owner of lock 0x%x, but %u owns"), ThreadGetCurrentId(), (CRITICAL_SECTION *)&m_CriticalSection, m_currentOwnerID );
 	return false;
 #else
 	return true;

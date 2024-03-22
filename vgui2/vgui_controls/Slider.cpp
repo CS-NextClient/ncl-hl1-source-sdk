@@ -272,19 +272,19 @@ void Slider::ApplySchemeSettings(IScheme *pScheme)
 {
 	BaseClass::ApplySchemeSettings(pScheme);
 
-	SetFgColor(GetSchemeColor("Slider.NobColor", pScheme));
+	SetFgColor(GetSchemeColor("Slider.NobColor", GetSchemeColor("Slider/SliderFgColor", pScheme), pScheme));
 	// this line is useful for debugging
 	//SetBgColor(GetSchemeColor("0 0 0 255"));
 
-	m_TickColor = pScheme->GetColor( "Slider.TextColor", GetFgColor() );
-	m_TrackColor = pScheme->GetColor( "Slider.TrackColor", GetFgColor() );
+	m_TickColor = pScheme->GetColor( "Slider.TextColor", pScheme->GetColor( "SliderTickColor", GetFgColor() ) );
+	m_TrackColor = pScheme->GetColor( "Slider.TrackColor", pScheme->GetColor( "SliderTrackColor", GetFgColor() ) );
 
 #ifdef _X360
 	m_DepressedBgColor = GetSchemeColor("Slider.NobFocusColor", pScheme);
 #endif
 
-	m_DisabledTextColor1 = pScheme->GetColor( "Slider.DisabledTextColor1", GetFgColor() );
-	m_DisabledTextColor2 = pScheme->GetColor( "Slider.DisabledTextColor2", GetFgColor() );
+	m_DisabledTextColor1 = pScheme->GetColor( "Slider.DisabledTextColor1", pScheme->GetColor( "DisabledFgColor1", GetFgColor() ) );
+	m_DisabledTextColor2 = pScheme->GetColor( "Slider.DisabledTextColor2", pScheme->GetColor( "DisabledFgColor2", GetFgColor() ) );
 
 	_sliderBorder = pScheme->GetBorder("ButtonBorder");
 	_insetBorder = pScheme->GetBorder("ButtonDepressedBorder");

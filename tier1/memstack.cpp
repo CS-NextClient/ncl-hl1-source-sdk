@@ -290,8 +290,8 @@ void CMemoryStack::Access( void **ppRegion, unsigned *pBytes )
 
 void CMemoryStack::PrintContents()
 {
-	Msg( "Total used memory:      %d\n", GetUsed() );
-	Msg( "Total committed memory: %d\n", GetSize() );
+	Msg( _T("Total used memory:      %d\n"), GetUsed() );
+	Msg( _T("Total committed memory: %d\n"), GetSize() );
 }
 
 //-----------------------------------------------------------------------------

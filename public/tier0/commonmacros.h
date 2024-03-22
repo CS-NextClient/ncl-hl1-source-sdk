@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright ï¿½ 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -35,12 +35,11 @@
 #define ARRAYSIZE(p)		(sizeof(p)/sizeof(p[0]))
 #define Q_ARRAYSIZE(p)		ARRAYSIZE(p)
 
-//TODO: comment these out for now, need to rework this header to use the latest code we've got. - Solokiller
-//#define SETBITS(iBitVector, bits)	((iBitVector) |= (bits))
-//#define CLEARBITS(iBitVector, bits)	((iBitVector) &= ~(bits))
-//#define FBitSet(iBitVector, bit)	((iBitVector) & (bit))
+#define SetBits(flBitVector, bits)		((flBitVector) = (int)(flBitVector) | (bits))
+#define ClearBits(flBitVector, bits)	((flBitVector) = (int)(flBitVector) & ~(bits))
+#define FBitSet(flBitVector, bit)		((int)(flBitVector) & (bit))
 
-inline bool IsPowerOfTwo( int value )
+inline int IsPowerOfTwo( int value )
 {
 	return (value & ( value - 1 )) == 0;
 }

@@ -220,6 +220,8 @@ public:
 
 	// return the menuID of the n'th item in the menu list, valid from [0, GetItemCount)
 	virtual int GetMenuID(int index);
+
+    virtual int GetRowByItemId(int index) const;
 	
 	// Return the number of items currently visible in the menu list
 	int GetCurrentlyVisibleItemsCount();

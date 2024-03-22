@@ -70,10 +70,15 @@ typedef wchar_t wchar;
 #define _tfopen fopen
 #define _stprintf sprintf 
 #define _ftprintf fprintf
-#define _vsntprintf _vsnprintf
 #define _tprintf printf
 #define _sntprintf _snprintf
+#ifdef _UNICODE
+#define _vsntprintf _vswprintf
+#define _T(s) L##s
+#else
+#define _vsntprintf _vsnprintf
 #define _T(s) s
+#endif // _UNICODE
 #endif
 
 #if defined(_UNICODE)

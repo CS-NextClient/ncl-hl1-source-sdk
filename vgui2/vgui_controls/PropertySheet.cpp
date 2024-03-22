@@ -312,8 +312,8 @@ public:
 		// set up the scheme settings
 		Button::ApplySchemeSettings(pScheme);
 
-		_textColor = GetSchemeColor("PropertySheet.SelectedTextColor", GetFgColor(), pScheme);
-		_dimTextColor = GetSchemeColor("PropertySheet.TextColor", GetFgColor(), pScheme);
+		_textColor = GetSchemeColor("PropertySheet.SelectedTextColor", GetSchemeColor("BrightControlText", GetFgColor(), pScheme), pScheme);
+		_dimTextColor = GetSchemeColor("PropertySheet.TextColor", GetSchemeColor("FgColorDim", GetFgColor(), pScheme), pScheme);
 		m_pActiveBorder = pScheme->GetBorder("TabActiveBorder");
 		m_pNormalBorder = pScheme->GetBorder("TabBorder");
 
@@ -338,7 +338,7 @@ public:
 			GetSize(wide, tall);
 			GetContentSize(contentWide, contentTall);
 
-			wide = max(m_bMaxTabWidth, contentWide + 10);  // 10 = 5 pixels margin on each side
+			wide = std::max(m_bMaxTabWidth, contentWide + 10);  // 10 = 5 pixels margin on each side
 			wide += m_pContextLabel ? 10 : 0;
 			SetSize(wide, tall);
 		}
@@ -1193,7 +1193,7 @@ void PropertySheet::RemovePage(Panel *panel)
 	{
 		_activePage = NULL;
 		// if this page is currently active, backup to the page before this.
-		ChangeActiveTab( max( location - 1, 0 ) ); 
+		ChangeActiveTab( std::max( location - 1, 0 ) );
 	}
 
 	PerformLayout();
@@ -1396,7 +1396,7 @@ void PropertySheet::OnKeyCodePressed(KeyCode code)
 		}
 	}
 
-	if ( IsKBNavigationEnabled() )
+	if ( IsKBNavigationEnabled() && _activeTab && _activeTab->HasFocus() )
 	{
 		switch ( code )
 		{

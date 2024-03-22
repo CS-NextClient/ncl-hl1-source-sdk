@@ -13,7 +13,7 @@
 #endif
 
 #include "tier1/tier1.h"
-
+#include "SurfaceEx.h"
 
 //-----------------------------------------------------------------------------
 // Forward declarations
@@ -47,7 +47,7 @@ extern IFileSystem *g_pFullFileSystem;
 extern IBaseUI *g_pBaseUI;
 extern IEngineVGui *g_pEngineVGui;
 extern IGameUIFuncs *g_pGameUIFuncs;
-extern vgui2::ISurface *g_pVGuiSurface;
+extern SurfaceEx *g_pVGuiSurface;
 extern vgui2::IInputInternal *g_pVGuiInput;
 extern vgui2::IVGui *g_pVGui;
 extern vgui2::IPanel *g_pVGuiPanel;
@@ -68,9 +68,12 @@ extern IGameUI *g_pGameUI;
 // Call this to connect to/disconnect from all tier 2 libraries.
 // It's up to the caller to check the globals it cares about to see if ones are missing
 //-----------------------------------------------------------------------------
-void ConnectTier2Libraries( CreateInterfaceFn *pFactoryList, int nFactoryCount );
+void ConnectTier2Libraries(CreateInterfaceFn *pFactoryList, int nFactoryCount, void* pMainWindow);
 void DisconnectTier2Libraries();
 
+// Use this to initialize KeyValues system without initialize tier2
+bool KV_InitKeyValuesSystem2(CreateInterfaceFn vgui2Factory);
+void KV_UninitializeKeyValuesSystem();
 
 #endif // TIER2_H
 

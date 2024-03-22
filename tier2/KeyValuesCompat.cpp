@@ -97,3 +97,20 @@ bool KV_InitKeyValuesSystem( CreateInterfaceFn* pFactories, int iNumFactories )
 
 	return true;
 }
+
+bool KV_InitKeyValuesSystem2(CreateInterfaceFn vgui2Factory)
+{
+    g_pKeyValuesInterface = (IKeyValues*)vgui2Factory(IKEYVALUES_INTERFACE_VERSION, NULL);
+
+    if(!g_pKeyValuesInterface)
+        return false;
+
+    g_pKeyValuesInterface->RegisterSizeofKeyValues(sizeof(KeyValues));
+
+    return true;
+}
+
+void KV_UninitializeKeyValuesSystem()
+{
+    g_pKeyValuesInterface = nullptr;
+}

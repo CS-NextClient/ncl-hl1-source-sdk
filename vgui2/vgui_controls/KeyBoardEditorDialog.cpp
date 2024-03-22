@@ -425,7 +425,7 @@ void CKeyBoardEditorPage::BindKey( KeyCode code )
 			if ( binding && Q_stricmp( kbMap->bindingname, binding->bindingname ) )
 			{
 				// Key is already rebound!!!
-				Warning( "Can't bind to '%S', key is already bound to '%s'\n",
+				Warning(_T("Can't bind to '%S', key is already bound to '%s'\n"),
 					Panel::KeyCodeToDisplayString( code ), binding->bindingname );
 				return;
 			}
@@ -443,7 +443,7 @@ void CKeyBoardEditorPage::BindKey( KeyCode code )
 			if ( binding && Q_stricmp( bindingMap->bindingname, binding->bindingname ) )
 			{
 				// Key is already rebound!!!
-				Warning( "Can't bind to '%S', key is already bound to '%s'\n",
+				Warning( _T("Can't bind to '%S', key is already bound to '%s'\n"),
 					Panel::KeyCodeToDisplayString( code ), binding->bindingname );
 				return;
 			}

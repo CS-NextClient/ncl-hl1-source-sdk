@@ -266,23 +266,6 @@ public:
 	explicit CUtlVectorFixedGrowable( int growSize = 0 ) : BaseClass( growSize, MAX_SIZE ) {}
 };
 
-
-//-----------------------------------------------------------------------------
-// The CUtlVectorConservative class:
-// A array class with a conservative allocation scheme
-//-----------------------------------------------------------------------------
-template< class T >
-class CUtlVectorConservative : public CUtlVector< T, CUtlMemoryConservative<T> >
-{
-	typedef CUtlVector< T, CUtlMemoryConservative<T> > BaseClass;
-public:
-
-	// constructor, destructor
-	explicit CUtlVectorConservative( int growSize = 0, int initSize = 0 ) : BaseClass( growSize, initSize ) {}
-	explicit CUtlVectorConservative( T* pMemory, int numElements ) : BaseClass( pMemory, numElements ) {}
-};
-
-
 //-----------------------------------------------------------------------------
 // The CUtlVectorUltra Conservative class:
 // A array class with a very conservative allocation scheme, with customizable allocator

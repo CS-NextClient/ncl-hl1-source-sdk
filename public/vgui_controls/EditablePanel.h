@@ -56,7 +56,9 @@ public:
 	virtual Panel *CreateControlByName(const char *controlName);
 
 	// Shortcut function to set data in child controls
-	virtual void SetControlString(const char *controlName, const char *string);
+    void SetControlString(const char *controlName, const char *string);
+    void SetControlStringNoLocalize(const char *controlName, const char *string);
+	virtual void SetControlString(const char *controlName, const char *string, bool localize);
 	// Shortcut function to set data in child controls
 	virtual void SetControlString(const char *controlName, const wchar_t *string);
 	// Shortcut function to set data in child controls

@@ -2,6 +2,7 @@ cmake_minimum_required( VERSION 3.5.2 )
 
 project( hl1_source_sdk )
 
+find_package(OpenGL REQUIRED)
 
 set( SOURCE_SDK_ROOT ${CMAKE_CURRENT_SOURCE_DIR} )
 
@@ -88,6 +89,9 @@ else()
 	set( STEAM_API_LIBRARIES
 		steam_api
 	)
+	set ( STEAM_API_DEFINES
+		NO_HLSDK_ARCHTYPES
+	)
 
 	# Links client with a steam_api.dll with less symbols.
 	# Allows client.dll run on HL with old engine (but SteamAPI won't work).
@@ -119,9 +123,19 @@ endif()
 set( SOURCE_SDK_INCLUDE_PATHS
 	${SOURCE_SDK_INCLUDE_PATHS}
 	${CMAKE_CURRENT_SOURCE_DIR}/common
+	${CMAKE_CURRENT_SOURCE_DIR}/dlls
 	${CMAKE_CURRENT_SOURCE_DIR}/public
 	${CMAKE_CURRENT_SOURCE_DIR}/public/tier0
 	${CMAKE_CURRENT_SOURCE_DIR}/public/tier1
+	${CMAKE_CURRENT_SOURCE_DIR}/public/cl_dll
+	${CMAKE_CURRENT_SOURCE_DIR}/public/HLTV
+	${CMAKE_CURRENT_SOURCE_DIR}/public/html
+	${CMAKE_CURRENT_SOURCE_DIR}/engine
+	${CMAKE_CURRENT_SOURCE_DIR}/game_shared
+	${CMAKE_CURRENT_SOURCE_DIR}/pm_shared
+	${CMAKE_CURRENT_SOURCE_DIR}/cef
+	${CMAKE_CURRENT_SOURCE_DIR}/cef/include
+	${OPENGL_INCLUDE_DIR}
 )
 
 set( SOURCE_SDK_WARNING_LEVEL "")
@@ -138,6 +152,8 @@ find_package( vstdlib MODULE REQUIRED )
 add_subdirectory( tier1 )
 add_subdirectory( tier2 )
 add_subdirectory( vgui2/vgui_controls )
+add_subdirectory( mathlib )
+add_subdirectory( cef )
 
 #-----------------------------------------------------------------
 # Source SDK exported variables
@@ -152,5 +168,8 @@ set( SOURCE_SDK_LIBS
 	tier1
 	tier0
 	vstdlib
+	mathlib
+	libcef_dll
+	OpenGL::GL
 	PARENT_SCOPE
 )

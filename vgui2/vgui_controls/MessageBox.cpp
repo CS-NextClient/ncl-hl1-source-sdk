@@ -384,6 +384,11 @@ void MessageBox::SetCancelCommand( KeyValues *command )
 	m_CancelCommand = command;
 }
 
+void MessageBox::RequestFocusOnCancelButton()
+{
+	if (m_pCancelButton->IsVisible())
+		m_pCancelButton->RequestFocus();
+}
 	
 //-----------------------------------------------------------------------------
 // Purpose: Toggles visibility of the close box.

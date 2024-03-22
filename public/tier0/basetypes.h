@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright ï¿½ 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -56,12 +56,13 @@
 
 #define ExecuteOnce( x )			ExecuteNTimes( 1, x )
 
-
+#ifdef __cplusplus
 template <typename T>
 inline T AlignValue( T val, unsigned alignment )
 {
 	return (T)( ( (unsigned)val + alignment - 1 ) & ~( alignment - 1 ) );
 }
+#endif
 
 
 // Pad a number so it lies on an N byte boundary.
@@ -104,6 +105,7 @@ enum ThreeState_t
 };
 
 typedef float vec_t;
+typedef float vec3_t[3];
 
 #if defined(__GNUC__)
 	#define fpmin __builtin_fminf
@@ -208,10 +210,12 @@ struct color24
 
 struct color32
 {
+#ifdef __cplusplus
 	bool operator!=( const color32 &other ) const
 	{
 		return r != other.r || g != other.g || b != other.b || a != other.a;
 	}
+#endif
 
 	byte r, g, b, a;
 };
@@ -265,6 +269,7 @@ struct interval_t
 // 32-bit pointer handles.
 
 // Typesafe 8-bit and 16-bit handles.
+#ifdef __cplusplus
 template< class HandleType >
 class CBaseIntHandle
 {
@@ -321,6 +326,7 @@ protected:
 		m_Handle = val;
 	}
 };
+#endif
 
 
 // NOTE: This macro is the same as windows uses; so don't change the guts of it

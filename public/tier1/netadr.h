@@ -16,11 +16,13 @@
 #undef SetPort
 
 typedef enum
-{ 
-	NA_NULL = 0,
-	NA_LOOPBACK,
-	NA_BROADCAST,
-	NA_IP,
+{
+    NA_UNUSED,
+    NA_LOOPBACK,
+    NA_BROADCAST,
+    NA_IP,
+    NA_IPX,
+    NA_BROADCAST_IPX,
 } netadrtype_t;
 
 typedef struct netadr_s
@@ -60,9 +62,10 @@ public:
 
 public:	// members are public to avoid to much changes
 
-	netadrtype_t	type;
-	unsigned char	ip[4];
-	unsigned short	port;
+    netadrtype_t type;
+    unsigned char ip[4];
+    unsigned char ipx[10];
+    unsigned short port;
 } netadr_t;
 
 #endif // NETADR_H

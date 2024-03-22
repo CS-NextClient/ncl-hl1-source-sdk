@@ -1,6 +1,6 @@
-//========= Copyright � 1996-2008, Valve LLC, All rights reserved. ============
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================
@@ -18,9 +18,9 @@
 #endif
 #endif
 
-#include <stdio.h>
-#include <string.h>
-#include <strtools.h>
+#include <cstdio>
+#include <cstring>
+#include <string>
 
 //
 // Max size (in bytes of UTF-8 data, not in characters) of server fields, including null terminator.
@@ -33,11 +33,6 @@ const int k_cbMaxGameServerName = 64;
 const int k_cbMaxGameServerTags = 128;
 const int k_cbMaxGameServerGameData = 2048;
 
-/// Store key/value pair used in matchmaking queries.
-///
-/// Actually, the name Key/Value is a bit misleading.  The "key" is better
-/// understood as "filter operation code" and the "value" is the operand to this
-/// filter operation.  The meaning of the operand depends upon the filter.
 struct MatchMakingKeyValuePair_t
 {
 	MatchMakingKeyValuePair_t() { m_szKey[0] = m_szValue[0] = 0; }
@@ -62,17 +57,17 @@ enum EMatchMakingServerResponse
 
 // servernetadr_t is all the addressing info the serverbrowser needs to know about a game server,
 // namely: its IP, its connection port, and its query port.
-class servernetadr_t 
+class servernetadr_t
 {
 public:
 
-	servernetadr_t() : m_usConnectionPort( 0 ), m_usQueryPort( 0 ), m_unIP( 0 ) {}
-	
 	void	Init( unsigned int ip, uint16 usQueryPort, uint16 usConnectionPort );
-#ifdef NETADR_SOURCE_H
-	netadr_t	GetIPAndQueryPort();
-#endif
-	
+
+// Uncompatible feature commented
+//#ifdef NETADR_H
+//	netadr_t	GetIPAndQueryPort();
+//#endif
+
 	// Access the query port.
 	uint16	GetQueryPort() const;
 	void	SetQueryPort( uint16 usPort );
@@ -86,8 +81,8 @@ public:
 	void SetIP( uint32 );
 
 	// This gets the 'a.b.c.d:port' string with the connection port (instead of the query port).
-	const char *GetConnectionAddressString() const;
-	const char *GetQueryAddressString() const;
+    std::string GetConnectionAddressString() const;
+    std::string GetQueryAddressString() const;
 
 	// Comparison operators and functions.
 	bool	operator<(const servernetadr_t &netadr) const;
@@ -98,9 +93,9 @@ public:
 		m_unIP = that.m_unIP;
 	}
 
-	
+
 private:
-	const char *ToString( uint32 unIP, uint16 usPort ) const;
+    std::string ToString( uint32 unIP, uint16 usPort ) const;
 	uint16	m_usConnectionPort;	// (in HOST byte order)
 	uint16	m_usQueryPort;
 	uint32  m_unIP;
@@ -114,12 +109,13 @@ inline void	servernetadr_t::Init( unsigned int ip, uint16 usQueryPort, uint16 us
 	m_usConnectionPort = usConnectionPort;
 }
 
-#ifdef NETADR_SOURCE_H
-inline netadr_t servernetadr_t::GetIPAndQueryPort()
-{
-	return netadr_t( m_unIP, m_usQueryPort );
-}
-#endif
+// Uncompatible feature commented
+//#ifdef NETADR_H
+//inline netadr_t servernetadr_t::GetIPAndQueryPort()
+//{
+//	return netadr_t( m_unIP, m_usQueryPort );
+//}
+//#endif
 
 inline uint16 servernetadr_t::GetQueryPort() const
 {
@@ -151,30 +147,29 @@ inline void	servernetadr_t::SetIP( uint32 unIP )
 	m_unIP = unIP;
 }
 
-inline const char *servernetadr_t::ToString( uint32 unIP, uint16 usPort ) const
+inline std::string servernetadr_t::ToString( uint32 unIP, uint16 usPort ) const
 {
-	static char s[4][64];
-	static int nBuf = 0;
-	unsigned char *ipByte = (unsigned char *)&unIP;
+    auto *ipByte = (uint8_t*)&unIP;
+
+    char address[22];
+
 #ifdef VALVE_BIG_ENDIAN
-	V_snprintf (s[nBuf], sizeof( s[nBuf] ), "%u.%u.%u.%u:%i", (int)(ipByte[0]), (int)(ipByte[1]), (int)(ipByte[2]), (int)(ipByte[3]), usPort );
+    snprintf(address, sizeof(address), "%d.%d.%d.%d:%d", ipByte[0], ipByte[1], ipByte[2], ipByte[3], usPort);
 #else
-	V_snprintf (s[nBuf], sizeof( s[nBuf] ), "%u.%u.%u.%u:%i", (int)(ipByte[3]), (int)(ipByte[2]), (int)(ipByte[1]), (int)(ipByte[0]), usPort );
+    snprintf(address, sizeof(address), "%d.%d.%d.%d:%d", ipByte[3], ipByte[2], ipByte[1], ipByte[0], usPort);
 #endif
-	const char *pchRet = s[nBuf];
-	++nBuf;
-	nBuf %= ( (sizeof(s)/sizeof(s[0])) );
-	return pchRet;
+
+    return address;
 }
 
-inline const char* servernetadr_t::GetConnectionAddressString() const
+inline std::string servernetadr_t::GetConnectionAddressString() const
 {
 	return ToString( m_unIP, m_usConnectionPort );
 }
 
-inline const char* servernetadr_t::GetQueryAddressString() const
+inline std::string servernetadr_t::GetQueryAddressString() const
 {
-	return ToString( m_unIP, m_usQueryPort );	
+	return ToString( m_unIP, m_usQueryPort );
 }
 
 inline bool servernetadr_t::operator<(const servernetadr_t &netadr) const
@@ -190,7 +185,7 @@ class gameserveritem_t
 public:
 	gameserveritem_t();
 
-	const char* GetName() const;
+    std::string GetName() const;
 	void SetName( const char *pName );
 
 public:
@@ -233,7 +228,7 @@ inline gameserveritem_t::gameserveritem_t()
 	m_szGameTags[0] = 0;
 }
 
-inline const char* gameserveritem_t::GetName() const
+inline std::string gameserveritem_t::GetName() const
 {
 	// Use the IP address as the name if nothing is set yet.
 	if ( m_szServerName[0] == 0 )

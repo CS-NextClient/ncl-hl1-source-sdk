@@ -7,7 +7,7 @@ set( TIER2_SOURCE_FILES
 	KeyValuesCompat.cpp
 	steam_api.cpp
 	tier2.cpp
-)
+	SurfaceEx.cpp)
 
 add_library( tier2 STATIC
 	${TIER2_HEADER_FILES}

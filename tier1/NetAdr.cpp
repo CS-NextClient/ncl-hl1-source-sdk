@@ -148,7 +148,7 @@ void netadr_t::Clear()
 {
 	ip[0] = ip[1] = ip[2] = ip[3] = 0;
 	port = 0;
-	type = NA_NULL;
+	type = NA_UNUSED;
 }
 
 void netadr_t::SetIP(uint8 b1, uint8 b2, uint8 b3, uint8 b4)
@@ -232,7 +232,7 @@ bool netadr_t::SetFromSockadr(const struct sockaddr * s)
 
 bool netadr_t::IsValid() const
 {
-	return ( (port !=0 ) && (type != NA_NULL) &&
+	return ( (port !=0 ) && (type != NA_UNUSED) &&
 			 ( ip[0] != 0 || ip[1] != 0 || ip[2] != 0 || ip[3] != 0 ) );
 }
 

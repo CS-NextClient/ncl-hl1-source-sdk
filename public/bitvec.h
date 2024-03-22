@@ -1083,8 +1083,8 @@ inline int CFixedBitVecBase<NUM_BITS>::FindNextSetBit( int startBit ) const
 //-----------------------------------------------------------------------------
 // Unrolled loops for some common sizes
 
-template<> 
-FORCEINLINE_TEMPLATE void CBitVecT< CFixedBitVecBase<256> >::And(const CBitVecT &addStr, CBitVecT *out) const
+template<>
+FORCEINLINE void CBitVecT< CFixedBitVecBase<256> >::And(const CBitVecT &addStr, CBitVecT *out) const
 {
 	uint32 *	   pDest		= out->Base();
 	const uint32 *pOperand1	= Base();
@@ -1100,15 +1100,15 @@ FORCEINLINE_TEMPLATE void CBitVecT< CFixedBitVecBase<256> >::And(const CBitVecT 
 	pDest[7] = pOperand1[7] & pOperand2[7];
 }
 
-template<> 
-FORCEINLINE_TEMPLATE  bool CBitVecT< CFixedBitVecBase<256> >::IsAllClear(void) const
+template<>
+FORCEINLINE  bool CBitVecT< CFixedBitVecBase<256> >::IsAllClear(void) const
 {
 	const uint32 *pInts = Base();
 	return ( pInts[0] == 0 && pInts[1] == 0 && pInts[2] == 0 && pInts[3] == 0 && pInts[4] == 0 && pInts[5] == 0 && pInts[6] == 0 && pInts[7] == 0 );
 }
 
-template<> 
-FORCEINLINE_TEMPLATE  void CBitVecT< CFixedBitVecBase<256> >::CopyTo(CBitVecT *out) const
+template<>
+FORCEINLINE  void CBitVecT< CFixedBitVecBase<256> >::CopyTo(CBitVecT *out) const
 {
 	uint32 *	   pDest = out->Base();
 	const uint32 *pInts = Base();
@@ -1124,7 +1124,7 @@ FORCEINLINE_TEMPLATE  void CBitVecT< CFixedBitVecBase<256> >::CopyTo(CBitVecT *o
 }
 
 template<> 
-FORCEINLINE_TEMPLATE  void CBitVecT< CFixedBitVecBase<128> >::And(const CBitVecT &addStr, CBitVecT *out) const
+FORCEINLINE  void CBitVecT< CFixedBitVecBase<128> >::And(const CBitVecT &addStr, CBitVecT *out) const
 {
 	uint32 *	   pDest		= out->Base();
 	const uint32 *pOperand1	= Base();
@@ -1136,15 +1136,15 @@ FORCEINLINE_TEMPLATE  void CBitVecT< CFixedBitVecBase<128> >::And(const CBitVecT
 	pDest[3] = pOperand1[3] & pOperand2[3];
 }
 
-template<> 
-FORCEINLINE_TEMPLATE  bool CBitVecT< CFixedBitVecBase<128> >::IsAllClear(void) const
+template<>
+FORCEINLINE  bool CBitVecT< CFixedBitVecBase<128> >::IsAllClear(void) const
 {
 	const uint32 *pInts = Base();
 	return ( pInts[0] == 0 && pInts[1] == 0 && pInts[2] == 0 && pInts[3] == 0 );
 }
 
-template<> 
-FORCEINLINE_TEMPLATE  void CBitVecT< CFixedBitVecBase<128> >::CopyTo(CBitVecT *out) const
+template<>
+FORCEINLINE  void CBitVecT< CFixedBitVecBase<128> >::CopyTo(CBitVecT *out) const
 {
 	uint32 *	   pDest = out->Base();
 	const uint32 *pInts = Base();

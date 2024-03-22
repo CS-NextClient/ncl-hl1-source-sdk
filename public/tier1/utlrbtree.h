@@ -687,7 +687,7 @@ I  CUtlRBTree<T, I, L, M>::NewNode()
 			Assert( m_Elements.IsValidIterator( it ) );
 			if ( !m_Elements.IsValidIterator( it ) )
 			{
-				Error( "CUtlRBTree overflow!\n" );
+				Error( _T("CUtlRBTree overflow!\n") );
 			}
 		}
 		m_LastAlloc = it;
@@ -1356,7 +1356,7 @@ int CUtlRBTree<T, I, L, M>::Depth( I node ) const
 
 	int depthright = Depth( RightChild(node) );
 	int depthleft = Depth( LeftChild(node) );
-	return max(depthright, depthleft) + 1;
+	return std::max(depthright, depthleft) + 1;
 }
 
 

@@ -10,7 +10,9 @@
 #include <KeyValues.h>
 #include <vgui/IScheme.h>
 #include <vgui_controls/Controls.h>
-#include <locale.h>
+#include <clocale>
+#include <vgui/SchemeEx.h>
+#include <vgui/ImageEx.h>
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -22,12 +24,16 @@ namespace vgui2
 
 class CSchemeManagerWrapper : public ISchemeManagerEx
 {
+    std::unordered_map<vgui2::HScheme, SchemeEx*> scheme_ex_;
+    std::unordered_map<vgui2::HScheme, std::string> scheme_path_;
+    std::unordered_map<std::string, ImageEx*> image_ex_;
+
 public:
 	ISchemeManager *m_pEngineIface = nullptr;
 
 	virtual HScheme LoadSchemeFromFile(const char *fileName, const char *tag)
 	{
-		return LoadSchemeFromFilePath(fileName, nullptr, tag);
+        return LoadSchemeFromFilePath(fileName, nullptr, tag);
 	}
 
 	virtual void ReloadSchemes()
@@ -47,7 +53,15 @@ public:
 
 	virtual IImage *GetImage(const char *imageName, bool hardwareFiltered)
 	{
-		return m_pEngineIface->GetImage(imageName, hardwareFiltered);
+        if (image_ex_.count(imageName) == 0)
+        {
+            auto* image_ex = new ImageEx(g_pVGuiSurface, m_pEngineIface->GetImage(imageName, hardwareFiltered));
+            image_ex_.emplace(imageName, image_ex);
+
+            return image_ex;
+        }
+
+		return image_ex_[imageName];
 	}
 
 	virtual HTexture GetImageID(const char *imageName, bool hardwareFiltered)
@@ -57,7 +71,17 @@ public:
 
 	virtual IScheme *GetIScheme(HScheme scheme)
 	{
-		return m_pEngineIface->GetIScheme(scheme);
+        if (scheme_ex_.count(scheme) == 0)
+        {
+            const std::string& path = scheme_path_.count(scheme) ? scheme_path_[scheme] : "";
+
+            auto* scheme_ex = new SchemeEx(m_pEngineIface->GetIScheme(scheme), path);
+            scheme_ex_.emplace(scheme, scheme_ex);
+
+            return scheme_ex;
+        }
+
+        return scheme_ex_[scheme];
 	}
 
 	virtual void Shutdown(bool full = true)
@@ -156,7 +180,7 @@ public:
 
 		if (bNeedRecompile)
 		{
-			Msg("LoadSchemeFromFile: '%s' has changed, will be recompiled.\n", fileName);
+			Msg(_T("LoadSchemeFromFile: '%s' has changed, will be recompiled.\n"), fileName);
 
 			// Load original file
 			KeyValuesAD orig(new KeyValues("Scheme"));
@@ -192,13 +216,16 @@ public:
 			}
 			else
 			{
-				Error("LoadSchemeFromFile: Failed to open '%s'\n", fileName);
-				return 0;
+				Error(_T("LoadSchemeFromFile: Failed to open '%s'\n"), fileName);
+				return NULL_HANDLE;
 			}
 		}
 
 		// Load compiled file
-		return m_pEngineIface->LoadSchemeFromFile(fileNameComp, tag);
+        HScheme scheme =  m_pEngineIface->LoadSchemeFromFile(fileNameComp, tag);
+        scheme_path_[scheme] = fileName;
+
+        return scheme;
 	}
 };
 
@@ -234,7 +261,6 @@ bool VGui_InitInterfacesList( const char *moduleName, CreateInterfaceFn *factory
 	g_szControlsModuleName[sizeof(g_szControlsModuleName) - 1] = 0;
 
 	// initialize our locale (must be done for every vgui dll/exe)
-	// "" makes it use the default locale, required to make iswprint() work correctly in different languages
 	setlocale(LC_CTYPE, "");
 	setlocale(LC_TIME, "");
 	setlocale(LC_COLLATE, "");
@@ -244,7 +270,7 @@ bool VGui_InitInterfacesList( const char *moduleName, CreateInterfaceFn *factory
 	if ( !g_pVGui || !g_pVGuiInput || !g_pVGuiPanel || 
 		 !g_pVGuiSurface || !g_pVGuiSchemeManager || !g_pVGuiSystem )
 	{
-		Warning( "vgui_controls is missing a required interface!\n" );
+		Warning(_T("vgui_controls is missing a required interface!\n"));
 		return false;
 	}
 

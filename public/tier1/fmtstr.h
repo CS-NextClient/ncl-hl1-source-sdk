@@ -40,8 +40,8 @@
 		(szBuf)[(nBufSize)-1] = 0; \
 		if ( bTruncated && !(bQuietTruncation) && scAsserted < 5 ) \
 		{ \
-			Warning( "FmtStrVSNPrintf truncated to %d without QUIET_TRUNCATION specified!\n", ( int )( nBufSize ) ); \
-			AssertMsg( 0, "FmtStrVSNPrintf truncated without QUIET_TRUNCATION specified!\n" ); \
+			Warning( _T("FmtStrVSNPrintf truncated to %d without QUIET_TRUNCATION specified!\n"), ( int )( nBufSize ) ); \
+			AssertMsg( 0, _T("FmtStrVSNPrintf truncated without QUIET_TRUNCATION specified!\n") ); \
 			scAsserted++; \
 		} \
 		m_nLength = nPrevLen + result; \
@@ -121,8 +121,8 @@ public:
 		m_szBuf[SIZE_BUF - 1] = 0; 
 		if ( bTruncated && !m_bQuietTruncation && ( s_nWarned < 5 ) ) 
 		{ 
-			Warning( "CFmtStr truncated to %d without QUIET_TRUNCATION specified!\n", SIZE_BUF ); 
-			AssertMsg( 0, "CFmtStr truncated without QUIET_TRUNCATION specified!\n" );
+			Warning( _T("CFmtStr truncated to %d without QUIET_TRUNCATION specified!\n"), SIZE_BUF );
+			AssertMsg( 0, _T("CFmtStr truncated without QUIET_TRUNCATION specified!\n") );
 			s_nWarned++; 
 		} 
 		m_nLength = V_strlen( m_szBuf );
@@ -163,7 +163,7 @@ public:
 
 	void SetLength( int nLength )
 	{
-		m_nLength = min( nLength, SIZE_BUF - 1 );
+		m_nLength = std::min( nLength, SIZE_BUF - 1 );
 		m_szBuf[m_nLength] = '\0';
 	}
 

@@ -142,7 +142,7 @@ bool AnimationController::LoadScriptFile(const char *fileName)
 	FileHandle_t f = g_pFullFileSystem->Open(fileName, "rt");
 	if (!f)
 	{
-		Warning("Couldn't find script file %s\n", fileName);
+		Warning(_T("Couldn't find script file %s\n"), fileName);
 		return false;
 	}
 
@@ -308,7 +308,7 @@ bool AnimationController::ParseScriptFile(char *pMem, int length)
 		// should be 'event'
 		if (stricmp(token, "event"))
 		{
-			Warning("Couldn't parse script file: expected 'event', found '%s'\n", token);
+			Warning(_T("Couldn't parse script file: expected 'event', found '%s'\n"), token);
 			return false;
 		}
 
@@ -316,7 +316,7 @@ bool AnimationController::ParseScriptFile(char *pMem, int length)
 		pMem = ParseFile(pMem, token, NULL);
 		if (strlen(token) < 1)
 		{
-			Warning("Couldn't parse script file: expected <event name>, found nothing\n");
+			Warning(_T("Couldn't parse script file: expected <event name>, found nothing\n"));
 			return false;
 		}
 		
@@ -341,7 +341,7 @@ bool AnimationController::ParseScriptFile(char *pMem, int length)
 
 		if (stricmp(token, "{"))
 		{
-			Warning("Couldn't parse script sequence '%s': expected '{', found '%s'\n", g_ScriptSymbols.String(seq.name), token);
+			Warning(_T("Couldn't parse script sequence '%s': expected '{', found '%s'\n"), g_ScriptSymbols.String(seq.name), token);
 			return false;
 		}
 
@@ -618,7 +618,7 @@ bool AnimationController::ParseScriptFile(char *pMem, int length)
 			}
 			else
 			{
-				Warning("Couldn't parse script sequence '%s': expected <anim command>, found '%s'\n", g_ScriptSymbols.String(seq.name), token);
+				Warning(_T("Couldn't parse script sequence '%s': expected <anim command>, found '%s'\n"), g_ScriptSymbols.String(seq.name), token);
 				return false;
 			}
 			
@@ -1703,13 +1703,13 @@ void CPanelAnimationDictionary::PanelAnimationDumpMap( PanelAnimationMap *map, b
 {
 	if ( map->pfnClassName )
 	{
-		Msg( "%s\n", (*map->pfnClassName)() );
+		Msg( _T("%s\n"), (*map->pfnClassName)() );
 	}
 	int c = map->entries.Count();
 	for ( int i = 0; i < c; i++ )
 	{
 		PanelAnimationMapEntry *e = &map->entries[ i ];
-		Msg( "  %s %s\n", e->type(), e->name() );
+		Msg( _T("  %s %s\n"), e->type(), e->name() );
 	}
 
 	if ( recursive && map->baseMap )
@@ -1739,7 +1739,7 @@ void CPanelAnimationDictionary::PanelAnimationDumpVars( char const *className )
 		}
 		else
 		{
-			Msg( "No such Panel Animation class %s\n", className );
+			Msg( _T("No such Panel Animation class %s\n"), className );
 		}
 	}
 }

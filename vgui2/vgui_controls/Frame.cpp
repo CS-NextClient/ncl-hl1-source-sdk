@@ -234,8 +234,8 @@ namespace
 			bool isSmall = ((Frame *)GetParent())->IsSmallCaption();
 
 			_marlettFont = pScheme->GetFont( isSmall ? "MarlettSmall" : "Marlett", IsProportional());
-			SetFgColor(GetSchemeColor("FrameGrip.Color1", pScheme));
-			SetBgColor(GetSchemeColor("FrameGrip.Color2", pScheme));
+			SetFgColor(GetSchemeColor("FrameGrip.Color1", GetSchemeColor("BorderBright", pScheme), pScheme));
+			SetBgColor(GetSchemeColor("FrameGrip.Color2", GetSchemeColor("BorderSelection", pScheme), pScheme));
 
 			const char *snapRange = pScheme->GetResourceString("Frame.AutoSnapRange");
 			if (snapRange && *snapRange)
@@ -528,11 +528,11 @@ namespace vgui2
 		{
 			Button::ApplySchemeSettings(pScheme);
 			
-			_enabledFgColor = GetSchemeColor("FrameTitleButton.FgColor", pScheme);
-			_enabledBgColor = GetSchemeColor("FrameTitleButton.BgColor", pScheme);
+			_enabledFgColor = GetSchemeColor("FrameTitleButton.FgColor", GetSchemeColor("TitleButtonFgColor", pScheme), pScheme);
+			_enabledBgColor = GetSchemeColor("FrameTitleButton.BgColor", GetSchemeColor("TitleButtonBgColor", pScheme), pScheme);
 
-			_disabledFgColor = GetSchemeColor("FrameTitleButton.DisabledFgColor", pScheme);
-			_disabledBgColor = GetSchemeColor("FrameTitleButton.DisabledBgColor", pScheme);
+			_disabledFgColor = GetSchemeColor("FrameTitleButton.DisabledFgColor", GetSchemeColor("TitleButtonDisabledFgColor", pScheme), pScheme);
+			_disabledBgColor = GetSchemeColor("FrameTitleButton.DisabledBgColor", GetSchemeColor("TitleButtonDisabledBgColor", pScheme), pScheme);
 			
 			_brightBorder = pScheme->GetBorder("TitleButtonBorder");
 			_depressedBorder = pScheme->GetBorder("TitleButtonDepressedBorder");
@@ -662,13 +662,20 @@ public:
 	{
 		BaseClass::ApplySchemeSettings(pScheme);
 
-		_enCol = GetSchemeColor("FrameSystemButton.FgColor", pScheme);
-		_disCol = GetSchemeColor("FrameSystemButton.BgColor", pScheme);
+		_enCol = GetSchemeColor("FrameSystemButton.FgColor", GetSchemeColor("TitleBarBgColor", pScheme), pScheme);
+		_disCol = GetSchemeColor("FrameSystemButton.BgColor", GetSchemeColor("TitleBarDisabledBgColor", pScheme), pScheme);
 		
 		const char *pEnabledImage = m_EnabledImage.Length() ? m_EnabledImage.Get() : 
 			pScheme->GetResourceString( "FrameSystemButton.Icon" );
 		const char *pDisabledImage = m_DisabledImage.Length() ? m_DisabledImage.Get() : 
 			pScheme->GetResourceString( "FrameSystemButton.DisabledIcon" );
+
+		if(!pEnabledImage)
+			pEnabledImage = pScheme->GetResourceString( "TitleBarIcon" );
+
+		if(!pDisabledImage)
+			pEnabledImage = pScheme->GetResourceString( "TitleBarDisabledIcon" );
+
 		_enabled = scheme()->GetImage( pEnabledImage, false);
 		_disabled = scheme()->GetImage( pDisabledImage, false);
 
@@ -776,7 +783,7 @@ Frame::Frame(Panel *parent, const char *panelName, bool showTaskbarIcon /*=true*
 	m_iClientInsetX = 5; 
 	m_iClientInsetY = 5;
 	m_iClientInsetXOverridden = false;
-	m_iTitleTextInsetX = 28;
+	m_iTitleTextInsetX = 12;
 	m_bClipToParent = false;
 	m_bSmallCaption = false;
 	m_bChainKeysToParent = false;
@@ -1142,7 +1149,7 @@ void Frame::OnFrameFocusChanged(bool bHasFocus)
 	// set our background color
 	if (bHasFocus)
 	{
-		if (m_flFocusTransitionEffectTime && ( !m_bDisableFadeEffect ))
+		if (m_flFocusTransitionEffectTime > 0.f && ( !m_bDisableFadeEffect ))
 		{
 			GetAnimationController()->RunAnimationCommand(this, "BgColor", m_InFocusBgColor, 0.0f, m_bDisableFadeEffect ? 0.0f : m_flTransitionEffectTime, AnimationController::INTERPOLATOR_LINEAR);
 		}
@@ -1153,7 +1160,7 @@ void Frame::OnFrameFocusChanged(bool bHasFocus)
 	}
 	else
 	{
-		if (m_flFocusTransitionEffectTime && ( !m_bDisableFadeEffect ))
+		if (m_flFocusTransitionEffectTime > 0.f && ( !m_bDisableFadeEffect ))
 		{
 			GetAnimationController()->RunAnimationCommand(this, "BgColor", m_OutOfFocusBgColor, 0.0f, m_bDisableFadeEffect ? 0.0f : m_flTransitionEffectTime, AnimationController::INTERPOLATOR_LINEAR);
 		}
@@ -1649,10 +1656,10 @@ void Frame::ApplySchemeSettings(IScheme *pScheme)
 	// always chain back
 	BaseClass::ApplySchemeSettings(pScheme);
 	
-	SetOverridableColor( &_titleBarFgColor, GetSchemeColor("FrameTitleBar.TextColor", pScheme) );
-	SetOverridableColor( &_titleBarBgColor, GetSchemeColor("FrameTitleBar.BgColor", pScheme) );
-	SetOverridableColor( &_titleBarDisabledFgColor, GetSchemeColor("FrameTitleBar.DisabledTextColor", pScheme) );
-	SetOverridableColor( &_titleBarDisabledBgColor, GetSchemeColor("FrameTitleBar.DisabledBgColor", pScheme) );
+	SetOverridableColor( &_titleBarFgColor, GetSchemeColor("FrameTitleBar.TextColor", GetSchemeColor("TitleBarFgColor", pScheme), pScheme) );
+	SetOverridableColor( &_titleBarBgColor, GetSchemeColor("FrameTitleBar.BgColor", GetSchemeColor("TitleBarBgColor", pScheme), pScheme) );
+	SetOverridableColor( &_titleBarDisabledFgColor, GetSchemeColor("FrameTitleBar.DisabledTextColor", GetSchemeColor("TitleBarDisabledFgColor", pScheme), pScheme) );
+	SetOverridableColor( &_titleBarDisabledBgColor, GetSchemeColor("FrameTitleBar.DisabledBgColor", GetSchemeColor("TitleBarDisabledBgColor", pScheme), pScheme) );
 
 	const char *font = NULL;
 	if ( m_bSmallCaption )
@@ -1701,17 +1708,17 @@ void Frame::ApplySchemeSettings(IScheme *pScheme)
 	SetOverridableColor( &m_OutOfFocusBgColor, pScheme->GetColor("Frame.OutOfFocusBgColor", m_InFocusBgColor) );
 
 	const char *resourceString = pScheme->GetResourceString("Frame.ClientInsetX");
-	if ( resourceString )
+	if ( Q_strlen(resourceString) )
 	{
 		m_iClientInsetX = atoi(resourceString);
 	}
 	resourceString = pScheme->GetResourceString("Frame.ClientInsetY");
-	if ( resourceString )
+	if ( Q_strlen(resourceString) )
 	{
 		m_iClientInsetY = atoi(resourceString);
 	}
 	resourceString = pScheme->GetResourceString("Frame.TitleTextInsetX");
-	if ( resourceString )
+	if ( Q_strlen(resourceString) )
 	{
 		m_iTitleTextInsetX = atoi(resourceString);
 	}
@@ -1827,7 +1834,7 @@ void Frame::OnClose()
 	
 	BaseClass::OnClose();
 
-	if (m_flTransitionEffectTime && !m_bDisableFadeEffect)
+	if (m_flTransitionEffectTime > 0.001f && !m_bDisableFadeEffect)
 	{
 		// begin the hide transition effect
 		GetAnimationController()->RunAnimationCommand(this, "alpha", 0.0f, 0.0f, m_flTransitionEffectTime, AnimationController::INTERPOLATOR_LINEAR);
@@ -2097,10 +2104,7 @@ void Frame::InternalFlashWindow()
 	if (_flashWindow)
 	{
 		// toggle icon flashing
-		_nextFlashState = true;
-		surface()->FlashWindow(GetVPanel(), _nextFlashState);
-		_nextFlashState = !_nextFlashState;
-		
+		surface()->FlashWindow(GetVPanel(), true);
 		PostMessage(this, new KeyValues("FlashWindow"), 1.8f);
 	}
 }
@@ -2118,8 +2122,10 @@ void Frame::OnChildAdded(VPANEL child)
 //-----------------------------------------------------------------------------
 void Frame::FlashWindow()
 {
+    if (_flashWindow)
+        return;
+
 	_flashWindow = true;
-	_nextFlashState = true;
 	
 	InternalFlashWindow();
 }
@@ -2129,6 +2135,9 @@ void Frame::FlashWindow()
 //-----------------------------------------------------------------------------
 void Frame::FlashWindowStop()
 {
+    if (!_flashWindow)
+        return;
+    
 	surface()->FlashWindow(GetVPanel(), false);
 	_flashWindow = false;
 }
@@ -2323,8 +2332,8 @@ void Frame::OnScreenSizeChanged(int iOldWide, int iOldTall)
 	}
 
 	// make sure the top-left is visible
-	x = max( 0, x );
-	y = max( 0, y );
+	x = std::max( 0, x );
+	y = std::max( 0, y );
 
 	// apply
 	SetPos(x, y);

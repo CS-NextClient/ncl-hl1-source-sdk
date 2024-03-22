@@ -42,7 +42,7 @@ enum
 	WINDOW_BORDER_WIDTH=2 // the width of the window's border
 };
 
-
+#include <iostream>
 #ifndef max
 #define max(a,b)            (((a) > (b)) ? (a) : (b))
 #endif
@@ -868,7 +868,7 @@ int ListPanel::AddItem( const KeyValues *item, unsigned int userData, bool bScro
 	newitem->kv = item->MakeCopy();
 	newitem->userData = userData;
 	newitem->m_pDragData = NULL;
-	newitem->m_bImage = newitem->kv->GetInt( "image" ) != 0 ? true : false;
+	newitem->m_bImage = newitem->kv->GetInt("image") != 0;
 	newitem->m_nImageIndex = newitem->kv->GetInt( "image" );
 	newitem->m_nImageIndexSelected = newitem->kv->GetInt( "imageSelected" );
 	newitem->m_pIcon = reinterpret_cast< IImage * >( newitem->kv->GetPtr( "iconImage" ) );
@@ -1558,17 +1558,34 @@ Panel *ListPanel::GetCellRenderer(int itemID, int col)
 		}
 
 		FastSortListPanelItem *listItem = m_DataItems[ itemID ];
-		if ( col == 0 &&
-			listItem->m_bImage && m_pImageList )
+
+        ListPanelItemImage image;
+
+        const char *key = m_ColumnsData[m_CurrentColumns[col]].m_pHeader->GetName();
+        if (std::strncmp(item->GetString(key), "!img:", 5) == 0)
+        {
+            int image_index = std::stoi(item->GetString(key) + 5);
+            image.m_nImageIndex = image_index;
+            image.m_nImageIndexSelected = image_index;
+        }
+
+        if ( col == 0 && listItem->m_bImage && m_pImageList )
+        {
+            image.m_nImageIndex = listItem->m_nImageIndex;
+            image.m_nImageIndexSelected = listItem->m_nImageIndexSelected;
+            image.m_pIcon = listItem->m_pIcon;
+        }
+
+        if (m_pImageList && image.m_nImageIndex != -1)
 		{
 			IImage *pImage = NULL;
-			if ( listItem->m_pIcon )
+            if ( image.m_pIcon )
 			{
-				pImage = listItem->m_pIcon;
+                pImage = image.m_pIcon;
 			}
 			else
 			{
-				int imageIndex = selected ? listItem->m_nImageIndexSelected : listItem->m_nImageIndex;
+                int imageIndex = selected ? image.m_nImageIndexSelected : image.m_nImageIndex;
 				if ( m_pImageList->IsValidIndex(imageIndex) )
 				{
 					pImage = m_pImageList->GetImage(imageIndex);
@@ -1789,16 +1806,17 @@ void ListPanel::PerformLayout()
 				}
 			}
 
+			// !!! commented code below causes wierd columns behaviour on change its size
 			// enforce column mins and max's - unless we're FORCING it to shrink
-			if ( hWide < column.m_iMinWidth && !bForceShrink ) 
-			{
-				hWide = column.m_iMinWidth; // adjust width of column
-			}
-			else if ( hWide > column.m_iMaxWidth )
-			{
-				hWide = column.m_iMaxWidth;
-			}
-	
+//			if ( hWide < column.m_iMinWidth && !bForceShrink )
+//			{
+//				hWide = column.m_iMinWidth; // adjust width of column
+//			}
+//			else if ( hWide > column.m_iMaxWidth )
+//			{
+//				hWide = column.m_iMaxWidth;
+//			}
+
 			header->SetSize(hWide, m_vbar->GetWide());
 			x += hWide;
 	
@@ -2639,17 +2657,17 @@ void ListPanel::ApplySchemeSettings(IScheme *pScheme)
 
 	BaseClass::ApplySchemeSettings(pScheme);
 
-	SetBgColor(GetSchemeColor("ListPanel.BgColor", pScheme));
+	SetBgColor(GetSchemeColor("ListPanel.BgColor", GetSchemeColor("WindowBgColor", pScheme), pScheme));
 	SetBorder(pScheme->GetBorder("ButtonDepressedBorder"));
 
-	m_pLabel->SetBgColor(GetSchemeColor("ListPanel.BgColor", pScheme));
+	m_pLabel->SetBgColor(GetSchemeColor("ListPanel.BgColor", GetSchemeColor("Menu/ArmedBgColor", pScheme), pScheme));
 
-	m_LabelFgColor = GetSchemeColor("ListPanel.TextColor", pScheme);
-	m_DisabledColor = GetSchemeColor("ListPanel.DisabledTextColor", m_LabelFgColor, pScheme);
-	m_SelectionFgColor = GetSchemeColor("ListPanel.SelectedTextColor", m_LabelFgColor, pScheme);
-	m_DisabledSelectionFgColor = GetSchemeColor("ListPanel.DisabledSelectedTextColor", m_LabelFgColor, pScheme);
+	m_LabelFgColor = GetSchemeColor("ListPanel.TextColor", GetSchemeColor("WindowFgColor", pScheme), pScheme);
+	m_DisabledColor = GetSchemeColor("ListPanel.DisabledTextColor", GetSchemeColor("WindowDisabledBgColor", m_LabelFgColor, pScheme), pScheme);
+	m_SelectionFgColor = GetSchemeColor("ListPanel.SelectedTextColor", GetSchemeColor("ListSelectionFgColor", pScheme), pScheme);
+	m_DisabledSelectionFgColor = GetSchemeColor("ListPanel.DisabledSelectedTextColor", GetSchemeColor("WindowDisabledFgColor", pScheme), pScheme);
 
-	m_pEmptyListText->SetColor(GetSchemeColor("ListPanel.EmptyListInfoTextColor", pScheme));
+	m_pEmptyListText->SetColor(GetSchemeColor("ListPanel.EmptyListInfoTextColor", GetSchemeColor("LabelDimText", pScheme), pScheme));
 		
 	SetFont( pScheme->GetFont("Default", IsProportional() ) );
 	m_pEmptyListText->SetFont( pScheme->GetFont( "Default", IsProportional() ) );
@@ -2858,34 +2876,35 @@ void ListPanel::OnColumnResized(int col, int delta)
 
 	wide += delta;
 
+	// !!! commented code below causes wierd columns behaviour on change its size
 	// enforce minimum sizes for the header
-	if ( wide < column.m_iMinWidth )
-	{
-		wide = column.m_iMinWidth;
-	}
-	// enforce maximum sizes for the header
-	if ( wide > column.m_iMaxWidth )
-	{
-		wide = column.m_iMaxWidth;
-	}
-
-	// make sure we have enough space for the columns to our right
-	int panelWide, panelTall;
-	GetSize( panelWide, panelTall );
-	int x, y;
-	header->GetPos(x, y);
-	int restColumnsMinWidth = 0;
-	int i;
-	for ( i = col+1 ; i < m_CurrentColumns.Count() ; i++ )
-	{
-		column_t& nextCol = m_ColumnsData[m_CurrentColumns[i]];
-		restColumnsMinWidth += nextCol.m_iMinWidth;
-	}
-	panelWide -= ( x + restColumnsMinWidth + m_vbar->GetWide() + WINDOW_BORDER_WIDTH );
-	if ( wide > panelWide )
-	{
-		wide = panelWide;
-	}
+//	if ( wide < column.m_iMinWidth )
+//	{
+//		wide = column.m_iMinWidth;
+//	}
+//	// enforce maximum sizes for the header
+//	if ( wide > column.m_iMaxWidth )
+//	{
+//		wide = column.m_iMaxWidth;
+//	}
+//
+//	// make sure we have enough space for the columns to our right
+//	int panelWide, panelTall;
+//	GetSize( panelWide, panelTall );
+//	int x, y;
+//	header->GetPos(x, y);
+//	int restColumnsMinWidth = 0;
+//	int i;
+//	for ( i = col+1 ; i < m_CurrentColumns.Count() ; i++ )
+//	{
+//		column_t& nextCol = m_ColumnsData[m_CurrentColumns[i]];
+//		restColumnsMinWidth += nextCol.m_iMinWidth;
+//	}
+//	panelWide -= ( x + restColumnsMinWidth + m_vbar->GetWide() + WINDOW_BORDER_WIDTH );
+//	if ( wide > panelWide )
+//	{
+//		wide = panelWide;
+//	}
 
 	header->SetSize(wide, tall);
 
@@ -2920,7 +2939,7 @@ void ListPanel::OnSetSortColumn(int column)
 //-----------------------------------------------------------------------------
 // Purpose: sets whether the item is visible or not
 //-----------------------------------------------------------------------------
-void ListPanel::SetItemVisible(int itemID, bool state)
+void ListPanel::SetItemVisible(int itemID, bool state, bool resort)
 {
 	if ( !m_DataItems.IsValidIndex(itemID) )
 		return;
@@ -2929,7 +2948,7 @@ void ListPanel::SetItemVisible(int itemID, bool state)
 	if (data->visible == state)
 		return;
 
-	m_bNeedsSort = true;
+    m_bNeedsSort = resort;
 
 	data->visible = state;
 	if (data->visible)

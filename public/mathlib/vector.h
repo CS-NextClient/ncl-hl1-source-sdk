@@ -1469,16 +1469,12 @@ inline Vector CrossProduct(const Vector& a, const Vector& b)
 
 inline void VectorMin( const Vector &a, const Vector &b, Vector &result )
 {
-	result.x = fpmin(a.x, b.x);
-	result.y = fpmin(a.y, b.y);
-	result.z = fpmin(a.z, b.z);
+    result = a.Min(b);
 }
 
 inline void VectorMax( const Vector &a, const Vector &b, Vector &result )
 {
-	result.x = fpmax(a.x, b.x);
-	result.y = fpmax(a.y, b.y);
-	result.z = fpmax(a.z, b.z);
+    result = a.Max(b);
 }
 
 inline float ComputeVolume( const Vector &vecMins, const Vector &vecMaxs )
@@ -1780,7 +1776,7 @@ inline vec_t RadianEuler::operator[](int i) const
 //-----------------------------------------------------------------------------
 class QAngleByValue;
 
-class QAngle					
+class QAngle
 {
 public:
 	// Members
@@ -1789,6 +1785,7 @@ public:
 	// Construction/destruction
 	QAngle(void);
 	QAngle(vec_t X, vec_t Y, vec_t Z);
+	explicit QAngle(const vec3_t angles);
 //	QAngle(RadianEuler const &angles);	// evil auto type promotion!!!
 
 	// Allow pass-by-value
@@ -1903,6 +1900,11 @@ inline QAngle::QAngle(vec_t X, vec_t Y, vec_t Z)
 	CHECK_VALID(*this);
 }
 
+inline QAngle::QAngle(const vec3_t angles)
+{
+    x = angles[0]; y = angles[1]; z = angles[2];
+    CHECK_VALID(*this);
+}
 
 //-----------------------------------------------------------------------------
 // initialization

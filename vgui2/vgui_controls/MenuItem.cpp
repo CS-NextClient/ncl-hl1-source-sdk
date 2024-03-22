@@ -378,12 +378,25 @@ void MenuItem::ApplySchemeSettings(IScheme *pScheme)
 	// chain back first
 	Button::ApplySchemeSettings(pScheme);
 
-	// get color settings
-	SetDefaultColor(GetSchemeColor("Menu.TextColor", GetFgColor(), pScheme), GetSchemeColor("Menu.BgColor", GetBgColor(), pScheme));
-	SetArmedColor(GetSchemeColor("Menu.ArmedTextColor", GetFgColor(), pScheme), GetSchemeColor("Menu.ArmedBgColor", GetBgColor(), pScheme));
-	SetDepressedColor(GetSchemeColor("Menu.ArmedTextColor", GetFgColor(), pScheme), GetSchemeColor("Menu.ArmedBgColor", GetBgColor(), pScheme));
+	auto bwFgDefaultColor = GetSchemeColor("Menu/FgColor", GetBgColor(), pScheme);
+	auto bwBgDefaultColor = GetSchemeColor("Menu/BgColor", GetBgColor(), pScheme);
+	auto bwFgArmedColor = GetSchemeColor("Menu/ArmedFgColor", GetBgColor(), pScheme);
+	auto bwBgArmedColor = GetSchemeColor("Menu/ArmedBgColor", GetBgColor(), pScheme);
+	auto bwFgDepressedColor = bwFgArmedColor;
+	auto bwBgDepressedColor = bwBgArmedColor;
 
-	SetTextInset(atoi(pScheme->GetResourceString("Menu.TextInset")), 0);
+	// get color settings
+	SetDefaultColor(GetSchemeColor("Menu.TextColor", bwFgDefaultColor, pScheme), GetSchemeColor("Menu.BgColor", bwBgDefaultColor, pScheme));
+	SetArmedColor(GetSchemeColor("Menu.ArmedTextColor", bwFgArmedColor, pScheme), GetSchemeColor("Menu.ArmedBgColor", bwBgArmedColor, pScheme));
+	SetDepressedColor(GetSchemeColor("Menu.ArmedTextColor", bwFgDepressedColor, pScheme), GetSchemeColor("Menu.ArmedBgColor", bwBgDepressedColor, pScheme));
+
+	auto strTextInset = pScheme->GetResourceString("Menu.TextInset");
+	if( !Q_strlen(strTextInset) )
+		strTextInset = pScheme->GetResourceString("Menu/TextInset");
+	if( !Q_strlen(strTextInset) )
+		strTextInset = "6";
+
+	SetTextInset(atoi(strTextInset), 0);
 	
 	// reload images since applyschemesettings in label wipes them out.
 	if ( m_pCascadeArrow )
@@ -643,5 +656,5 @@ void MenuItem::GetContentSize( int& cw, int &ch )
 	m_pCurrentKeyBinding->GetSize( iw, ih );
 
 	cw += iw + KEYBINDING_INSET;
-	ch = max( ch, ih );
+	ch = std::max( ch, ih );
 }

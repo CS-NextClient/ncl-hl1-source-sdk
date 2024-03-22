@@ -305,6 +305,95 @@ namespace // internal use only
 
 		return (nOut + 1) * sizeof( DstType );
 	}
+
+    // A generic Unicode processing loop: decode one character from input to uchar32, handle errors, encode uchar32 to output
+    template < typename SrcType, typename DstType, int (&DecodeSrc)( const SrcType*, uchar32&, bool& ), int (&EncodeDstLen)( uchar32 ), int (&EncodeDst)( uchar32, DstType* ) >
+    int Q_UnicodeConvertT( const SrcType *pBegin, const SrcType *pEnd, DstType *pOut, int nOutBytes, EStringConvertErrorPolicy ePolicy )
+    {
+        if ( !pBegin )
+        {
+            // For now, assert and return 0. Once these are cleaned out a bit
+            //  we should remove this return and just leave in the assert...
+            AssertMsg( pBegin, "We shouldn't be passing in NULL! (pBegin)" );
+            return 0;
+        }
+
+        if ( !pEnd )
+        {
+            // For now, assert and return 0. Once these are cleaned out a bit
+            //  we should remove this return and just leave in the assert...
+            AssertMsg( pEnd, "We shouldn't be passing in NULL! (pEnd)" );
+            return 0;
+        }
+
+        Assert(pBegin <= pEnd);
+
+        int nOut = 0;
+        const char *pCur = pBegin;
+
+        if ( !pOut )
+        {
+            while ( pCur != pEnd )
+            {
+                uchar32 uVal;
+                // Initialize in order to avoid /analyze warnings.
+                bool bErr = false;
+                pCur += DecodeSrc( pCur, uVal, bErr );
+                nOut += EncodeDstLen( uVal );
+                if ( bErr )
+                {
+#ifdef _DEBUG
+                    AssertMsg( !(ePolicy & _STRINGCONVERTFLAG_ASSERT), "invalid Unicode byte sequence" );
+#endif
+                    if ( ePolicy & _STRINGCONVERTFLAG_SKIP )
+                    {
+                        nOut -= EncodeDstLen( uVal );
+                    }
+                    else if ( ePolicy & _STRINGCONVERTFLAG_FAIL )
+                    {
+                        pOut[0] = 0;
+                        return 0;
+                    }
+                }
+            }
+        }
+        else
+        {
+            int nOutElems = nOutBytes / sizeof( DstType );
+            if ( nOutElems <= 0 )
+                return 0;
+
+            int nMaxOut = nOutElems - 1;
+            while ( pCur != pEnd )
+            {
+                uchar32 uVal;
+                // Initialize in order to avoid /analyze warnings.
+                bool bErr = false;
+                pCur += DecodeSrc( pCur, uVal, bErr );
+                if ( nOut + EncodeDstLen( uVal ) > nMaxOut )
+                    break;
+                nOut += EncodeDst( uVal, pOut + nOut );
+                if ( bErr )
+                {
+#ifdef _DEBUG
+                    AssertMsg( !(ePolicy & _STRINGCONVERTFLAG_ASSERT), "invalid Unicode byte sequence" );
+#endif
+                    if ( ePolicy & _STRINGCONVERTFLAG_SKIP )
+                    {
+                        nOut -= EncodeDstLen( uVal );
+                    }
+                    else if ( ePolicy & _STRINGCONVERTFLAG_FAIL )
+                    {
+                        pOut[0] = 0;
+                        return 0;
+                    }
+                }
+            }
+            pOut[nOut] = 0;
+        }
+
+        return (nOut + 1) * sizeof( DstType );
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -448,6 +537,11 @@ uchar32 *Q_UnicodeAdvance( uchar32 *pUTF32, int nChars )
 int Q_UTF8ToUTF16( const char *pUTF8, uchar16 *pUTF16, int cubDestSizeInBytes, EStringConvertErrorPolicy ePolicy )
 {
 	return Q_UnicodeConvertT< char, uchar16, true, Q_UTF8ToUChar32, Q_UChar32ToUTF16Len, Q_UChar32ToUTF16 >( pUTF8, 0, pUTF16, cubDestSizeInBytes, ePolicy );
+}
+
+int Q_UTF8ToUTF16( const char *pUTF8Begin, const char* pUTF8End, OUT_Z_BYTECAP(cubDestSizeInBytes) uchar16 *pUTF16, int cubDestSizeInBytes, EStringConvertErrorPolicy ePolicy )
+{
+    return Q_UnicodeConvertT< char, uchar16, Q_UTF8ToUChar32, Q_UChar32ToUTF16Len, Q_UChar32ToUTF16 >( pUTF8Begin, pUTF8End, pUTF16, cubDestSizeInBytes, ePolicy );
 }
 
 //-----------------------------------------------------------------------------

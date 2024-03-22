@@ -43,7 +43,9 @@ public:
 	// inserts characters at the end of the stream
 	void InsertChar(wchar_t ch);
 	void InsertString(const char *text);
+    void InsertString(const char *begin, const char *end);
 	void InsertString(const wchar_t *wszText);
+	void InsertString(const wchar_t *begin, const wchar_t *end);
 	
 	// selection
 	void SelectNone();

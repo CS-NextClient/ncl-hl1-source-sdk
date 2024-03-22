@@ -305,6 +305,11 @@ extern	const int nanmask;
 
 #define	IS_NAN(x) (((*(int *)&x)&nanmask)==nanmask)
 
+FORCEINLINE float Sqr( float f )
+{
+	return f*f;
+}
+
 FORCEINLINE vec_t DotProduct(const vec_t *v1, const vec_t *v2)
 {
 	return v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2];
@@ -348,12 +353,12 @@ FORCEINLINE void VectorClear(vec_t *a)
 
 FORCEINLINE float VectorMaximum(const vec_t *v)
 {
-	return max( v[0], max( v[1], v[2] ) );
+	return std::max( v[0], std::max( v[1], v[2] ) );
 }
 
 FORCEINLINE float VectorMaximum(const Vector& v)
 {
-	return max( v.x, max( v.y, v.z ) );
+	return std::max( v.x, std::max( v.y, v.z ) );
 }
 
 FORCEINLINE void VectorScale (const float* in, vec_t scale, float* out)
@@ -421,6 +426,11 @@ int VectorCompare (const float *v1, const float *v2);
 inline float VectorLength(const float *v)
 {
 	return FastSqrt( v[0]*v[0] + v[1]*v[1] + v[2]*v[2] + FLT_EPSILON );
+}
+
+inline float VectorDistance(const float *v1, const float *v2)
+{
+	return FastSqrt(Sqr(v2[0] - v1[0]) + Sqr(v2[1] - v1[1]) + Sqr(v2[2] - v1[2]));
 }
 
 void CrossProduct (const float *v1, const float *v2, float *cross);
@@ -659,11 +669,6 @@ template <class T>
 FORCEINLINE T Lerp( float flPercent, T const &A, T const &B )
 {
 	return A + (B - A) * flPercent;
-}
-
-FORCEINLINE float Sqr( float f )
-{
-	return f*f;
 }
 
 // 5-argument floating point linear interpolation.
@@ -1489,7 +1494,7 @@ FORCEINLINE unsigned char LinearToLightmap( float f )
 
 FORCEINLINE void ColorClamp( Vector& color )
 {
-	float maxc = max( color.x, max( color.y, color.z ) );
+	float maxc = std::max( color.x, std::max( color.y, color.z ) );
 	if ( maxc > 1.0f )
 	{
 		float ooMax = 1.0f / maxc;
@@ -1777,8 +1782,7 @@ float CalcDistanceToLineSegment2D( Vector2D const &P, Vector2D const &vLineA, Ve
 float CalcDistanceSqrToLineSegment2D( Vector2D const &P, Vector2D const &vLineA, Vector2D const &vLineB, float *t=0 );
 
 // Init the mathlib
-void MathLib_Init( float gamma = 2.2f, float texGamma = 2.2f, float brightness = 0.0f, int overbright = 2.0f, bool bAllow3DNow = true, bool bAllowSSE = true, bool bAllowSSE2 = true, bool bAllowMMX = true );
-bool MathLib_3DNowEnabled( void );
+void MathLib_Init( float gamma = 2.2f, float texGamma = 2.2f, float brightness = 0.0f, int overbright = 2.0f, bool bAllowSSE = true, bool bAllowSSE2 = true, bool bAllowMMX = true );
 bool MathLib_MMXEnabled( void );
 bool MathLib_SSEEnabled( void );
 bool MathLib_SSE2Enabled( void );
@@ -1788,6 +1792,7 @@ float ApproachAngle( float target, float value, float speed );
 float AngleDiff( float destAngle, float srcAngle );
 float AngleDistance( float next, float cur );
 float AngleNormalize( float angle );
+float AngleNormalize( float* angles );
 
 // ensure that 0 <= angle <= 360
 float AngleNormalizePositive( float angle );
@@ -1985,10 +1990,10 @@ FORCEINLINE unsigned int * PackNormal_SHORT2( float nx, float ny, float nz, unsi
 	ny *= 16384.0f;
 
 	// '0' and '32768' values are invalid encodings
-	nx = max( nx, 1.0f );		// Make sure there are no zero values
-	ny = max( ny, 1.0f );
-	nx = min( nx, 32767.0f );	// Make sure there are no 32768 values
-	ny = min( ny, 32767.0f );
+	nx = std::max( nx, 1.0f );		// Make sure there are no zero values
+	ny = std::max( ny, 1.0f );
+	nx = std::min( nx, 32767.0f );	// Make sure there are no 32768 values
+	ny = std::min( ny, 32767.0f );
 
 	if ( nz < 0.0f )
 		nx = -nx;				// Set the sign bit for z
@@ -2166,7 +2171,7 @@ inline bool CloseEnough( const Vector &a, const Vector &b, float epsilon = EQUAL
 // Fast compare
 // maxUlps is the maximum error in terms of Units in the Last Place. This 
 // specifies how big an error we are willing to accept in terms of the value
-// of the least significant digit of the floating point number’s 
+// of the least significant digit of the floating point numberï¿½s 
 // representation. maxUlps can also be interpreted in terms of how many 
 // representable floats we are willing to accept between A and B. 
 // This function will allow maxUlps-1 floats between A and B.
@@ -2179,6 +2184,17 @@ inline bool AlmostEqual( const Vector &a, const Vector &b, int maxUlps = 10)
 		AlmostEqual( a.z, b.z, maxUlps );
 }
 
+template <typename T>
+inline T bswap(T s)
+{
+    switch (sizeof(T))
+    {
+        case 2: {auto res = __builtin_bswap16(*(uint16 *)&s); return *(T *)&res; }
+        case 4: {auto res = __builtin_bswap32(*(uint32 *)&s); return *(T *)&res; }
+        case 8: {auto res = __builtin_bswap64(*(uint64 *)&s); return *(T *)&res; }
+        default: return s;
+    }
+}
 
 #endif	// MATH_BASE_H
 

@@ -306,7 +306,7 @@ public:
 	{
 		if ( !panel->GetName() || !panel->GetName()[ 0 ] )
 		{
-			Warning( "Can't add Keybindings Context for unnamed panels\n" );
+			Warning( _T("Can't add Keybindings Context for unnamed panels\n") );
 			return;
 		}
 
@@ -531,7 +531,7 @@ void Panel::SaveKeyBindingsToFile( KeyBindingContextHandle_t handle, char const 
 	if ( g_pFullFileSystem->FileExists( filename ) &&
 		!FS_IsFileWritable( g_pFullFileSystem, filename, pathID ) )
 	{
-		Warning( "Panel::SaveKeyBindings '%s' is read-only!!!\n", filename );
+		Warning( _T("Panel::SaveKeyBindings '%s' is read-only!!!\n"), filename );
 	}
 
 	FileHandle_t h = g_pFullFileSystem->Open( filename, "wb", pathID );
@@ -580,7 +580,7 @@ void Panel::LoadKeyBindingsForOnePanel( KeyBindingContextHandle_t handle, Panel 
 			KeyValues *subKey = kv->FindKey( panelName, false );
 			if ( !subKey )
 			{
-				Warning( "Panel::ReloadKeyBindings:  Can't find entry for panel '%s'\n", panelName );
+				Warning( _T("Panel::ReloadKeyBindings:  Can't find entry for panel '%s'\n"), panelName );
 				continue;
 			}
 			
@@ -618,7 +618,7 @@ void Panel::ReloadKeyBindings( KeyBindingContextHandle_t handle )
 			KeyValues *subKey = kv->FindKey( panelName, false );
 			if ( !subKey )
 			{
-				Warning( "Panel::ReloadKeyBindings:  Can't find entry for panel '%s'\n", panelName );
+				Warning( _T("Panel::ReloadKeyBindings:  Can't find entry for panel '%s'\n"), panelName );
 				continue;
 			}
 			
@@ -727,6 +727,15 @@ void Panel::Init( int x, int y, int wide, int tall )
 	m_nBgTextureId2 = -1;
 	m_nBgTextureId3 = -1;
 	m_nBgTextureId4 = -1;
+    m_nBgTextureBorderId1 = -1;
+    m_nBgTextureBorderId2 = -1;
+    m_nBgTextureBorderId3 = -1;
+    m_nBgTextureBorderId4 = -1;
+    m_nBgTextureBorderHalfId1 = -1;
+    m_nBgTextureBorderHalfId2 = -1;
+    m_nBgTextureBorderHalfId3 = -1;
+    m_nBgTextureBorderHalfId4 = -1;
+
 #if defined( VGUI_USEDRAGDROP )
 	m_pDragDrop = new DragDrop_t;
 
@@ -1151,7 +1160,7 @@ void Panel::PaintTraverse( bool repaint, bool allowForce )
 		return;
 	}
 
-	float oldAlphaMultiplier = DrawGetAlphaMultiplier();
+	float oldAlphaMultiplier = g_pVGuiSurface->DrawGetAlphaMultiplier();
 	float newAlphaMultiplier = oldAlphaMultiplier * m_flAlpha * 1.0f/255.0f;
 
 	if ( IsXbox() && !newAlphaMultiplier )
@@ -1194,7 +1203,7 @@ void Panel::PaintTraverse( bool repaint, bool allowForce )
 	}
 
 	// set global alpha
-	DrawSetAlphaMultiplier( newAlphaMultiplier );
+    g_pVGuiSurface->DrawSetAlphaMultiplier( newAlphaMultiplier );
 
 	// GoldSrc: border doesn't have that property
 #if 0
@@ -1299,7 +1308,7 @@ void Panel::PaintTraverse( bool repaint, bool allowForce )
 		}
 	}
 
-	DrawSetAlphaMultiplier( oldAlphaMultiplier );
+    g_pVGuiSurface->DrawSetAlphaMultiplier( oldAlphaMultiplier );
 
 	surface()->SwapBuffers( vpanel );
 
@@ -1318,7 +1327,11 @@ void Panel::PaintTraverse( bool repaint, bool allowForce )
 //-----------------------------------------------------------------------------
 void Panel::PaintBorder()
 {
-	_border->Paint(GetVPanel());
+    if (_borderEx)
+        _borderEx->Paint(GetVPanel());
+    else
+        _border->Paint(GetVPanel());
+
 }
 
 
@@ -2597,7 +2610,7 @@ bool Panel::ParseKeyBindings( KeyValues *kv )
 		}
 		else
 		{
-			Warning( "KeyBinding for panel '%s' contained unknown binding '%s'\n", GetName() ? GetName() : "???", bindingName );
+			Warning( _T("KeyBinding for panel '%s' contained unknown binding '%s'\n"), GetName() ? GetName() : "???", bindingName );
 		}
 	}
 
@@ -2622,7 +2635,7 @@ bool Panel::ParseKeyBindings( KeyValues *kv )
 					KeyBindingMap_t *alreadyBound = LookupBindingByKeyCode( (KeyCode)defaultKey->keycode, defaultKey->modifiers );
 					if ( alreadyBound )
 					{
-						Warning( "No binding for '%s', defautl key already bound to '%s'\n", binding->bindingname, alreadyBound->bindingname );
+						Warning( _T("No binding for '%s', defautl key already bound to '%s'\n"), binding->bindingname, alreadyBound->bindingname );
 					}
 					else
 					{
@@ -2957,7 +2970,7 @@ void Panel::OnThink()
 			return;
 		}
 
-		if ( m_pDragDrop->m_hCurrentDrop != 0 )
+		if ( m_pDragDrop->m_hCurrentDrop != nullptr )
 		{
 			if ( !input()->IsMouseDown( MOUSE_LEFT ) )
 			{
@@ -3684,6 +3697,7 @@ void Panel::PostActionSignal( KeyValues *message )
 void Panel::SetBorder(IBorder *border)
 {
 	_border = border;
+    _borderEx = dynamic_cast<IBorderEx*>(border);
 
 	if (border)
 	{
@@ -3691,16 +3705,16 @@ void Panel::SetBorder(IBorder *border)
 		border->GetInset(x, y, x2, y2);
 		ipanel()->SetInset(GetVPanel(), x, y, x2, y2);
 
-		// GoldSrc: Border doesn't support bg type
-		// GoldSrc: Emulate that for FrameBorder
-#if 0
-		// update our background type based on the bord
-		SetPaintBackgroundType(border->GetBackgroundType());
-#endif
-		if (!strcmp(border->GetName(), "FrameBorder"))
-			SetPaintBackgroundType(2);
-		else
-			SetPaintBackgroundType(0);
+        if (_borderEx)
+        {
+            SetPaintBackgroundType(_borderEx->GetBackgroundType());
+            _borderEx->SetBorderCornerTextures(m_nBgTextureBorderId1, m_nBgTextureBorderId2, m_nBgTextureBorderId3, m_nBgTextureBorderId4,
+                                               m_nBgTextureBorderHalfId1, m_nBgTextureBorderHalfId2, m_nBgTextureBorderHalfId3, m_nBgTextureBorderHalfId4);
+        }
+        else
+        {
+            SetPaintBackgroundType(0);
+        }
 	}
 	else
 	{
@@ -4099,8 +4113,8 @@ void Panel::UpdateSiblingPin( void )
 void Panel::ApplySchemeSettings(IScheme *pScheme)
 {
 	// get colors
-	SetFgColor(GetSchemeColor("Panel.FgColor", pScheme));
-	SetBgColor(GetSchemeColor("Panel.BgColor", pScheme));
+	SetFgColor(GetSchemeColor("Panel.FgColor", GetSchemeColor("FgColor", pScheme), pScheme));
+	SetBgColor(GetSchemeColor("Panel.BgColor", GetSchemeColor("BgColor", pScheme), pScheme));
 
 #if defined( VGUI_USEDRAGDROP )
 	m_clrDragFrame = pScheme->GetColor("DragDrop.DragFrame", Color(255, 255, 255, 192));
@@ -4273,7 +4287,7 @@ int Panel::ComputeWide( KeyValues *inResourceData, int nParentWide, int nParentT
 				wstr++;
 				if ( bComputingOther )
 				{
-					Warning( "Wide and Tall of panel %s are set to be each other!\n", GetName() );
+					Warning( _T("Wide and Tall of panel %s are set to be each other!\n"), GetName() );
 					return 0;
 				}
 
@@ -4347,7 +4361,7 @@ int Panel::ComputeTall( KeyValues *inResourceData, int nParentWide, int nParentT
 				tstr++;
 				if ( bComputingOther )
 				{
-					Warning( "Wide and Tall of panel %s are set to be each other!\n", GetName() );
+					Warning( _T("Wide and Tall of panel %s are set to be each other!\n"), GetName() );
 					return 0;
 				}
 
@@ -6201,7 +6215,7 @@ public:
 	virtual void GetData( Panel *panel, KeyValues *kv, PanelAnimationMapEntry *entry )
 	{
 		// GoldSrc: scheme->GetFontName doesn't exist
-		Msg("CHFontProperty: panel '%s' tried to save font animation variable '%s'. Saving default value instead.\n",
+		Msg(_T("CHFontProperty: panel '%s' tried to save font animation variable '%s'. Saving default value instead.\n"),
 			panel->GetName(), entry->name());
 		kv->SetString(entry->name(), entry->defaultvalue());
 #if 0
@@ -6384,7 +6398,7 @@ void Panel::AddPropertyConverter( char const *typeName, IPanelAnimationPropertyC
 	int lookup = g_AnimationPropertyConverters.Find( typeName );
 	if ( lookup != g_AnimationPropertyConverters.InvalidIndex() )
 	{
-		Msg( "Already have converter for type %s, ignoring...\n", typeName );
+		Msg( _T("Already have converter for type %s, ignoring...\n"), typeName );
 		return;
 	}
 
@@ -7058,7 +7072,7 @@ void Panel::OnFinishDragging( bool mousereleased, MouseCode code, bool abort /*=
 		Q_strncpy( cmd, "default", sizeof( cmd ) );
 
 		if ( mousereleased &&
-			m_pDragDrop->m_hCurrentDrop != 0 &&
+			m_pDragDrop->m_hCurrentDrop != nullptr &&
 			m_pDragDrop->m_hDropContextMenu.Get() )
 		{
 			Menu *menu = m_pDragDrop->m_hDropContextMenu;
@@ -7317,7 +7331,7 @@ void Panel::OnContinueDragging()
 		}
 	}
 
-	if ( m_pDragDrop->m_hCurrentDrop != 0 &&
+	if ( m_pDragDrop->m_hCurrentDrop != nullptr &&
 		m_pDragDrop->m_hDropContextMenu.Get() )
 	{
 		Menu *menu = m_pDragDrop->m_hDropContextMenu;
@@ -7667,8 +7681,8 @@ void Panel::OnDraggablePanelPaint()
 	input()->GetCursorPos( x, y );
 	int w, h;
 
-	w = min( sw, 80 );
-	h = min( sh, 80 );
+	w = std::min( sw, 80 );
+	h = std::min( sh, 80 );
 	x -= ( w >> 1 );
 	y -= ( h >> 1 );
 

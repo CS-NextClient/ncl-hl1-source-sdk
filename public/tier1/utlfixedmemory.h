@@ -294,7 +294,7 @@ void CUtlFixedMemory<T>::Grow( int num )
 	BlockHeader_t *  RESTRICT pBlockHeader = ( BlockHeader_t* )malloc( sizeof( BlockHeader_t ) + nBlockSize * sizeof( T ) );
 	if ( !pBlockHeader )
 	{
-		Error( "CUtlFixedMemory overflow!\n" );
+		Error( _T("CUtlFixedMemory overflow!\n") );
 	}
 	pBlockHeader->m_pNext = NULL;
 	pBlockHeader->m_nBlockSize = nBlockSize;

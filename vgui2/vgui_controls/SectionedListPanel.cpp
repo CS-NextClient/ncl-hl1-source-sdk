@@ -69,9 +69,9 @@ void SectionedListPanelHeader::ApplySchemeSettings(IScheme *pScheme)
 {
 	BaseClass::ApplySchemeSettings(pScheme);
 
-	SetFgColor(GetSchemeColor("SectionedListPanel.HeaderTextColor", pScheme));
-	m_SectionDividerColor = GetSchemeColor("SectionedListPanel.DividerColor", pScheme);
-	SetBgColor(GetSchemeColor("SectionedListPanelHeader.BgColor", GetBgColor(), pScheme));
+	SetFgColor(GetSchemeColor("SectionedListPanel.HeaderTextColor", GetSchemeColor("SectionTextColor", pScheme), pScheme));
+	m_SectionDividerColor = GetSchemeColor("SectionedListPanel.DividerColor", GetSchemeColor("SectionDividerColor", pScheme), pScheme);
+	SetBgColor(GetSchemeColor("SectionedListPanelHeader.BgColor", GetSchemeColor( "BuddyListBgColor", GetBgColor(), pScheme), pScheme));
 	SetFont(pScheme->GetFont("DefaultVerySmall", IsProportional()));
 	ClearImages();
 	
@@ -469,16 +469,15 @@ public:
 	{
 		BaseClass::ApplySchemeSettings(pScheme);
 
-		m_ArmedFgColor1 = GetSchemeColor("SectionedListPanel.BrightTextColor", pScheme);
-		m_ArmedFgColor2 = GetSchemeColor("SectionedListPanel.SelectedTextColor", pScheme);
-		m_OutOfFocusSelectedTextColor = GetSchemeColor("SectionedListPanel.OutOfFocusSelectedTextColor", pScheme);
-		m_ArmedBgColor = GetSchemeColor("SectionedListPanel.SelectedBgColor", pScheme);
+		m_ArmedFgColor1 = GetSchemeColor("SectionedListPanel.BrightTextColor", GetSchemeColor("BuddyButton/ArmedFgColor1", pScheme), pScheme);
+		m_ArmedFgColor2 = GetSchemeColor("SectionedListPanel.SelectedTextColor", GetSchemeColor("BuddyButton/ArmedFgColor2", pScheme), pScheme);
+		m_OutOfFocusSelectedTextColor = GetSchemeColor("SectionedListPanel.OutOfFocusSelectedTextColor", GetSchemeColor("BuddyButton/FgColor1", pScheme), pScheme);
+		m_ArmedBgColor = GetSchemeColor("SectionedListPanel.SelectedBgColor", GetSchemeColor("BuddyButton/ArmedBgColor", pScheme), pScheme);
 
-		m_FgColor2 = GetSchemeColor("SectionedListPanel.TextColor", pScheme);
+		m_FgColor2 = GetSchemeColor("SectionedListPanel.TextColor", GetSchemeColor("BuddyButton/FgColor2", pScheme), pScheme);
 
-		m_BgColor = GetSchemeColor("SectionedListPanel.BgColor", GetBgColor(), pScheme);
-		m_SelectionBG2Color = GetSchemeColor("SectionedListPanel.OutOfFocusSelectedBgColor", pScheme);
-
+		m_BgColor = GetSchemeColor("SectionedListPanel.BgColor", GetSchemeColor("BuddyListBgColor", GetBgColor(), pScheme), pScheme);
+		m_SelectionBG2Color = GetSchemeColor("SectionedListPanel.OutOfFocusSelectedBgColor", GetSchemeColor("SelectionBG2", pScheme), pScheme);
 
 		HFont hFont = m_pListPanel->GetRowFont();
 		if ( hFont != INVALID_FONT )
@@ -1068,7 +1067,7 @@ void SectionedListPanel::ApplySchemeSettings(IScheme *pScheme)
 {
 	BaseClass::ApplySchemeSettings(pScheme);
 
-	SetBgColor(GetSchemeColor("SectionedListPanel.BgColor", GetBgColor(), pScheme));
+	SetBgColor(GetSchemeColor("SectionedListPanel.BgColor", GetSchemeColor("BuddyListBgColor", GetBgColor(), pScheme), pScheme));
 	SetBorder(pScheme->GetBorder("ButtonDepressedBorder"));
 
 	FOR_EACH_LL( m_Items, j )

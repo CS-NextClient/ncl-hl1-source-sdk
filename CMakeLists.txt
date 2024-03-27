@@ -122,6 +122,7 @@ endif()
 
 set( SOURCE_SDK_INCLUDE_PATHS
 	${SOURCE_SDK_INCLUDE_PATHS}
+	${CMAKE_CURRENT_SOURCE_DIR}/HLTV
 	${CMAKE_CURRENT_SOURCE_DIR}/common
 	${CMAKE_CURRENT_SOURCE_DIR}/dlls
 	${CMAKE_CURRENT_SOURCE_DIR}/public
@@ -156,20 +157,35 @@ add_subdirectory( mathlib )
 add_subdirectory( cef )
 
 #-----------------------------------------------------------------
-# Source SDK exported variables
+# Export library
 #-----------------------------------------------------------------
-set( SOURCE_SDK_DEFINES ${SOURCE_SDK_DEFINES} PARENT_SCOPE )
-set( SOURCE_SDK_INCLUDE_PATHS ${SOURCE_SDK_INCLUDE_PATHS} PARENT_SCOPE )
 
-set( SOURCE_SDK_LIBS
-	vgui_controls
-	${STEAM_API_LIBRARIES}
-	tier2
-	tier1
-	tier0
-	vstdlib
-	mathlib
-	libcef_dll
-	OpenGL::GL
-	PARENT_SCOPE
+add_library(hl1_source_sdk_export STATIC
+		vgui2/src/SchemeEx.cpp
+		HLTV/common/mem.cpp
+		HLTV/common/BitBuffer.cpp
+		HLTV/common/byteorder.cpp
+		HLTV/common/DirectorCmd.cpp
+		HLTV/common/common.cpp
+)
+add_library(hl1_source_sdk::hl1_source_sdk ALIAS hl1_source_sdk_export)
+
+target_include_directories(hl1_source_sdk_export PUBLIC
+		${SOURCE_SDK_INCLUDE_PATHS}
+)
+
+target_link_libraries(hl1_source_sdk_export PUBLIC
+		vgui_controls
+		${STEAM_API_LIBRARIES}
+		tier2
+		tier1
+		tier0
+		vstdlib
+		mathlib
+		libcef_dll
+		OpenGL::GL
+)
+
+target_compile_definitions(hl1_source_sdk_export PUBLIC
+		${SOURCE_SDK_DEFINES}
 )

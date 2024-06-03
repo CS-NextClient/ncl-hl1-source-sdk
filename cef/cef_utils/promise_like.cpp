@@ -1,9 +1,9 @@
 #include "promise_like.h"
 
-CefJsPromiseLike::CefJsPromiseLike(CefRefPtr<CefV8Value> resolveFunc, CefRefPtr<CefV8Value> rejectFunc) {
+CefJsPromiseLike::CefJsPromiseLike(CefRefPtr<CefV8Context> context, CefRefPtr<CefV8Value> resolveFunc, CefRefPtr<CefV8Value> rejectFunc) {
 	resolveFunc_ = resolveFunc;
 	rejectFunc_ = rejectFunc;
-	shotedContext_ = CefV8Context::GetCurrentContext();
+	shotedContext_ = context;
 }
 
 CefRefPtr<CefV8Context> CefJsPromiseLike::GetContext() {

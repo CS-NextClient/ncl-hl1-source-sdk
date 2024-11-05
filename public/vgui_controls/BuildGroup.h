@@ -17,7 +17,7 @@
 #include <vgui/VGUI2.h>
 #include <vgui/Dar.h>
 #include <vgui/Cursor.h>
-#include <vgui/IScheme.h>
+#include <vgui/ISchemeNext.h>
 #include <vgui_controls/Controls.h>
 #include <vgui_controls/PHandle.h>
 #include "tier1/utlhandletable.h"

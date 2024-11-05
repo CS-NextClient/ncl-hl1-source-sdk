@@ -5,9 +5,9 @@
 // $NoKeywords: $
 //=============================================================================//
 
-#include "vgui/IScheme.h"
+#include "vgui/ISchemeNext.h"
 #include "vgui/KeyCode.h"
-#include "vgui/ISurface.h"
+#include "vgui/ISurfaceNext.h"
 #include "KeyValues.h"
 
 #include "vgui_controls/PropertyPage.h"

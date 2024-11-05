@@ -8,8 +8,8 @@
 #include <stdio.h>
 
 #include "vgui_controls/BitmapImagePanel.h"
-#include "vgui/ISurface.h"
-#include "vgui/IScheme.h"
+#include "vgui/ISurfaceNext.h"
+#include "vgui/ISchemeNext.h"
 #include "vgui/IBorder.h"
 #include "KeyValues.h"
 

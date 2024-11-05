@@ -7,8 +7,8 @@
 #include <math.h>
 
 #include <vgui_controls/GraphPanel.h>
-#include <vgui/IScheme.h>
-#include <vgui/ISurface.h>
+#include <vgui/ISchemeNext.h>
+#include <vgui/ISurfaceNext.h>
 #include <vgui/IVGui.h>
 
 // memdbgon must be the last include file in a .cpp file!!!

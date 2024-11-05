@@ -7,12 +7,12 @@
 #include <IGameUIFuncs.h>
 #include <IGameConsole.h>
 #include <IGameUI.h>
-#include <vgui/ISurface.h>
 #include <vgui/IVGui.h>
 #include <vgui/IInputInternal.h>
 #include <vgui/IPanel.h>
 #include <vgui/ILocalize.h>
-#include <vgui/IScheme.h>
+#include <vgui/ISchemeNext.h>
+#include <vgui/ISurfaceNext.h>
 #include <vgui/ISystem.h>
 #include "KeyValuesCompat.h"
 
@@ -22,18 +22,18 @@ IEngineVGui *g_pEngineVGui;
 IGameUIFuncs *g_pGameUIFuncs;
 IGameConsole *g_pGameConsole;
 IGameUI *g_pGameUI;
-SurfaceEx *g_pVGuiSurface;
+vgui2::ISurfaceNext *g_pVGuiSurface;
 vgui2::IInputInternal *g_pVGuiInput;
 vgui2::IVGui *g_pVGui;
 vgui2::IPanel *g_pVGuiPanel;
 vgui2::ILocalize *g_pVGuiLocalize;
-vgui2::ISchemeManager *g_pVGuiSchemeManager;
+vgui2::ISchemeManagerNext *g_pVGuiSchemeManager;
 vgui2::ISystem *g_pVGuiSystem;
 
 static bool s_bConnected = false;
 void SteamAPI_InitForGoldSrc();
 
-void ConnectTier2Libraries(CreateInterfaceFn *pFactoryList, int nFactoryCount, void* pMainWindow)
+void ConnectTier2Libraries(CreateInterfaceFn *pFactoryList, int nFactoryCount)
 {
 	if (s_bConnected)
 		return;
@@ -74,7 +74,7 @@ void ConnectTier2Libraries(CreateInterfaceFn *pFactoryList, int nFactoryCount, v
 		}
 		if (!g_pVGuiSurface)
 		{
-			g_pVGuiSurface = new SurfaceEx((vgui2::ISurface *)pFactoryList[i](VGUI_SURFACE_INTERFACE_VERSION_GS, NULL), pMainWindow);
+			g_pVGuiSurface = (vgui2::ISurfaceNext *)pFactoryList[i](VGUI_SURFACE_NEXT_INTERFACE_VERSION, NULL);
 		}
 		if (!g_pVGuiInput)
 		{
@@ -94,7 +94,7 @@ void ConnectTier2Libraries(CreateInterfaceFn *pFactoryList, int nFactoryCount, v
 		}
 		if (!g_pVGuiSchemeManager)
 		{
-			g_pVGuiSchemeManager = (vgui2::ISchemeManager *)pFactoryList[i](VGUI_SCHEME_INTERFACE_VERSION_GS, NULL);
+			g_pVGuiSchemeManager = (vgui2::ISchemeManagerNext *)pFactoryList[i](VGUI_SCHEME_NEXT_INTERFACE_VERSION, NULL);
 		}
 		if (!g_pVGuiSystem)
 		{
@@ -114,10 +114,7 @@ void DisconnectTier2Libraries()
     g_pGameUIFuncs = nullptr;
     g_pGameConsole = nullptr;
     g_pGameUI = nullptr;
-
-    delete g_pVGuiSurface;
     g_pVGuiSurface = nullptr;
-
     g_pVGuiInput = nullptr;
     g_pVGui = nullptr;
     g_pVGuiPanel = nullptr;

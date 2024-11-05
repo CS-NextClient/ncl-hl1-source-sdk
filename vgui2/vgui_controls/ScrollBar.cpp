@@ -7,7 +7,7 @@
 
 #include <assert.h>
 
-#include <vgui/IScheme.h>
+#include <vgui/ISchemeNext.h>
 #include <vgui/ISystem.h>
 #include <vgui/IInputInternal.h>
 #include <vgui/IImage.h>

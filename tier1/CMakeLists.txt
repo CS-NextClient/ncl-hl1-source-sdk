@@ -97,7 +97,6 @@ set( TIER1_SOURCE_FILES
 	utlstring.cpp
 	utlsymbol.cpp
 	utlbinaryblock.cpp
-	../common/parsemsg.cpp
 )
 
 if( WIN32 )
@@ -116,8 +115,7 @@ else()
 		${TIER1_SOURCE_FILES}
 		processor_detect_linux.cpp
 		pathmatch.cpp
-		qsort_s.cpp
-            ../common/ref_int.h)
+		qsort_s.cpp)
 endif()
 
 add_library( tier1 STATIC

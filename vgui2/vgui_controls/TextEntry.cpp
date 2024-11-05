@@ -13,9 +13,9 @@
 
 #include <vgui/Cursor.h>
 #include <vgui/IInputInternal.h>
-#include <vgui/IScheme.h>
+#include <vgui/ISchemeNext.h>
 #include <vgui/ISystem.h>
-#include <vgui/ISurface.h>
+#include <vgui/ISurfaceNext.h>
 #include <vgui/ILocalize.h>
 #include <vgui/IPanel.h>
 #include <KeyValues.h>

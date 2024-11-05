@@ -42,9 +42,6 @@ public:
 	// returns a pointer to an existing font
 	virtual HFont GetFont(const char *fontName, bool proportional = false) = 0;
 
-	// inverse font lookup
-	//virtual char const *GetFontName( const HFont& font ) = 0;
-
 	// colors
 	virtual Color GetColor(const char *colorName, Color defaultColor) = 0;
 };
@@ -59,9 +56,6 @@ public:
 	// reloads the scheme from the file - should only be used during development
 	virtual void ReloadSchemes() = 0;
 
-	// reloads scheme fonts
-	//virtual void ReloadFonts() = 0;
-
 	// returns a handle to the default (first loaded) scheme
 	virtual HScheme GetDefaultScheme() = 0;
 
@@ -71,9 +65,6 @@ public:
 	// returns a pointer to an image
 	virtual IImage *GetImage( const char *imageName, bool hardwareFiltered ) = 0;
 	virtual HTexture GetImageID( const char *imageName, bool hardwareFiltered ) = 0;
-#ifdef _XBOX
-	virtual void DeleteImage( const char *pImageName ) = 0;
-#endif
 
 	// This can only be called at certain times, like during paint()
 	// It will assert-fail if you call it at the wrong time...
@@ -92,34 +83,10 @@ public:
 	virtual int GetProportionalNormalizedValue( int scaledValue ) = 0;
 };
 
-// GoldSrc: These are not available in GoldSrc and are wrappers for corresponding function above
-// GoldSrc: They were added for compatibility for existing code.
-class ISchemeManagerEx : public ISchemeManager
-{
-public:
-	// loads a scheme from a file
-	// first scheme loaded becomes the default scheme, and all subsequent loaded scheme are derivitives of that
-	[[deprecated]] virtual HScheme LoadSchemeFromFileEx(VPANEL sizingPanel, const char *fileName, const char *tag) = 0;
-
-	// gets the proportional coordinates for doing screen-size independant panel layouts
-	// use these for font, image and panel size scaling (they all use the pixel height of the display for scaling)
-	[[deprecated]] virtual int GetProportionalScaledValueEx(HScheme scheme, int normalizedValue) = 0;
-	[[deprecated]] virtual int GetProportionalNormalizedValueEx(HScheme scheme, int scaledValue) = 0;
-
-	// Path must be writable. See LoadSchemeFromFilePath in vgui/vgui_controls/controls.cpp.
-	virtual HScheme LoadSchemeFromFilePath(const char *fileName, const char *pathID, const char *tag) = 0;
-};
-
 /**
 *	Interface version used by GoldSource.
 */
 #define VGUI_SCHEME_INTERFACE_VERSION_GS "VGUI_Scheme009"
-
-/*
-*	Interface version used by Source 2006.
-*/
-//#define VGUI_SCHEME_INTERFACE_VERSION "VGUI_Scheme010"
-
 
 } // namespace vgui2
 

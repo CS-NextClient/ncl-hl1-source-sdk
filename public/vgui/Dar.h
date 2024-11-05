@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright ï¿½ 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: Holds the enumerated list of default cursors
 //
@@ -57,10 +57,10 @@ public:
 			return;
 
 		// quick check to see if it's already at the end
-		if ( Element( this->Count() - 1 ) == elem )
+		if ( this->Element( this->Count() - 1 ) == elem )
 			return;
 
-		int idx = Find( elem );
+		int idx = this->Find( elem );
 		if ( idx == this->InvalidIndex() )
 			return;
 
@@ -92,7 +92,7 @@ public:
 	// insert element at index and move all the others down 1
 	void InsertElementAt(ELEMTYPE elem,int index)
 	{
-		InsertBefore( index, elem );
+		this->InsertBefore( index, elem );
 	}
 	void SetElementAt(ELEMTYPE elem,int index)
 	{

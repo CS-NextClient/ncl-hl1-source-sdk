@@ -12,6 +12,9 @@
 #pragma once
 #endif
 
+#include <annotations.h>
+#include <cstddef>
+
 struct characterset_t;
 
 // Don't call this directly. You should (as long as your destination is an array) be

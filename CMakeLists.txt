@@ -152,6 +152,7 @@ find_package( vstdlib MODULE REQUIRED )
 #-----------------------------------------------------------------
 add_subdirectory( tier1 )
 add_subdirectory( tier2 )
+add_subdirectory( vgui2/src )
 add_subdirectory( vgui2/vgui_controls )
 add_subdirectory( mathlib )
 add_subdirectory( cef )
@@ -161,7 +162,7 @@ add_subdirectory( cef )
 #-----------------------------------------------------------------
 
 add_library(hl1_source_sdk_export STATIC
-		vgui2/src/SchemeEx.cpp
+		common/parsemsg.cpp
 		HLTV/common/mem.cpp
 		HLTV/common/BitBuffer.cpp
 		HLTV/common/byteorder.cpp

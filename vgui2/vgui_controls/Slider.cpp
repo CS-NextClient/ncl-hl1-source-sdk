@@ -13,8 +13,8 @@
 #include <vgui/IBorder.h>
 #include <vgui/IInputInternal.h>
 #include <vgui/ISystem.h>
-#include <vgui/IScheme.h>
-#include <vgui/ISurface.h>
+#include <vgui/ISchemeNext.h>
+#include <vgui/ISurfaceNext.h>
 #include <vgui/ILocalize.h>
 
 #include <vgui_controls/Slider.h>

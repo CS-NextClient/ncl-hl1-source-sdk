@@ -6,7 +6,7 @@
 
 #include "vgui_controls/MessageDialog.h"
 #include "vgui/ILocalize.h"
-#include "vgui/ISurface.h"
+#include "vgui/ISurfaceNext.h"
 
 // NOTE: This has to be the last file included!
 #include "tier0/memdbgon.h"

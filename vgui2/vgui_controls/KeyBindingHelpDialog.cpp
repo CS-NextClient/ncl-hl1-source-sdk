@@ -6,7 +6,7 @@
 
 #include "vgui_controls/KeyBindingHelpDialog.h"
 #include "vgui_controls/ListPanel.h"
-#include "vgui/ISurface.h"
+#include "vgui/ISurfaceNext.h"
 #include "vgui/IVGui.h"
 #include "vgui/ILocalize.h"
 #include "vgui/IInputInternal.h"

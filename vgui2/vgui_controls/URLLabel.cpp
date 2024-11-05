@@ -7,7 +7,7 @@
 
 #include <stdio.h>
 
-#include "vgui/ISurface.h"
+#include "vgui/ISurfaceNext.h"
 #include "vgui/ISystem.h"
 #include "vgui/MouseCode.h"
 #include "vgui/Cursor.h"

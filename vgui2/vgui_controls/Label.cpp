@@ -13,8 +13,8 @@
 #include <vgui/IInputInternal.h>
 #include <vgui/ILocalize.h>
 #include <vgui/IPanel.h>
-#include <vgui/ISurface.h>
-#include <vgui/IScheme.h>
+#include <vgui/ISurfaceNext.h>
+#include <vgui/ISchemeNext.h>
 #include <KeyValues.h>
 
 #include <vgui_controls/Label.h>

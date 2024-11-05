@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright ï¿½ 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -23,7 +23,9 @@ enum MouseCode
 	MOUSE_MIDDLE,
 	MOUSE_4,
 	MOUSE_5,
+
 	MOUSE_LAST,
+	MOUSE_COUNT = MOUSE_LAST
 };
 
 } // namespace vgui2

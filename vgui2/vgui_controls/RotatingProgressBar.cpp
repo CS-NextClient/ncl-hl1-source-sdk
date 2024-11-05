@@ -13,8 +13,8 @@
 
 #include <vgui/IVGui.h>
 #include <vgui/ILocalize.h>
-#include <vgui/IScheme.h>
-#include <vgui/ISurface.h>
+#include <vgui/ISchemeNext.h>
+#include <vgui/ISurfaceNext.h>
 #include <KeyValues.h>
 
 #include "mathlib/mathlib.h"

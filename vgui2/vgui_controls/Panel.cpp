@@ -17,8 +17,8 @@
 #include <vgui/IBorder.h>
 #include <vgui/IInputInternal.h>
 #include <vgui/IPanel.h>
-#include <vgui/IScheme.h>
-#include <vgui/ISurface.h>
+#include <vgui/ISchemeNext.h>
+#include <vgui/ISurfaceNext.h>
 #include <vgui/ISystem.h>
 #include <vgui/ILocalize.h>
 #include <vgui/IVGui.h>
@@ -1160,16 +1160,8 @@ void Panel::PaintTraverse( bool repaint, bool allowForce )
 		return;
 	}
 
-	float oldAlphaMultiplier = g_pVGuiSurface->DrawGetAlphaMultiplier();
+	float oldAlphaMultiplier = surface()->DrawGetAlphaMultiplier();
 	float newAlphaMultiplier = oldAlphaMultiplier * m_flAlpha * 1.0f/255.0f;
-
-	if ( IsXbox() && !newAlphaMultiplier )
-	{
-		// xbox optimization not suitable for pc
-		// xbox panels are compliant and can early out and not traverse their children
-		// when they have no opacity
-		return;
-	}
 
 	if ( !repaint &&
 		 allowForce &&
@@ -1203,7 +1195,7 @@ void Panel::PaintTraverse( bool repaint, bool allowForce )
 	}
 
 	// set global alpha
-    g_pVGuiSurface->DrawSetAlphaMultiplier( newAlphaMultiplier );
+    surface()->DrawSetAlphaMultiplier( newAlphaMultiplier );
 
 	// GoldSrc: border doesn't have that property
 #if 0
@@ -1308,7 +1300,7 @@ void Panel::PaintTraverse( bool repaint, bool allowForce )
 		}
 	}
 
-    g_pVGuiSurface->DrawSetAlphaMultiplier( oldAlphaMultiplier );
+    surface()->DrawSetAlphaMultiplier( oldAlphaMultiplier );
 
 	surface()->SwapBuffers( vpanel );
 

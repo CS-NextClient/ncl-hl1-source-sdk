@@ -12,6 +12,7 @@
 #pragma once
 #endif
 
+#include <steam/steamtypes.h>
 #include "htmlmessages.h"
 
 class CUtlString;

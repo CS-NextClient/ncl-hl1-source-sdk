@@ -6,8 +6,8 @@
 #pragma warning( disable : 4244 ) // conversion from 'double' to 'float', possible loss of data
 
 #include <tier0/platform.h>
-#include <vgui/IScheme.h>
-#include <vgui/ISurface.h>
+#include <vgui/ISchemeNext.h>
+#include <vgui/ISurfaceNext.h>
 #include <vgui/ISystem.h>
 #include <vgui/IVGui.h>
 #include <KeyValues.h>

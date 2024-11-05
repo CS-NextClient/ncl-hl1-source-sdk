@@ -1,4 +1,4 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//===== Copyright © 1996-2005, Valve Corporation, All rights reserved. ========//
 //
 // Purpose: 
 //
@@ -10,11 +10,13 @@
 #pragma once
 #endif
 
-#include <vgui/KeyCode.h>
+#include <vgui/keycode.h>
+
+void KeyCode_InitKeyTranslationTable();
 
 // Convert from Windows scan codes to VGUI key codes.
-vgui2::KeyCode KeyCode_VirtualKeyToVGUI( int key );
-int			  KeyCode_VGUIToVirtualKey( vgui2::KeyCode keycode );
+vgui2::KeyCode KeyCode_VirtualKeyToVGUI(int key);
+int KeyCode_VGUIToVirtualKey(vgui2::KeyCode keycode);
 
 
 #endif // VGUI_KEY_TRANSLATION_H

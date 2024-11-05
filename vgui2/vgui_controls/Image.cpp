@@ -7,7 +7,7 @@
 
 #include <Color.h>
 #include <vgui/IPanel.h>
-#include <vgui/ISurface.h>
+#include <vgui/ISurfaceNext.h>
 
 #include <vgui_controls/Image.h>
 #include <vgui_controls/Controls.h>

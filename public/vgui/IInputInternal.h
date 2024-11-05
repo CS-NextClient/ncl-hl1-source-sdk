@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright ï¿½ 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -18,7 +18,7 @@ namespace vgui2
 
 typedef int HInputContext;
 
-#define DEFAULT_INPUT_CONTEXT ((vgui::HInputContext)~0)
+#define DEFAULT_INPUT_CONTEXT ((vgui2::HInputContext)~0)
 
 class IInputInternal : public IInput
 {
@@ -55,7 +55,7 @@ public:
 	// to get the one normally used by VGUI
 	virtual void ActivateInputContext( HInputContext context ) = 0;
 
-	virtual VPANEL 	GetMouseCapture() = 0;
+	virtual VPANEL GetMouseCapture() = 0;
 
 	virtual bool IsChildOfModalPanel( VPANEL panel ) = 0;
 

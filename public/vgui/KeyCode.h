@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright ï¿½ 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -162,6 +162,7 @@ enum KeyCode
 	KEY_XSTICK2_RIGHT,
 
 	KEY_LAST,
+	KEY_CODE_COUNT = KEY_LAST
 };
 
 inline bool IsAlpha(KeyCode code)

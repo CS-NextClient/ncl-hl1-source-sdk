@@ -27,8 +27,8 @@
 #include "tier1/utldict.h"
 #include "tier1/utlstring.h"
 
-#include <vgui/IScheme.h>
-#include <vgui/ISurface.h>
+#include <vgui/ISchemeNext.h>
+#include <vgui/ISurfaceNext.h>
 #include <vgui/ISystem.h>
 #include <KeyValues.h>
 #include <vgui/IVGui.h>

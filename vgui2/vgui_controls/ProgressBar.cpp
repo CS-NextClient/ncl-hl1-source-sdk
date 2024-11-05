@@ -13,8 +13,8 @@
 #include <vgui_controls/Controls.h>
 
 #include <vgui/ILocalize.h>
-#include <vgui/IScheme.h>
-#include <vgui/ISurface.h>
+#include <vgui/ISchemeNext.h>
+#include <vgui/ISurfaceNext.h>
 #include <KeyValues.h>
 
 // memdbgon must be the last include file in a .cpp file!!!

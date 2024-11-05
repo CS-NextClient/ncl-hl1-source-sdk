@@ -13,7 +13,6 @@
 #endif
 
 #include "tier1/tier1.h"
-#include "SurfaceEx.h"
 
 //-----------------------------------------------------------------------------
 // Forward declarations
@@ -29,10 +28,11 @@ namespace vgui2
 {
 	class ISurface;
 	class IVGui;
+	class ISurfaceNext;
 	class IInputInternal;
 	class IPanel;
 	class ILocalize;
-	class ISchemeManager;
+	class ISchemeManagerNext;
 	class ISystem;
 }
 
@@ -47,12 +47,12 @@ extern IFileSystem *g_pFullFileSystem;
 extern IBaseUI *g_pBaseUI;
 extern IEngineVGui *g_pEngineVGui;
 extern IGameUIFuncs *g_pGameUIFuncs;
-extern SurfaceEx *g_pVGuiSurface;
+extern vgui2::ISurfaceNext *g_pVGuiSurface;
 extern vgui2::IInputInternal *g_pVGuiInput;
 extern vgui2::IVGui *g_pVGui;
 extern vgui2::IPanel *g_pVGuiPanel;
 extern vgui2::ILocalize *g_pVGuiLocalize;
-extern vgui2::ISchemeManager *g_pVGuiSchemeManager;
+extern vgui2::ISchemeManagerNext *g_pVGuiSchemeManager;
 extern vgui2::ISystem *g_pVGuiSystem;
 
 // These interfaces are exposed by GameUI.dll for the engine (hw.dll/sw.dll)
@@ -68,7 +68,7 @@ extern IGameUI *g_pGameUI;
 // Call this to connect to/disconnect from all tier 2 libraries.
 // It's up to the caller to check the globals it cares about to see if ones are missing
 //-----------------------------------------------------------------------------
-void ConnectTier2Libraries(CreateInterfaceFn *pFactoryList, int nFactoryCount, void* pMainWindow);
+void ConnectTier2Libraries(CreateInterfaceFn *pFactoryList, int nFactoryCount);
 void DisconnectTier2Libraries();
 
 // Use this to initialize KeyValues system without initialize tier2

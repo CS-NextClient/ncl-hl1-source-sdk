@@ -8,7 +8,7 @@
 #include "vgui_controls/ListPanel.h"
 #include "vgui_controls/Button.h"
 #include "vgui_controls/TextEntry.h"
-#include "vgui/ISurface.h"
+#include "vgui/ISurfaceNext.h"
 #include "vgui/IInputInternal.h"
 #include "vgui/IVGui.h"
 #include "vgui/ILocalize.h"

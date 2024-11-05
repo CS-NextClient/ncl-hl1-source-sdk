@@ -42,9 +42,8 @@ const char *GetControlsModuleName();
 
 class IPanel;
 class IInputInternal;
-class ISchemeManager;
-class ISchemeManagerEx;
-class ISurface;
+class ISchemeManagerNext;
+class ISurfaceNext;
 class ISystem;
 class IVGui;
 
@@ -60,11 +59,14 @@ inline vgui2::IInputInternal *input()
 	return g_pVGuiInput;
 }
 
-// #include <vgui/IScheme.h>
-vgui2::ISchemeManagerEx *scheme();
+// #include <vgui/ISchemeNext.h>
+inline vgui2::ISchemeManagerNext *scheme()
+{
+	return g_pVGuiSchemeManager;
+}
 
-// #include <vgui/ISurface.h>
-inline vgui2::ISurface *surface()
+// #include <vgui/ISurfaceNext.h>
+inline vgui2::ISurfaceNext *surface()
 {
 	return g_pVGuiSurface;
 }

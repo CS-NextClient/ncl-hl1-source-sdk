@@ -6,7 +6,7 @@
 
 #include "vgui_controls/subrectimage.h"
 #include "tier0/dbg.h"
-#include "vgui/ISurface.h"
+#include "vgui/ISurfaceNext.h"
 #include "vgui_controls/Controls.h"
 
 // NOTE: This has to be the last file included!

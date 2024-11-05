@@ -6,7 +6,7 @@
 //=============================================================================//
 
 #include "vgui_controls/ControllerMap.h"
-#include "vgui/ISurface.h"
+#include "vgui/ISurfaceNext.h"
 #include "vgui/KeyCode.h"
 #include "KeyValues.h"
 

@@ -10,10 +10,10 @@
 #define PROTECTED_THINGS_DISABLE
 
 #include <vgui/Cursor.h>
-#include <vgui/IScheme.h>
+#include <vgui/ISchemeNext.h>
 #include <vgui/IInputInternal.h>
 #include <vgui/IPanel.h>
-#include <vgui/ISurface.h>
+#include <vgui/ISurfaceNext.h>
 #include <vgui/KeyCode.h>
 #include <KeyValues.h>
 #include <vgui/MouseCode.h>

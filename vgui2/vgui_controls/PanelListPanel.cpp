@@ -7,8 +7,8 @@
 
 #include "vgui/MouseCode.h"
 #include "vgui/IInputInternal.h"
-#include "vgui/IScheme.h"
-#include "vgui/ISurface.h"
+#include "vgui/ISchemeNext.h"
+#include "vgui/ISurfaceNext.h"
 
 #include "vgui_controls/EditablePanel.h"
 #include "vgui_controls/ScrollBar.h"

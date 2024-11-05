@@ -5,7 +5,7 @@
 // $NoKeywords: $
 //=============================================================================//
 
-#include <vgui/ISurface.h>
+#include <vgui/ISurfaceNext.h>
 #include <KeyValues.h>
 #include <vgui/IInputInternal.h>
 

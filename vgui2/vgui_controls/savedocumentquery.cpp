@@ -8,7 +8,7 @@
 #include "vgui_controls/Button.h"
 #include "vgui_controls/Label.h"
 #include "vgui_controls/Frame.h"
-#include "vgui/ISurface.h"
+#include "vgui/ISurfaceNext.h"
 #include "vgui/IVGui.h"
 #include "tier1/KeyValues.h"
 

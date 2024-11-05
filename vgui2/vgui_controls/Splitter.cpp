@@ -5,7 +5,7 @@
 // $NoKeywords: $
 //===========================================================================//
 
-#include <vgui/IScheme.h>
+#include <vgui/ISchemeNext.h>
 #include <vgui/Cursor.h>
 #include <vgui/IInputInternal.h>
 #include <vgui_controls/Splitter.h>

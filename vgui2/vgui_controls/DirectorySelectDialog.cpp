@@ -15,7 +15,7 @@
 #include <vgui/Cursor.h>
 #include <KeyValues.h>
 #include <vgui/IInputInternal.h>
-#include <vgui/ISurface.h>
+#include <vgui/ISurfaceNext.h>
 #include <vgui/ISystem.h>
 #include <FileSystem.h>
 

@@ -7,7 +7,7 @@
 
 #include <assert.h>
 
-#include <vgui/ISurface.h>
+#include <vgui/ISurfaceNext.h>
 #include <vgui/IVGui.h>
 #include <vgui/IPanel.h>
 #include <vgui/VGUI2.h>

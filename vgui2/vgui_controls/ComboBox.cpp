@@ -10,8 +10,8 @@
 #include "vgui/Cursor.h"
 #include "vgui/IInputInternal.h"
 #include "vgui/ILocalize.h"
-#include "vgui/IScheme.h"
-#include "vgui/ISurface.h"
+#include "vgui/ISchemeNext.h"
+#include "vgui/ISurfaceNext.h"
 #include "vgui/IPanel.h"
 #include "KeyValues.h"
 

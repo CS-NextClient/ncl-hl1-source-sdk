@@ -4,7 +4,6 @@ set( VGUI_CONTROLS_HEADER_FILES
 	${SOURCE_SDK_ROOT}/public/Color.h
 	${SOURCE_SDK_ROOT}/public/FileSystem.h
 	${SOURCE_SDK_ROOT}/public/filesystem_helpers.h
-	${SOURCE_SDK_ROOT}/public/vgui_border.h
 	${SOURCE_SDK_ROOT}/public/tier0/memdbgoff.h
 	${SOURCE_SDK_ROOT}/public/tier0/memdbgon.h
 	${SOURCE_SDK_ROOT}/public/tier1/interface.h
@@ -100,7 +99,6 @@ set( VGUI_CONTROLS_SOURCE_FILES
 	${SOURCE_SDK_ROOT}/public/vgui_controls/vgui_controls.cpp
 	${SOURCE_SDK_ROOT}/vgui2/src/vgui_key_translation.cpp
 	${SOURCE_SDK_ROOT}/vgui2/src/vgui_border.cpp
-	${SOURCE_SDK_ROOT}/vgui2/src/ImageEx.cpp
 	${SOURCE_SDK_ROOT}/vgui2/src/lang_code.cpp
 	AnalogBar.cpp
 	AnimatingImagePanel.cpp

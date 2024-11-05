@@ -21,7 +21,7 @@
 #include "vgui_controls/KeyBindingMap.h"
 #endif
 #include "vgui/IClientPanel.h"
-#include "vgui/IScheme.h"
+#include "vgui/ISchemeNext.h"
 #include "vgui/IBorderEx.h"
 #include "vgui_controls/Controls.h"
 #include "vgui_controls/PHandle.h"

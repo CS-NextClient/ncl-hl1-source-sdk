@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//===== Copyright © 1996-2005, Valve Corporation, All rights reserved. ========//
 //
 // Purpose: Core implementation of vgui
 //
@@ -15,7 +15,7 @@
 //#include <vgui/vg.h>
 #include <vgui/IBorder.h>
 #include <vgui/IBorderEx.h>
-#include <vgui/IScheme.h>
+#include <vgui/ISchemeNext.h>
 #include <Color.h>
 
 class KeyValues;
@@ -43,7 +43,7 @@ namespace vgui2
         struct side_t
         {
             int count;
-            line_t *lines;
+            line_t* lines;
         };
 
         const int kBorderThickness = 1;
@@ -56,12 +56,12 @@ namespace vgui2
         void Paint(int x0, int y0, int x1, int y1) override;
         void Paint(int x0, int y0, int x1, int y1, int breakSide, int breakStart, int breakStop) override;
         void SetInset(int left, int top, int right, int bottom) override;
-        void GetInset(int &left, int &top, int &right, int &bottom) override;
+        void GetInset(int& left, int& top, int& right, int& bottom) override;
 
-        void ApplySchemeSettings(IScheme *pScheme, KeyValues *inResourceData) override;
+        void ApplySchemeSettings(IScheme* pScheme, KeyValues* inResourceData) override;
 
-        const char *GetName() override;
-        void SetName(const char *name) override;
+        const char* GetName() override;
+        void SetName(const char* name) override;
 
         backgroundtype_e GetBackgroundType() override;
         void SetBorderCornerTextures(int cornerBorderTexture1, int cornerBorderTexture2, int cornerBorderTexture3, int cornerBorderTexture4,
@@ -78,12 +78,12 @@ namespace vgui2
         void PaintCorner(Corner corner, int x, int y, int texture, int texture_half);
         void GetAdjustedLineOffset(const line_t* line, sides_e side, int& start_offset_out, int& end_offset_out);
 
-        void ParseSideSettings(int side_index, KeyValues *inResourceData, IScheme *pScheme);
+        void ParseSideSettings(int side_index, KeyValues* inResourceData, IScheme* pScheme);
 
         static void DrawTexture(int texture, int x, int y, Corner pivot);
 
-        char *_name;
-        side_t _sides[4];	// left, top, right, bottom
+        char* _name;
+        side_t _sides[4]; // left, top, right, bottom
         backgroundtype_e m_eBackgroundType;
         int _cornerBorderTexture1 = -1;
         int _cornerBorderTexture2 = -1;
@@ -97,7 +97,6 @@ namespace vgui2
 
         friend class VPanel;
     };
-
 } // namespace vgui2
 
 #endif // VGUI_BORDER_H

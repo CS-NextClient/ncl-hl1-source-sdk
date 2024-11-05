@@ -9,7 +9,7 @@
 #include <KeyValues.h>
 #include "vgui/IInputInternal.h"
 #include "vgui/MouseCode.h"
-#include "vgui/ISurface.h"
+#include "vgui/ISurfaceNext.h"
 
 #include <vgui_controls/ToolWindow.h>
 #include <vgui_controls/PropertySheet.h>

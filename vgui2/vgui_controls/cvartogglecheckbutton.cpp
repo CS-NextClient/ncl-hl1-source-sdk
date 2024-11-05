@@ -7,8 +7,8 @@
 
 #include "tier1/KeyValues.h"
 
-#include <vgui/ISurface.h>
-#include <vgui/IScheme.h>
+#include <vgui/ISurfaceNext.h>
+#include <vgui/ISchemeNext.h>
 #include <vgui_controls/cvartogglecheckbutton.h>
 
 // memdbgon must be the last include file in a .cpp file!!!

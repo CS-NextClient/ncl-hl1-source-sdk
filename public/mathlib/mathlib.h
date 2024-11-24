@@ -420,6 +420,19 @@ FORCEINLINE void VectorMA( const float * start, float scale, const float *direct
 	VectorMAInline(start, scale, direction, dest);
 }
 
+FORCEINLINE void VectorMA(const float * direction, float scale, float * dst)
+{
+	dst[0] += direction[0] * scale;
+	dst[1] += direction[1] * scale;
+	dst[2] += direction[2] * scale;
+}
+
+FORCEINLINE void VectorMA_2(const float * direction, float scale, float * dst)
+{
+	dst[0] += direction[0] * scale;
+	dst[1] += direction[1] * scale;
+	dst[2] -= direction[2] * scale;
+}
 
 int VectorCompare (const float *v1, const float *v2);
 
@@ -1799,6 +1812,24 @@ float AngleNormalizePositive( float angle );
 
 bool AnglesAreEqual( float a, float b, float tolerance = 0.0f );
 
+FORCEINLINE void AngleLerp(const float * a, const float * b, float t, float * dst)
+{
+	/* crappy but it's fast */
+	int i;
+	float dt;
+
+	for (i = 0; i < 3; i++)
+	{
+		dt = b[i] - a[i];
+
+		if (dt < -180)
+			dt += 360;
+		else if (dt > 180)
+			dt -= 360;
+
+		dst[i] = a[i] + t * dt;
+	}
+}
 
 void RotationDeltaAxisAngle( const QAngle &srcAngles, const QAngle &destAngles, Vector &deltaAxis, float &deltaAngle );
 void RotationDelta( const QAngle &srcAngles, const QAngle &destAngles, QAngle *out );

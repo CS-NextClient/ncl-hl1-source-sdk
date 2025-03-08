@@ -13,6 +13,7 @@
 #endif
 
 #include "tier0/platform.h"
+#include <winsock2.h>
 #undef SetPort
 
 typedef enum
@@ -29,6 +30,7 @@ typedef struct netadr_s
 {
 public:
 	netadr_s() { SetIP( 0 ); SetPort( 0 ); SetType( NA_IP ); }
+	// unIP & usPort must be in host bytes order
 	netadr_s( uint unIP, uint16 usPort ) { SetIP( unIP ); SetPort( usPort ); SetType( NA_IP ); }
 	netadr_s( const char *pch ) { SetFromString( pch ); }
 	void	Clear();	// invalids Address
@@ -46,9 +48,11 @@ public:
 	bool	CompareClassCAdr (const netadr_s &a) const;
 
 	netadrtype_t	GetType() const;
-	unsigned short	GetPort() const;
+	unsigned short	GetPortHostByteOrder() const;
+	unsigned short	GetPortNetworkByteOrder() const;
 	const char*		ToString( bool onlyBase = false ) const; // returns xxx.xxx.xxx.xxx:ppppp
 	void			ToSockadr(struct sockaddr *s) const;
+	sockaddr_in		ToSockadr() const;
 	unsigned int	GetIPHostByteOrder() const;
 	unsigned int	GetIPNetworkByteOrder() const;
 
@@ -60,8 +64,8 @@ public:
 	bool operator==(const netadr_s &netadr) const {return ( CompareAdr( netadr ) );}
 	bool operator<(const netadr_s &netadr) const;
 
-public:	// members are public to avoid to much changes
-
+private:
+	// ip & port stored in network bytes order
     netadrtype_t type;
     unsigned char ip[4];
     unsigned char ipx[10];

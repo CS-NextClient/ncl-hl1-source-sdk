@@ -15,7 +15,7 @@
 
 #if defined( _WIN32 ) && !defined( _X360 )
 #define WIN32_LEAN_AND_MEAN
-#include <winsock.h>
+#include <winsock2.h>
 typedef int socklen_t;
 #elif !defined( _X360 )
 #include <netinet/in.h> // ntohs()
@@ -174,7 +174,12 @@ netadrtype_t netadr_t::GetType() const
 	return type;
 }
 
-unsigned short netadr_t::GetPort() const
+unsigned short netadr_t::GetPortNetworkByteOrder() const
+{
+	return port;
+}
+
+unsigned short netadr_t::GetPortHostByteOrder() const
 {
 	return BigShort( port );
 }
@@ -212,6 +217,14 @@ void netadr_t::ToSockadr (struct sockaddr * s) const
 		((struct sockaddr_in*)s)->sin_port = port;
 		((struct sockaddr_in*)s)->sin_addr.s_addr = INADDR_LOOPBACK ;
 	}
+}
+
+sockaddr_in netadr_t::ToSockadr() const
+{
+	sockaddr_in addr{};
+	ToSockadr((sockaddr*)&addr);
+
+	return addr;
 }
 
 bool netadr_t::SetFromSockadr(const struct sockaddr * s)

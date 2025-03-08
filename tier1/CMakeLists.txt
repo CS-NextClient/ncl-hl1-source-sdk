@@ -132,6 +132,7 @@ target_include_directories( tier1 PRIVATE
 target_compile_definitions( tier1 PRIVATE
 	${SOURCE_SDK_DEFINES}
 	TIER1_STATIC_LIB
+	WIN32_LEAN_AND_MEAN
 )
 
 set_target_properties( tier1 PROPERTIES

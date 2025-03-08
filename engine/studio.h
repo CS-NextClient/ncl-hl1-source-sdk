@@ -141,7 +141,7 @@ typedef struct
 {
 	char				label[32];	// textual name
 	char				name[64];	// file name
-	int32				unused1;    // was "cache"  - index pointer
+	int				    unused1;    // was "cache"  - index pointer
 	int					unused2;    // was "data" -  hack for group 0
 } mstudioseqgroup_t;
 
@@ -301,14 +301,12 @@ typedef struct
 } mstudiomesh_t;
 
 // triangles
-#if 0
 typedef struct
 {
-	short				vertindex;		// index into vertex array
-	short				normindex;		// index into normal array
+	unsigned short		vertindex;		// index into vertex array
+	unsigned short		normindex;		// index into normal array
 	short				s,t;			// s,t position on skin
 } mstudiotrivert_t;
-#endif
 
 #define STUDIO_DYNAMIC_LIGHT		0x0100	// dynamically get lighting from floor or ceil (flying monsters)
 #define STUDIO_TRACE_HITBOX		0x0200	// always use hitbox trace instead of bbox

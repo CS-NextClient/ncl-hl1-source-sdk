@@ -339,6 +339,7 @@ void CInputWin32::SetMouseFocus(VPANEL newMouseFocus)
 
     pCtx->_oldMouseFocus = pCtx->_mouseOver;
     pCtx->_mouseOver = pNewMouseFocus;
+    pCtx->_mouseFocus = pNewMouseFocus;
 
     if (pCtx->_oldMouseFocus)
     {

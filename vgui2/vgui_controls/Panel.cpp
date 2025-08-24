@@ -6310,7 +6310,7 @@ public:
 			{
 				currentId = surface()->CreateNewTextureID();
 			}
-			DrawSetTextureFile( currentId, texturename, false, true );
+			DrawSetTextureFile( currentId, texturename, false, false );
 		}
 
 		*(int *)data = currentId;

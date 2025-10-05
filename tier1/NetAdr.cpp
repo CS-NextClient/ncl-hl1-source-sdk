@@ -105,7 +105,7 @@ bool netadr_t::IsReservedAdr () const
 
 const char * netadr_t::ToString(bool baseOnly) const
 {
-	static	char	s[64];
+	thread_local char s[64];
 
 	Q_strncpy (s, "unknown", sizeof( s ) );
 

@@ -35,9 +35,9 @@
 typedef struct cvar_s
 {
 	const char *name;
-	char	*string;
-	int		flags;
-	float	value;
+	char	   *string;
+	int		   flags;
+	float	   value;
 	struct cvar_s *next;
 } cvar_t;
 

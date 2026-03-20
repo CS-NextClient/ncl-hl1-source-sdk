@@ -840,7 +840,7 @@ typedef void (*PFN_MODULELOADED)(void);
 typedef void (*PFN_PROCESSOUTGOINGNET)(struct netchan_s *pchan, struct sizebuf_s *psizebuf);
 typedef qboolean (*PFN_PROCESSINCOMINGNET)(struct netchan_s *pchan, struct sizebuf_s *psizebuf);
 
-typedef void (*PFN_TEXTURELOAD)(char *pszName, int dxWidth, int dyHeight, char *pbData);
+typedef void (*PFN_TEXTURELOAD)(const char *pszName, int dxWidth, int dyHeight, char *pbData);
 typedef void (*PFN_MODELLOAD)(struct model_s *pmodel, void *pvBuf);
 
 typedef void (*PFN_FRAMEBEGIN)(void);

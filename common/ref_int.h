@@ -1,7 +1,5 @@
 #pragma once
 
-#include <GL/gl.h>
-
 typedef struct refdef_s
 {
     vrect_t vrect;
@@ -49,7 +47,7 @@ typedef struct
 
     void (*GL_BuildLightmaps)(void);
     void (*GL_Bind)(int texnum);
-    void (*GL_SelectTexture)(GLenum target);
+    void (*GL_SelectTexture)(unsigned int target);
     void (*GL_DisableMultitexture)(void);
     void (*GL_EnableMultitexture)(void);
     void (*GL_StudioDrawShadow)(void);

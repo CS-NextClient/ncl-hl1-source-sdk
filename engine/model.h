@@ -93,7 +93,7 @@ typedef struct texture_s
 	unsigned		width, height;
 
 #if !defined(SWDS) && !defined(HLTV)
-	int			gl_texturenum;
+	int			   gl_texturenum;
 	struct msurface_s *	texturechain;
 #endif
 
@@ -404,11 +404,11 @@ typedef struct skin_s
 	int gl_index;
 } skin_t;
 
-typedef struct cachepic_s
+typedef struct cacheentry_s
 {
 	char			name[64];
 	cache_user_t	cache;
-} cachepic_t;
+} cacheentry_t;
 
 typedef struct cachewad_s cachewad_t;
 
@@ -417,7 +417,7 @@ typedef void(*PFNCACHE)(cachewad_t *, unsigned char *);
 typedef struct cachewad_s
 {
 	char			*name;
-	cachepic_t		*cache;
+	cacheentry_t	*cache;
 	int				cacheCount;
 	int				cacheMax;
 	struct lumpinfo_s *lumps;

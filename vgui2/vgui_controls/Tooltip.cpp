@@ -225,6 +225,7 @@ TextTooltip::TextTooltip(Panel *parent, const char *text) : BaseTooltip( parent,
 	if (!s_TooltipWindow.Get())
 	{
 		s_TooltipWindow = new TextEntry(NULL, "tooltip");
+		s_TooltipWindow->SetAutoDelete(false);
 
  		s_TooltipWindow->InvalidateLayout(false, true);
 
@@ -233,21 +234,23 @@ TextTooltip::TextTooltip(Panel *parent, const char *text) : BaseTooltip( parent,
 		s_TooltipWindow->SetBgColor(s_TooltipWindow->GetSchemeColor("Tooltip.BgColor", s_TooltipWindow->GetBgColor(), pScheme));
 		s_TooltipWindow->SetFgColor(s_TooltipWindow->GetSchemeColor("Tooltip.TextColor", s_TooltipWindow->GetFgColor(), pScheme));
 		s_TooltipWindow->SetBorder(pScheme->GetBorder("ToolTipBorder"));
-		s_TooltipWindow->SetFont( pScheme->GetFont("DefaultSmall", s_TooltipWindow->IsProportional()));
+
+		HFont tooltipFont = pScheme->GetFont("TooltipFont", s_TooltipWindow->IsProportional());
+		if (!tooltipFont)
+		{
+		    tooltipFont = pScheme->GetFont("DefaultSmall", s_TooltipWindow->IsProportional());
+		}
+		s_TooltipWindow->SetFont(tooltipFont);
+
+		s_TooltipWindow->SetEditable(false);
+		s_TooltipWindow->SetMultiline(true);
+		s_TooltipWindow->SetVisible(false);
 	}
 	s_iTooltipWindowCount++;
 
-	// this line prevents the main window from losing focus
-	// when a tooltip pops up
 	s_TooltipWindow->MakePopup(false, true);
-	s_TooltipWindow->SetKeyBoardInputEnabled( false );
-	s_TooltipWindow->SetMouseInputEnabled( false );
-	
-	SetText(text);
-	s_TooltipWindow->SetText(m_Text.Base());
-	s_TooltipWindow->SetEditable(false);
-	s_TooltipWindow->SetMultiline(true);
-	s_TooltipWindow->SetVisible(false);
+	s_TooltipWindow->SetKeyBoardInputEnabled(false);
+	s_TooltipWindow->SetMouseInputEnabled(false);
 }
 
 
@@ -284,9 +287,14 @@ void TextTooltip::SetText(const char *text)
 //-----------------------------------------------------------------------------
 void TextTooltip::ApplySchemeSettings(IScheme *pScheme)
 {
-	if ( s_TooltipWindow )
+	if (s_TooltipWindow)
 	{
-		s_TooltipWindow->SetFont(pScheme->GetFont("DefaultSmall", s_TooltipWindow->IsProportional()));
+		HFont tooltipFont = pScheme->GetFont("TooltipFont", s_TooltipWindow->IsProportional());
+		if (!tooltipFont)
+		{
+		    tooltipFont = pScheme->GetFont("DefaultSmall", s_TooltipWindow->IsProportional());
+		}
+		s_TooltipWindow->SetFont(tooltipFont);
 	}
 }
 
@@ -295,26 +303,23 @@ void TextTooltip::ApplySchemeSettings(IScheme *pScheme)
 //-----------------------------------------------------------------------------
 void TextTooltip::ShowTooltip(Panel *currentPanel)
 {
-	if ( s_TooltipWindow.Get() )
-	{
-		int nLen = s_TooltipWindow->GetTextLength();
+    if (s_TooltipWindow.Get())
+    {
+        Panel *pCurrentParent = s_TooltipWindow->GetParent();
 
-		if ( nLen <= 0 )
-		{
-			// Empty tool tip, no need to show it
-			_makeVisible = false;
-			return;
-		}
+        _isDirty = _isDirty || pCurrentParent != currentPanel;
 
-		char *pBuf = (char*)_alloca( nLen+1 );
-		s_TooltipWindow->GetText( pBuf, nLen+1 );
-		Panel *pCurrentParent = s_TooltipWindow->GetParent();
+        s_TooltipWindow->SetText(m_Text.Base());
+        s_TooltipWindow->SetParent(currentPanel);
 
-		_isDirty = _isDirty || ( pCurrentParent != currentPanel );
-		s_TooltipWindow->SetText( m_Text.Base() );
-		s_TooltipWindow->SetParent(currentPanel);
-	}
-	BaseTooltip::ShowTooltip( currentPanel );
+        int nLen = s_TooltipWindow->GetTextLength();
+        if (nLen <= 0)
+        {
+            _makeVisible = false;
+            return;
+        }
+    }
+    BaseTooltip::ShowTooltip(currentPanel);
 }
 
 //-----------------------------------------------------------------------------
@@ -322,8 +327,14 @@ void TextTooltip::ShowTooltip(Panel *currentPanel)
 //-----------------------------------------------------------------------------
 void TextTooltip::PerformLayout()
 {
-	if ( !ShouldLayout() )
-		return;
+    if (!ShouldLayout())
+    {
+        if (s_TooltipWindow.Get() && s_TooltipWindow->IsVisible())
+        {
+            s_TooltipWindow->MoveToFront();
+        }
+        return;
+    }
 	// we're ready, just make us visible
 	if ( !s_TooltipWindow.Get() )
 		return;
@@ -340,6 +351,7 @@ void TextTooltip::PerformLayout()
 
 	SizeTextWindow();
 	PositionWindow( s_TooltipWindow );
+	s_TooltipWindow->MoveToFront();
 }
 
 //-----------------------------------------------------------------------------

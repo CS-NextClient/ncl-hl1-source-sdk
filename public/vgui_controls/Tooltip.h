@@ -43,6 +43,8 @@ public:
 	void SetTooltipDelay(int tooltipDelayMilliseconds);
 	int GetTooltipDelay();
 	void SetEnabled( bool bState );
+	void SetTooltipMaxWidth(int maxWidth);
+	void SetTooltipFormatToNoWrap();
 
 private:
 	Panel *m_pParent;
@@ -55,6 +57,8 @@ protected:
 	bool _displayOnOneLine : 1;
 	bool _isDirty : 1;
 	bool _enabled : 1;
+	bool _noWrap : 1;
+	int _maxWidth;
 };
 
 class TextTooltip : public BaseTooltip

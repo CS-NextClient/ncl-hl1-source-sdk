@@ -46,6 +46,8 @@ BaseTooltip::BaseTooltip(Panel *parent, const char *text)
 
 	_tooltipDelay = 500; // default delay for opening tooltips
 	_delay = 0;
+	_maxWidth = 0;
+	_noWrap = false;
 }
 
 //-----------------------------------------------------------------------------
@@ -105,6 +107,18 @@ void BaseTooltip::ShowTooltip(Panel *currentPanel)
 void BaseTooltip::SetEnabled( bool bState )
 {
 	_enabled = bState;
+}
+
+void BaseTooltip::SetTooltipMaxWidth(int maxWidth)
+{
+    _maxWidth = maxWidth;
+    _isDirty = true;
+}
+
+void BaseTooltip::SetTooltipFormatToNoWrap()
+{
+    _noWrap = true;
+    _isDirty = true;
 }
 
 //-----------------------------------------------------------------------------
@@ -368,6 +382,18 @@ void TextTooltip::SizeTextWindow()
 		s_TooltipWindow->SetMultiline(false);
 		s_TooltipWindow->SetToFullWidth();
 	}
+	else if (_noWrap || _maxWidth > 0)
+	{
+        int wide = s_TooltipWindow->GetLongestLineWidth();
+        if (_maxWidth > 0 && wide > _maxWidth)
+        {
+            wide = _maxWidth;
+        }
+
+        s_TooltipWindow->SetMultiline(true);
+        s_TooltipWindow->SetSize(wide, 24);
+        s_TooltipWindow->SetToFullHeight();
+	}
 	else
 	{
 		// We want the tool tip to be one line
@@ -398,9 +424,9 @@ void TextTooltip::SizeTextWindow()
 				s_TooltipWindow->GetSize( wide, tall );
 			}
 		}
-		s_TooltipWindow->GetSize( wide, tall );
-	//	ivgui()->DPrintf("End Ratio: %f\n", (float)wide/(float)tall);		
-	}
+        // s_TooltipWindow->GetSize( wide, tall );
+        // ivgui()->DPrintf("End Ratio: %f\n", (float)wide/(float)tall);
+    }
 }
 
 //-----------------------------------------------------------------------------

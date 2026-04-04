@@ -134,6 +134,7 @@ public:
 	virtual void Undo();
 	virtual void SaveUndoState();
 	virtual void SetFont(HFont font);
+	virtual HFont GetFont() const;
 	virtual void SetTextHidden(bool bHideText);
 	virtual void SetEditable(bool state);
 	virtual bool IsEditable();
@@ -178,6 +179,10 @@ public:
 	// sets the width of the window so all text is visible. (will create one line)
 	// used by tooltips
 	void SetToFullWidth();
+
+	// returns the pixel width of the longest line (split by \n), including padding.
+	// used by tooltips for no-wrap / max-width sizing.
+	int GetLongestLineWidth();
 
 	int GetNumLines();
 

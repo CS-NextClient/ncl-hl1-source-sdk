@@ -1439,6 +1439,3 @@ void Label::HandleAutoSizing( void )
 		SetSize(wide, GetTall());
 	}
 }
-
-
-

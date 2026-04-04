@@ -3691,6 +3691,11 @@ void TextEntry::SetFont(HFont font)
 	Repaint();
 }
 
+HFont TextEntry::GetFont() const
+{
+    return _font;
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Called when the scrollbar slider is moved
 //-----------------------------------------------------------------------------
@@ -3859,6 +3864,41 @@ void TextEntry::SetToFullWidth()
 	
 	SetSize (wide, tall);
 	PerformLayout();
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Returns the pixel width of the longest line (split by \n),
+//          including horizontal padding. Used by tooltips.
+//-----------------------------------------------------------------------------
+int TextEntry::GetLongestLineWidth()
+{
+    PerformLayout();
+
+    int longestLine = 0;
+    int currentLine = 0;
+
+    for (int i = 0; i < m_TextStream.Count(); ++i)
+    {
+        if (m_TextStream[i] == L'\n')
+        {
+            if (currentLine > longestLine)
+            {
+                longestLine = currentLine;
+            }
+            currentLine = 0;
+        }
+        else
+        {
+            currentLine += getCharWidth(_font, m_TextStream[i]);
+        }
+    }
+
+    if (currentLine > longestLine)
+    {
+        longestLine = currentLine;
+    }
+
+    return longestLine + 2 * DRAW_OFFSET_X;
 }
 
 //-----------------------------------------------------------------------------

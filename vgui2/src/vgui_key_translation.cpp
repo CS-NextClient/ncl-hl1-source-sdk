@@ -127,9 +127,9 @@ void KeyCode_InitKeyTranslationTable()
     s_pVirtualKeyToKeyCode[VK_F12] = vgui2::KEY_F12;
 
     // create reverse table engine to virtual
-    V_memset(s_pVirtualKeyToKeyCode, 0, sizeof(s_pVirtualKeyToKeyCode));
+    V_memset(s_pKeyCodeToVirtual, 0, sizeof(s_pKeyCodeToVirtual));
 
-    for (int i = 0; i < vgui2::KEY_LAST; i++)
+    for (int i = 0; i < (int)(sizeof(s_pVirtualKeyToKeyCode) / sizeof(s_pVirtualKeyToKeyCode[0])); i++)
     {
         s_pKeyCodeToVirtual[s_pVirtualKeyToKeyCode[i]] = i;
     }

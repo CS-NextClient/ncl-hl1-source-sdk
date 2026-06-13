@@ -87,9 +87,9 @@ class HTMLInterior : public Panel
 {
 	DECLARE_CLASS_SIMPLE( HTMLInterior, Panel );
 public:
-	HTMLInterior( HTML *parent ) : BaseClass( parent, "HTMLInterior" ) 
-	{ 	
-		m_pHTML = parent; 
+	HTMLInterior( HTML *parent ) : BaseClass( parent, "HTMLInterior" )
+	{
+		m_pHTML = parent;
 		SetPaintBackgroundEnabled( false );
 		SetKeyBoardInputEnabled( false );
 		SetMouseInputEnabled( false );
@@ -1161,7 +1161,7 @@ void HTML::OnKeyCodeTyped(KeyCode code)
 	default: break;
 	}
 
-	m_Serializer->KeyDown( KeyCode_VGUIToVirtualKey(code), GetKeyModifiers() );
+	m_Serializer->KeyDown( system()->KeyCode_VGUIToVirtualKey(code), GetKeyModifiers() );
 }
 
 //-----------------------------------------------------------------------------
@@ -1174,7 +1174,7 @@ void HTML::OnKeyCodeReleased(KeyCode code)
 		case KEY_RSHIFT:
 			return;
 	}
-	m_Serializer->KeyUp( KeyCode_VGUIToVirtualKey(code), GetKeyModifiers() );
+	m_Serializer->KeyUp( system()->KeyCode_VGUIToVirtualKey(code), GetKeyModifiers() );
 }
 
 

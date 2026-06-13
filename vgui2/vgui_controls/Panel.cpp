@@ -5920,17 +5920,6 @@ void Panel::SetKeyBoardInputEnabled( bool state )
 void Panel::SetMouseInputEnabled( bool state )
 {
 	ipanel()->SetMouseInputEnabled( GetVPanel(), state );
-
-	for (int i = 0; i < GetChildCount(); i++)
-	{
-		Panel *child = GetChild( i );
-		if ( !child )
-		{
-			continue;
-		}
-		child->SetMouseInputEnabled( state );
-	}
-
 	vgui2::surface()->CalculateMouseVisible();
 }
 

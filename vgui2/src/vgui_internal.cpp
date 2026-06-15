@@ -6,6 +6,7 @@
 //=============================================================================//
 
 #include "vgui_internal.h"
+#include "FontReplace.h"
 
 #include <vgui/ISurfaceNext.h>
 #include <vgui/ILocalize.h>
@@ -45,6 +46,8 @@ namespace vgui2
             Error("IVGui unable to connect to required interfaces!\n");
             return false;
         }
+
+        FontReplace_Install(g_pSurface);
 
         g_MainWindow = GetActiveWindow();
 

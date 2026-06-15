@@ -1,6 +1,8 @@
 project(vgui2)
 set(OUTPUT_NAME "vgui2")
 
+find_package(optic REQUIRED)
+
 add_library(${PROJECT_NAME} SHARED
         Bitmap.h
         Bitmap.cpp
@@ -10,6 +12,8 @@ add_library(${PROJECT_NAME} SHARED
         lang_code.cpp
         LocalizedStringTable.cpp
         SurfaceNext.cpp
+        FontReplace.h
+        FontReplace.cpp
         Scheme.cpp
         System.cpp
         vgui.cpp
@@ -31,6 +35,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         tier0
         tier1
         vstdlib
+        vgui2_surfacelib
+        optic::optic
 
         OpenGL::GL
         Imm32.lib
@@ -45,6 +51,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 target_compile_definitions(${PROJECT_NAME} PRIVATE
         ${SOURCE_SDK_DEFINES}
         NOMINMAX
+        USE_OPTICK=$<BOOL:${USE_PROFILER}>
 )
 
 target_compile_options(${PROJECT_NAME} PRIVATE

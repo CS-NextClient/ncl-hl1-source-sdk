@@ -23,6 +23,7 @@
 #include "vgui_border.h"
 #include "vgui_internal.h"
 #include "Bitmap.h"
+#include "FontManager.h"
 
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -745,16 +746,45 @@ void CScheme::ReloadFontGlyphs()
             }
             else
             {
-                // add the new set
+                const int fontWeight = fontdata->GetInt("weight");
+
                 g_pSurfaceNext->AddGlyphSetToFont(m_FontAliases[i]._font,
                                               fontdata->GetString("name"),
                                               tall,
-                                              fontdata->GetInt("weight"),
+                                              fontWeight,
                                               blur,
                                               scanlines,
                                               flags,
                                               0x0000,
                                               0xFFFF);
+
+                // fallback faces, tried in chain order: "fallbacks" { "1" face "2" face } or "fallback" face
+                if (KeyValues* fallbacks = fontdata->FindKey("fallbacks", false))
+                {
+                    for (KeyValues* fb = fallbacks->GetFirstValue(); fb != nullptr; fb = fb->GetNextValue())
+                    {
+                        const char* fallbackName = fb->GetString();
+                        if (fallbackName && *fallbackName)
+                        {
+                            g_pSurfaceNext->AddGlyphSetToFont(m_FontAliases[i]._font, fallbackName, tall, fontWeight, blur, scanlines, flags, 0x0000, 0xFFFF);
+                        }
+                    }
+                }
+                else
+                {
+                    const char* fallbackName = fontdata->GetString("fallback", "");
+                    if (*fallbackName)
+                    {
+                        g_pSurfaceNext->AddGlyphSetToFont(m_FontAliases[i]._font, fallbackName, tall, fontWeight, blur, scanlines, flags, 0x0000, 0xFFFF);
+                    }
+                }
+
+                // final fallback: the platform broad-coverage font, unless it already is the primary
+                const char* lastResort = FontManager().GetForeignFallbackFontName();
+                if (lastResort && *lastResort && stricmp(lastResort, fontdata->GetString("name")) != 0)
+                {
+                    g_pSurfaceNext->AddGlyphSetToFont(m_FontAliases[i]._font, lastResort, tall, fontWeight, blur, scanlines, flags, 0x0000, 0xFFFF);
+                }
             }
 
             // don't add any more

@@ -152,6 +152,7 @@ find_package( vstdlib MODULE REQUIRED )
 #-----------------------------------------------------------------
 add_subdirectory( tier1 )
 add_subdirectory( tier2 )
+add_subdirectory( vgui2/surfacelib )
 add_subdirectory( vgui2/src )
 add_subdirectory( vgui2/vgui_controls )
 add_subdirectory( mathlib )

@@ -1791,11 +1791,18 @@ void Panel::InternalCursorMoved(int x, int y)
 
 	if (m_pTooltips)
 	{
-		if ( _tooltipText )
+		if ( IsWithin( x, y ) )
 		{
-			m_pTooltips->SetText( _tooltipText );
+			if ( _tooltipText )
+			{
+				m_pTooltips->SetText( _tooltipText );
+			}
+			m_pTooltips->ShowTooltip(this);
 		}
-		m_pTooltips->ShowTooltip(this);
+		else
+		{
+			m_pTooltips->HideTooltip();
+		}
 	}
 
 	ScreenToLocal(x, y);

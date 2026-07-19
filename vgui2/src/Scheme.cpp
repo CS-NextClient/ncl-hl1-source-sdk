@@ -23,7 +23,6 @@
 #include "vgui_border.h"
 #include "vgui_internal.h"
 #include "Bitmap.h"
-#include "FontManager.h"
 
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -777,13 +776,6 @@ void CScheme::ReloadFontGlyphs()
                     {
                         g_pSurfaceNext->AddGlyphSetToFont(m_FontAliases[i]._font, fallbackName, tall, fontWeight, blur, scanlines, flags, 0x0000, 0xFFFF);
                     }
-                }
-
-                // final fallback: the platform broad-coverage font, unless it already is the primary
-                const char* lastResort = FontManager().GetForeignFallbackFontName();
-                if (lastResort && *lastResort && stricmp(lastResort, fontdata->GetString("name")) != 0)
-                {
-                    g_pSurfaceNext->AddGlyphSetToFont(m_FontAliases[i]._font, lastResort, tall, fontWeight, blur, scanlines, flags, 0x0000, 0xFFFF);
                 }
             }
 

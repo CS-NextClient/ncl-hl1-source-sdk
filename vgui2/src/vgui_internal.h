@@ -23,6 +23,8 @@ namespace vgui2
 
     extern IInputInternal* g_pInput;
     extern ISchemeManager* g_pScheme;
+    // The engine's surface. Everything draws through g_pSurfaceNext, this module's own
+    // implementation, which forwards here for everything but text.
     extern ISurface* g_pSurface;
     extern ISurfaceNext* g_pSurfaceNext;
     extern ISystem* g_pSystem;

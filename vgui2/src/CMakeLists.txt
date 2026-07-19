@@ -12,8 +12,6 @@ add_library(${PROJECT_NAME} SHARED
         lang_code.cpp
         LocalizedStringTable.cpp
         SurfaceNext.cpp
-        FontReplace.h
-        FontReplace.cpp
         Scheme.cpp
         System.cpp
         vgui.cpp
@@ -35,7 +33,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         tier0
         tier1
         vstdlib
-        vgui2_surfacelib
         optic::optic
 
         OpenGL::GL

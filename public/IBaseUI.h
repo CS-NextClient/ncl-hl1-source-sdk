@@ -2,9 +2,8 @@
 #define ENGINE_IBASEUI_H
 
 #include "interface.h"
-#include <vmodes.h>
-#include <quakedef.h>
-#include <APIProxy.h>
+
+typedef struct cl_enginefuncs_s cl_enginefunc_t;
 
 /**
 *	Interface to the engine's game UI controls.

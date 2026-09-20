@@ -28,9 +28,8 @@
 
 #pragma once
 
-#include "event_args.h"
-#include "vmodes.h"
-#include "cdll_int.h"
+#include <goldsrc/client_api.h>
+#include <goldsrc/event_api.h>
 
 class IBaseSystem;
 class ISystemModule;
@@ -46,8 +45,8 @@ public:
 	virtual char *GetCvarString(const char *szName) = 0;
 	virtual void SetCvar(const char *szName, const char *szValue) = 0;
 	virtual void Cbuf_AddText(const char *text) = 0;
-	virtual void DemoUpdateClientData(client_data_t *cdat) = 0;
-	virtual void CL_QueueEvent(int flags, int index, float delay, event_args_t *pargs) = 0;
+	virtual void DemoUpdateClientData(goldsrc::client_data_t* cdat) = 0;
+	virtual void CL_QueueEvent(int flags, int index, float delay, goldsrc::event_args_t* pargs) = 0;
 	virtual void HudWeaponAnim(int iAnim, int body) = 0;
 	virtual void CL_DemoPlaySound(int channel, const char *sample, float attenuation, float volume, int flags, int pitch) = 0;
 	virtual void ClientDLL_ReadDemoBuffer(int size, unsigned char *buffer) = 0;

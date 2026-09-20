@@ -26,14 +26,26 @@
 *
 */
 
+#include <cctype>
+#include <cstdarg>
+#include <cstdio>
+#include <cstdlib>
 #include <ctime>
 
 #include <steam/steamtypes.h>
 #include <basetypes.h>
 #include <mathlib/mathlib.h>
-#include <common.h>
+#include <goldsrc/types.h>
 #include <tier1/strtools.h>
-#include <port.h>
+
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
+namespace
+{
+	constexpr int kComTokenLen = 1024;
+}
 
 static const char *date = __DATE__;
 static const char *mon[12] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
@@ -264,8 +276,8 @@ char *COM_FileExtension(char *in)
 #endif // #ifdef HLTV_FIXES
 }
 
-char com_token[COM_TOKEN_LEN];
-qboolean s_com_token_unget = FALSE;
+char com_token[kComTokenLen];
+goldsrc::qboolean s_com_token_unget = FALSE;
 
 void COM_UngetToken()
 {
@@ -326,7 +338,7 @@ skipwhite:
 				return data;
 			}
 
-			if (!c || len == COM_TOKEN_LEN - 1) // check if buffer is full
+			if (!c || len == kComTokenLen - 1) // check if buffer is full
 			{
 				com_token[len] = 0;
 				return data;
@@ -355,7 +367,7 @@ skipwhite:
 			if (c == '{' || c == '}' || c == ')' || c == '(' || c == '\'' || c == ',')
 				break;
 		}
-		while (len < COM_TOKEN_LEN - 1 && (c < 0 || c > 32));
+		while (len < kComTokenLen - 1 && (c < 0 || c > 32));
 	}
 
 	com_token[len] = '\0';
@@ -531,7 +543,7 @@ unsigned int COM_PackRGBA(unsigned char r, unsigned char g, unsigned char b, uns
 	return (a << 24) | (r << 16) | (g << 8) | b;
 }
 
-void NORETURN HLTV_SysError(const char *fmt, ...)
+[[noreturn]] void HLTV_SysError(const char *fmt, ...)
 {
 	va_list argptr;
 	static char string[8192];

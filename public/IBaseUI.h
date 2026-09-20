@@ -1,9 +1,9 @@
 #ifndef ENGINE_IBASEUI_H
 #define ENGINE_IBASEUI_H
 
-#include "interface.h"
+#include <goldsrc/fwd.h>
 
-typedef struct cl_enginefuncs_s cl_enginefunc_t;
+#include "interface.h"
 
 /**
 *	Interface to the engine's game UI controls.
@@ -23,7 +23,7 @@ public:
 	/**
 	*	Sets up the game UI.
 	*/
-	virtual void Start( cl_enginefunc_t* pEngfuncs, int iVersion ) = 0;
+	virtual void Start( goldsrc::cl_enginefunc_t* pEngfuncs, int iVersion ) = 0;
 
 	/**
 	*	Shuts down the UI. Unloads libraries used by the UI.

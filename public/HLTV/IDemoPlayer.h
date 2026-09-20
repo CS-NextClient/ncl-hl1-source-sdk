@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "ref_params.h"
+#include <goldsrc/view.h>
 
 class IWorld;
 class IProxy;
@@ -85,7 +85,7 @@ public:
 	virtual bool LoadGame(const char *filename) = 0;
 	virtual void Stop() = 0;
 	virtual void ForceHLTV(bool state) = 0;
-	virtual void GetDemoViewInfo(ref_params_t *rp, float *view, int *viewmodel) = 0;
+	virtual void GetDemoViewInfo(goldsrc::ref_params_t* rp, float* view, int* viewmodel) = 0;
 	virtual int ReadDemoMessage(unsigned char *buffer, int size) = 0;
 	virtual void ReadNetchanState(int *incoming_sequence, int *incoming_acknowledged, int *incoming_reliable_acknowledged, int *incoming_reliable_sequence, int *outgoing_sequence, int *reliable_sequence, int *last_reliable_sequence) = 0;
 };

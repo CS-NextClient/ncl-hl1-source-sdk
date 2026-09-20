@@ -176,6 +176,7 @@ target_include_directories(hl1_source_sdk_export PUBLIC
 )
 
 target_link_libraries(hl1_source_sdk_export PUBLIC
+		goldsrc::abi
 		vgui_controls
 		${STEAM_API_LIBRARIES}
 		tier2

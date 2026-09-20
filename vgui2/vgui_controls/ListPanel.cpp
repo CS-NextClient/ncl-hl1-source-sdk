@@ -39,7 +39,9 @@ using namespace vgui2;
 
 enum 
 {
-	WINDOW_BORDER_WIDTH=2 // the width of the window's border
+	WINDOW_BORDER_WIDTH=2, // the width of the window's border
+	CELL_CONTENT_INSET=2, // cell content starts this far into its column
+	HEADER_ORIGIN_X=-1 // x of the first column header
 };
 
 #include <iostream>
@@ -730,8 +732,9 @@ void ListPanel::SetColumnTextAlignment( int col, int align )
 void ListPanel::SetColumnHeaderImage(int column, int imageListIndex)
 {
 	Assert(m_pImageList);
-	m_ColumnsData[m_CurrentColumns[column]].m_pHeader->SetTextImageIndex(-1);
-	m_ColumnsData[m_CurrentColumns[column]].m_pHeader->SetImageAtIndex(0, m_pImageList->GetImage(imageListIndex), 0);
+	Button *pHeader = m_ColumnsData[m_CurrentColumns[column]].m_pHeader;
+	pHeader->SetTextImageIndex(-1);
+	pHeader->SetImageAtIndex(0, m_pImageList->GetImage(imageListIndex), CELL_CONTENT_INSET);
 }
 
 //-----------------------------------------------------------------------------
@@ -1626,6 +1629,14 @@ Panel *ListPanel::GetCellRenderer(int itemID, int col)
 		}
 
 		IImage *pIImage = GetCellImage(itemID, col);
+
+		// the renderer is shared with the text cells: drop their text slot and any extra
+		// image slot so only this image takes part in the column alignment
+		m_pLabel->SetTextImageIndex(-1);
+		for (int i = 1; i < m_pLabel->GetImageCount(); i++)
+		{
+			m_pLabel->SetImageAtIndex(i, NULL, 0);
+		}
 		m_pLabel->SetImageAtIndex(0, pIImage, 0);
 
 		return m_pLabel;
@@ -1763,7 +1774,7 @@ void ListPanel::PerformLayout()
 	for ( int iLoopSanityCheck=0; iLoopSanityCheck < 1000; iLoopSanityCheck++ )
 	{
 		// try and place headers as is - before we have to force items to be minimum width
-		int x = -1;
+		int x = HEADER_ORIGIN_X;
 		int i;
 		for ( i = 0; i < nColumns; i++)
 		{
@@ -1925,7 +1936,7 @@ void ListPanel::PerformLayout()
 					 j == m_iEditModeColumn )
 				{
 
-					m_hEditModePanel->SetPos( x + m_iTableStartX + 2, (drawcount * m_iRowHeight) + m_iTableStartY);
+					m_hEditModePanel->SetPos( x + m_iTableStartX + CELL_CONTENT_INSET, (drawcount * m_iRowHeight) + m_iTableStartY);
 					m_hEditModePanel->SetSize( wide, m_iRowHeight - 1 );
 
 					bDone = true;
@@ -1991,6 +2002,8 @@ void ListPanel::Paint()
 	int drawcount = 0;
 	for (int i = nStartItem; i < nTotalRows && !bDone; i++)
 	{
+		// cells deliberately sit one pixel right of the headers (laid out from HEADER_ORIGIN_X):
+		// content that lines up with the header exactly is perceived as shifted, this reads straighter
 		int x = 0;
 		if (!m_VisibleItems.IsValidIndex(i))
 			continue;
@@ -2019,7 +2032,7 @@ void ListPanel::Paint()
 				{
 					render->SetVisible(true);
 				}
-				int xpos = x + m_iTableStartX + 2;
+				int xpos = x + m_iTableStartX + CELL_CONTENT_INSET;
 
 				render->SetPos( xpos, (drawcount * m_iRowHeight) + m_iTableStartY);
 
@@ -2047,7 +2060,7 @@ void ListPanel::Paint()
 				char tempText[256];
 				// Grab cell text
 				GetCellText(i, j, tempText, sizeof(tempText));
-				surface()->DrawSetTextPos(x + m_iTableStartX + 2, (drawcount * m_iRowHeight) + m_iTableStartY);
+				surface()->DrawSetTextPos(x + m_iTableStartX + CELL_CONTENT_INSET, (drawcount * m_iRowHeight) + m_iTableStartY);
 
 				for (const char *pText = tempText; *pText != 0; pText++)
 				{
@@ -2587,16 +2600,26 @@ bool ListPanel::GetCellBounds( int row, int col, int& x, int& y, int& wide, int&
 	y += ( row - startitem ) * m_iRowHeight;
 	tall = m_iRowHeight;
 
+	Panel *header = m_ColumnsData[m_CurrentColumns[col]].m_pHeader;
+	if ( !header->IsVisible() )
+	{
+		return false;
+	}
+
 	// Compute column cell
 	x = m_iTableStartX;
 	// walk columns
 	int c = 0;
 	while ( c < col)
 	{
-		x += m_ColumnsData[m_CurrentColumns[c]].m_pHeader->GetWide();
+		Panel *columnHeader = m_ColumnsData[m_CurrentColumns[c]].m_pHeader;
+		if ( columnHeader->IsVisible() )
+		{
+			x += columnHeader->GetWide();
+		}
 		c++;
 	}
-	wide = m_ColumnsData[m_CurrentColumns[c]].m_pHeader->GetWide();
+	wide = header->GetWide();
 
 	return true;
 }
@@ -2629,7 +2652,13 @@ bool ListPanel::GetCellAtPos(int x, int y, int &row, int &col)
 		int startx = 0;
 		for ( col = 0 ; col < m_CurrentColumns.Count() ; col++ )
 		{
-			startx += m_ColumnsData[m_CurrentColumns[col]].m_pHeader->GetWide();
+			Panel *header = m_ColumnsData[m_CurrentColumns[col]].m_pHeader;
+			if ( !header->IsVisible() )
+			{
+				continue;
+			}
+
+			startx += header->GetWide();
 
 			if ( x < startx )
 				break;
@@ -3150,6 +3179,22 @@ void ListPanel::OnToggleColumnVisible(int col)
 	SetColumnVisible(col, column.m_bHidden);
 }
 
+// Settings are keyed by column name so a build with another column set or order neither reads nor overwrites them;
+// a column without a name keeps the index form
+static void ColumnConfigKey( Panel *header, int columnIndex, const char *setting, char *out, int outLen )
+{
+	const char *columnName = header->GetName();
+
+	if ( columnName[0] )
+	{
+		V_snprintf( out, outLen, "%s_%s", columnName, setting );
+	}
+	else
+	{
+		V_snprintf( out, outLen, "%d_%s", columnIndex, setting );
+	}
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: sets user settings
 //-----------------------------------------------------------------------------
@@ -3170,11 +3215,12 @@ void ListPanel::ApplyUserConfigSettings(KeyValues *userConfig)
 	//      so it pushes out any COLUMN_RESIZEWITHWINDOW columns to their max extent and shrinks everything else to its min extent.
 	m_lastBarWidth = userConfig->GetInt( "lastBarWidth", 0 );
 	
-	// read which columns are hidden
 	for ( int i = 0; i < m_CurrentColumns.Count(); i++ )
 	{
+		column_t &column = m_ColumnsData[m_CurrentColumns[i]];
+
 		char name[64];
-		_snprintf(name, sizeof(name), "%d_hidden", i);
+		ColumnConfigKey( column.m_pHeader, i, "hidden", name, sizeof(name) );
 
 		int hidden = userConfig->GetInt(name, -1);
 		if (hidden == 0)
@@ -3186,11 +3232,17 @@ void ListPanel::ApplyUserConfigSettings(KeyValues *userConfig)
 			SetColumnVisible(i, false);
 		}
 
-		_snprintf(name, sizeof(name), "%d_width", i);
+		// a fixed-width column keeps its built-in width
+		if ( column.m_iMinWidth == column.m_iMaxWidth )
+		{
+			continue;
+		}
+
+		ColumnConfigKey( column.m_pHeader, i, "width", name, sizeof(name) );
+
 		int nWidth = userConfig->GetInt( name, -1 );
 		if ( nWidth >= 0 )
 		{
-			column_t &column = m_ColumnsData[m_CurrentColumns[i]];
 			column.m_pHeader->SetWide( nWidth );
 		}
 	}
@@ -3205,19 +3257,33 @@ void ListPanel::GetUserConfigSettings(KeyValues *userConfig)
 	{
 		userConfig->SetInt( "configVersion", m_nUserConfigFileVersion );
 	}
+	else
+	{
+		// a version key left by an earlier layout of this list would reject these settings forever
+		KeyValues *staleVersion = userConfig->FindKey( "configVersion" );
+		if ( staleVersion )
+		{
+			userConfig->RemoveSubKey( staleVersion );
+			staleVersion->deleteThis();
+		}
+	}
 
 	userConfig->SetInt( "lastBarWidth", m_lastBarWidth );
 
-	// save which columns are hidden
 	for ( int i = 0 ; i < m_CurrentColumns.Count() ; i++ )
 	{
 		column_t &column = m_ColumnsData[m_CurrentColumns[i]];
 
 		char name[64];
-		_snprintf(name, sizeof(name), "%d_hidden", i);
+		ColumnConfigKey( column.m_pHeader, i, "hidden", name, sizeof(name) );
 		userConfig->SetInt(name, column.m_bHidden ? 1 : 0);
 
-		_snprintf(name, sizeof(name), "%d_width", i);
+		if ( column.m_iMinWidth == column.m_iMaxWidth )
+		{
+			continue;
+		}
+
+		ColumnConfigKey( column.m_pHeader, i, "width", name, sizeof(name) );
 		userConfig->SetInt( name, column.m_pHeader->GetWide() );
 	}
 }

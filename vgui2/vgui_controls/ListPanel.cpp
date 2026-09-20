@@ -1710,6 +1710,23 @@ void ListPanel::PerformLayout()
 		}
 	}
 
+	// The slack between the columns and the scroll bar goes to the first column that grows with the window, so
+	// that a wide list widens the content column instead of whichever column happens to sit last. A set without
+	// such a column, and a column drag, keep the old rule: the last column reaches the scroll bar.
+	int fillColumnIndex = lastColumnIndex;
+	if ( m_iColumnDraggerMoved == -1 )
+	{
+		for ( int i = 0; i < nColumns; i++ )
+		{
+			column_t &column = m_ColumnsData[m_CurrentColumns[i]];
+			if ( !column.m_bHidden && column.m_bResizesWithWindow )
+			{
+				fillColumnIndex = i;
+				break;
+			}
+		}
+	}
+
 	bool bForceShrink = false;
 	if ( numToResize == 0 )
 	{
@@ -1773,6 +1790,19 @@ void ListPanel::PerformLayout()
 	// This was a while(1) loop and we hit an infinite loop case, so now we max out the # of times it can loop.
 	for ( int iLoopSanityCheck=0; iLoopSanityCheck < 1000; iLoopSanityCheck++ )
 	{
+		// width the columns behind the fill column take below, so that it can end exactly where they start
+		int trailingWidth = 0;
+		for ( int j = fillColumnIndex + 1; j < nColumns; j++ )
+		{
+			column_t &trailing = m_ColumnsData[m_CurrentColumns[j]];
+			if ( trailing.m_bHidden )
+			{
+				continue;
+			}
+
+			trailingWidth += trailing.m_pHeader->GetWide() + ( trailing.m_bResizesWithWindow ? dxPerBar : 0 );
+		}
+
 		// try and place headers as is - before we have to force items to be minimum width
 		int x = HEADER_ORIGIN_X;
 		int i;
@@ -1798,10 +1828,14 @@ void ListPanel::PerformLayout()
 			int hWide = header->GetWide();
 
 			// calculate the column's width
-			// make it so the last column always attaches to the scroll bar
-			if ( i == lastColumnIndex )
+			// make it so the columns always reach the scroll bar
+			if ( i == fillColumnIndex )
 			{
-				hWide = buttonMaxXPos-x; 
+				hWide = buttonMaxXPos - x - trailingWidth;
+				if ( hWide < column.m_iMinWidth && !bForceShrink )
+				{
+					hWide = column.m_iMinWidth;
+				}
 			}
 			else if (i == m_iColumnDraggerMoved ) // column resizing using dragger
 			{

@@ -357,7 +357,7 @@ void CInputWin32::SetMouseFocus(VPANEL newMouseFocus)
     if (pNewMouseFocus)
     {
         if (!pCtx->_mouseCapture ||
-            pCtx->_mouseCapture->HasParent(pCtx->_mouseCapture))
+            pNewMouseFocus->HasParent(pCtx->_mouseCapture))
         {
             g_pIVgui->PostMessage(
                 VPanelToHandle(pCtx->_mouseOver),

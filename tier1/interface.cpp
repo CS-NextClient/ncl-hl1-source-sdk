@@ -28,7 +28,6 @@
 
 #include "interface.h"
 #include "platform.h"
-#include "port.h"
 #include <cstring>
 #include <iostream>
 #ifdef _WIN32

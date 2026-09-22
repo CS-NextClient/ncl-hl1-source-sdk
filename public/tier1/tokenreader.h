@@ -21,7 +21,7 @@
 #undef min
 #undef max
 #include <fstream>
-#include <MinMax.h>
+#include "tier0/minmax.h"
 
 #ifdef _WIN32
 #pragma warning(pop)

@@ -12,7 +12,7 @@
 #include <cwchar>
 #include "wchartypes.h"
 #include "basetypes.h"
-#include "osconfig.h"
+#include "tier0/compiler.h"
 #include "tier0/valve_off.h"
 
 #ifdef _WIN32

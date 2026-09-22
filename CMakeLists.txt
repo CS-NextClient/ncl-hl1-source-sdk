@@ -89,9 +89,6 @@ else()
 	set( STEAM_API_LIBRARIES
 		steam_api
 	)
-	set ( STEAM_API_DEFINES
-		NO_HLSDK_ARCHTYPES
-	)
 
 	# Links client with a steam_api.dll with less symbols.
 	# Allows client.dll run on HL with old engine (but SteamAPI won't work).
@@ -123,17 +120,12 @@ endif()
 set( SOURCE_SDK_INCLUDE_PATHS
 	${SOURCE_SDK_INCLUDE_PATHS}
 	${CMAKE_CURRENT_SOURCE_DIR}/HLTV
-	${CMAKE_CURRENT_SOURCE_DIR}/common
-	${CMAKE_CURRENT_SOURCE_DIR}/dlls
 	${CMAKE_CURRENT_SOURCE_DIR}/public
 	${CMAKE_CURRENT_SOURCE_DIR}/public/tier0
 	${CMAKE_CURRENT_SOURCE_DIR}/public/tier1
 	${CMAKE_CURRENT_SOURCE_DIR}/public/cl_dll
 	${CMAKE_CURRENT_SOURCE_DIR}/public/HLTV
 	${CMAKE_CURRENT_SOURCE_DIR}/public/html
-	${CMAKE_CURRENT_SOURCE_DIR}/engine
-	${CMAKE_CURRENT_SOURCE_DIR}/game_shared
-	${CMAKE_CURRENT_SOURCE_DIR}/pm_shared
 	${CMAKE_CURRENT_SOURCE_DIR}/cef
 	${CMAKE_CURRENT_SOURCE_DIR}/cef/include
 	${OPENGL_INCLUDE_DIR}
@@ -162,7 +154,6 @@ add_subdirectory( cef )
 #-----------------------------------------------------------------
 
 add_library(hl1_source_sdk_export STATIC
-		common/parsemsg.cpp
 		HLTV/common/mem.cpp
 		HLTV/common/BitBuffer.cpp
 		HLTV/common/byteorder.cpp

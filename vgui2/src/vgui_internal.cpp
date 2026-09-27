@@ -6,14 +6,19 @@
 //=============================================================================//
 
 #include "vgui_internal.h"
-#include "FontReplace.h"
+
+#ifdef _WIN32
+    #include "FontReplace.h"
+#endif
 
 #include <vgui/ISurfaceNext.h>
 #include <vgui/ILocalize.h>
 #include <vgui/IPanel.h>
 #include <FileSystem.h>
 
-#include <Windows.h>
+#ifdef _WIN32
+    #include <Windows.h>
+#endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -47,9 +52,11 @@ namespace vgui2
             return false;
         }
 
+#ifdef _WIN32
         FontReplace_Install(g_pSurface);
 
         g_MainWindow = GetActiveWindow();
+#endif
 
         return true;
     }

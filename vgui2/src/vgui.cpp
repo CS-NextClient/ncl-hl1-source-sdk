@@ -6,7 +6,9 @@
 //===========================================================================//
 
 #define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+#ifdef _WIN32
+    #include <windows.h>
+#endif
 #undef PostMessage
 #undef GetCursorPos
 
@@ -21,7 +23,7 @@
 #include <vgui/ISchemeNext.h>
 #include <KeyValues.h>
 #include <string.h>
-#include <Assert.h>
+#include <assert.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <malloc.h>
@@ -835,6 +837,15 @@ void CVGui::ClearMessageQueues()
     }
 }
 
+static void DebugOutput(const char* text)
+{
+#ifdef _WIN32
+    ::OutputDebugString(text);
+#else
+    fputs(text, stderr);
+#endif
+}
+
 void CVGui::DPrintf(const char* format, ...)
 {
     char buf[2048];
@@ -844,7 +855,7 @@ void CVGui::DPrintf(const char* format, ...)
     Q_vsnprintf(buf, sizeof(buf), format, argList);
     va_end(argList);
 
-    ::OutputDebugString(buf);
+    DebugOutput(buf);
 }
 
 void CVGui::DPrintf2(const char* format, ...)
@@ -859,7 +870,7 @@ void CVGui::DPrintf2(const char* format, ...)
     Q_vsnprintf(buf + strlen(buf), sizeof(buf) - strlen(buf), format, argList);
     va_end(argList);
 
-    ::OutputDebugString(buf);
+    DebugOutput(buf);
 }
 
 void vgui2::vgui_strcpy(char* dst, int dstLen, const char* src)

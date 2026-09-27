@@ -6,9 +6,11 @@
 //===========================================================================//
 
 
-#include <windows.h>
-#include <imm.h>
-#undef PostMessage
+#ifdef _WIN32
+    #include <windows.h>
+    #include <imm.h>
+    #undef PostMessage
+#endif
 
 #include <string.h>
 

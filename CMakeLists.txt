@@ -152,7 +152,10 @@ find_package( vstdlib MODULE REQUIRED )
 #-----------------------------------------------------------------
 add_subdirectory( tier1 )
 add_subdirectory( tier2 )
-add_subdirectory( vgui2/surfacelib )
+if( WIN32 )
+	# the Win32 font backend; on Linux vgui2 leaves text to the engine's surface
+	add_subdirectory( vgui2/surfacelib )
+endif()
 add_subdirectory( vgui2/src )
 add_subdirectory( vgui2/vgui_controls )
 add_subdirectory( mathlib )

@@ -12,8 +12,6 @@ add_library(${PROJECT_NAME} SHARED
         lang_code.cpp
         LocalizedStringTable.cpp
         SurfaceNext.cpp
-        FontReplace.h
-        FontReplace.cpp
         Scheme.cpp
         System.cpp
         vgui.cpp
@@ -30,19 +28,36 @@ add_library(${PROJECT_NAME} SHARED
         ${SOURCE_SDK_ROOT}/public/filesystem_helpers.cpp
 )
 
+if (WIN32)
+    target_sources(${PROJECT_NAME} PRIVATE
+            FontReplace.h
+            FontReplace.cpp
+    )
+endif ()
+
 target_link_libraries(${PROJECT_NAME} PRIVATE
         steam_api
         tier0
         tier1
         vstdlib
-        vgui2_surfacelib
         optic::optic
 
         OpenGL::GL
-        Imm32.lib
-        Winmm.dll
-        Shlwapi.lib
 )
+
+if (WIN32)
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+            vgui2_surfacelib
+            Imm32.lib
+            Winmm.dll
+            Shlwapi.lib
+    )
+else ()
+    # Text on Linux is left to the engine's own surface (fontconfig/FreeType),
+    # so no surfacelib here; SDL is the engine's, for the window and clipboard
+    find_package(SDL2 REQUIRED)
+    target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2)
+endif ()
 
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${SOURCE_SDK_INCLUDE_PATHS}
@@ -56,10 +71,15 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
 
 target_compile_options(${PROJECT_NAME} PRIVATE
         ${SOURCE_SDK_WARNING_LEVEL}
-        /EHsc # NEVER catch SEH exceptions; c functions cannot throw exceptions
 )
 
-if (CMAKE_BUILD_TYPE MATCHES Release)
+if (MSVC)
+    target_compile_options(${PROJECT_NAME} PRIVATE
+            /EHsc # NEVER catch SEH exceptions; c functions cannot throw exceptions
+    )
+endif ()
+
+if (MSVC AND CMAKE_BUILD_TYPE MATCHES Release)
     target_compile_options(${PROJECT_NAME} PRIVATE
             /Zi # enables PDB generation
             /O2 # enables maximize speed optimizations
@@ -73,9 +93,15 @@ if (CMAKE_BUILD_TYPE MATCHES Release)
     )
 endif()
 
+if (WIN32)
+    set(OUTPUT_SUFFIX ".dll")
+else ()
+    set(OUTPUT_SUFFIX ".so")
+endif ()
+
 set_target_properties(${PROJECT_NAME} PROPERTIES
         PREFIX ""
         OUTPUT_NAME ${OUTPUT_NAME}
-        SUFFIX ".dll"
+        SUFFIX ${OUTPUT_SUFFIX}
         PDB_NAME ${OUTPUT_NAME}
 )

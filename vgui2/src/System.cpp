@@ -17,6 +17,7 @@
     #include <cstddef> // the vendored SDL 2.0.0 headers expect size_t to be there already
     #include <SDL_clipboard.h>
     #include <algorithm>
+    #include <dlfcn.h>
     #include <spawn.h>
     #include <sys/statvfs.h>
     #include <sys/wait.h>
@@ -766,6 +767,55 @@ namespace
         }
     }
 
+    // SDL 2.0.0 announces the clipboard to the X server only when it doesn't own it yet, so
+    // from the second copy on nothing says the text changed, and whatever caches the text on
+    // that announcement (the compositor behind XWayland, clipboard managers) keeps handing
+    // out the first copy. Giving the ownership up first makes SDL announce every copy. libX11
+    // is loaded the way SDL loads it, so the build needs no X11 development files.
+    void DropClipboardOwnership()
+    {
+        using Display = struct _XDisplay;
+        using XOpenDisplayFn = Display* (*)(const char*);
+        using XInternAtomFn = unsigned long (*)(Display*, const char*, int);
+        using XSetSelectionOwnerFn = int (*)(Display*, unsigned long, unsigned long, unsigned long);
+        using XSyncFn = int (*)(Display*, int);
+
+        static bool loaded = false;
+        static Display* display = nullptr;
+        static unsigned long clipboard = 0;
+        static XSetSelectionOwnerFn set_selection_owner = nullptr;
+        static XSyncFn sync = nullptr;
+
+        if (!loaded)
+        {
+            loaded = true;
+
+            void* x11 = dlopen("libX11.so.6", RTLD_LAZY | RTLD_LOCAL);
+            if (!x11)
+                return;
+
+            auto open_display = reinterpret_cast<XOpenDisplayFn>(dlsym(x11, "XOpenDisplay"));
+            auto intern_atom = reinterpret_cast<XInternAtomFn>(dlsym(x11, "XInternAtom"));
+            set_selection_owner = reinterpret_cast<XSetSelectionOwnerFn>(dlsym(x11, "XSetSelectionOwner"));
+            sync = reinterpret_cast<XSyncFn>(dlsym(x11, "XSync"));
+
+            if (!open_display || !intern_atom || !set_selection_owner || !sync)
+                return;
+
+            // a connection of our own: SDL's isn't reachable from here
+            display = open_display(nullptr);
+            if (display)
+                clipboard = intern_atom(display, "CLIPBOARD", 0);
+        }
+
+        if (!display || !clipboard)
+            return;
+
+        // owner None at CurrentTime; the sync makes sure the server has it before SDL asks
+        set_selection_owner(display, clipboard, 0, 0);
+        sync(display, 0);
+    }
+
     // The clipboard is UTF-8 on the SDL side and UTF-32 wchar_t on ours
     std::unique_ptr<wchar_t[]> GetClipboardWide(int& len)
     {
@@ -808,6 +858,7 @@ void CSystem::SetClipboardText(const char* text, int textLen)
     CUtlVector<char> buf;
     buf.SetCount(textLen + 1);
     V_strncpy(buf.Base(), text, textLen + 1);
+    DropClipboardOwnership();
     SDL_SetClipboardText(buf.Base());
 }
 
@@ -824,6 +875,7 @@ void CSystem::SetClipboardText(const wchar_t* text, int textLen)
     CUtlVector<char> utf8;
     utf8.SetCount(textLen * 4 + 1);
     V_UnicodeToUTF8(wide.Base(), utf8.Base(), utf8.Count());
+    DropClipboardOwnership();
     SDL_SetClipboardText(utf8.Base());
 }
 

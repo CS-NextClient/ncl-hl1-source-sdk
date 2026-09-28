@@ -56,7 +56,7 @@ else ()
     # Text on Linux is left to the engine's own surface (fontconfig/FreeType),
     # so no surfacelib here; SDL is the engine's, for the window and clipboard
     find_package(SDL2 REQUIRED)
-    target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2)
+    target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2 ${CMAKE_DL_LIBS})
 endif ()
 
 target_include_directories(${PROJECT_NAME} PRIVATE

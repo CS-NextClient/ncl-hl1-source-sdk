@@ -65,6 +65,15 @@ static wchar_t* Utf16LEToWide(const uint16_t* units, int count)
     return result;
 }
 
+static void WriteUtf16LE(FileHandle_t file, const wchar_t* str)
+{
+    for (int i = 0; str[i] != 0; i++)
+    {
+        uint16_t small = (uint16_t)str[i];
+        g_pFullFileSystem->Write(&small, 2, file);
+    }
+}
+
 //-----------------------------------------------------------------------------
 //
 // Internal implementation
@@ -357,14 +366,7 @@ bool CLocalizedStringTable::SaveToFile(IFileSystem* fileSystem, const char* szFi
     if (!strLength)
         return false;
 
-    g_pFullFileSystem->Write(unicodeString, wcslen(unicodeString) * sizeof(wchar_t), file);
-
-    // convert our spacing characters to unicode
-    //	wchar_t unicodeSpace = L' ';
-    wchar_t unicodeQuote = L'\"';
-    wchar_t unicodeCR = L'\r';
-    wchar_t unicodeNewline = L'\n';
-    wchar_t unicodeTab = L'\t';
+    WriteUtf16LE(file, unicodeString);
 
     // write out all the key/value pairs
     for (StringIndex_t idx = GetFirstStringIndex(); idx != INVALID_STRING_INDEX; idx = GetNextStringIndex(idx))
@@ -379,27 +381,26 @@ bool CLocalizedStringTable::SaveToFile(IFileSystem* fileSystem, const char* szFi
         // convert the name to a unicode string
         ConvertANSIToUnicode(name, unicodeString, sizeof(unicodeString));
 
-        g_pFullFileSystem->Write(&unicodeTab, sizeof(wchar_t), file);
+        WriteUtf16LE(file, L"\t");
 
         // write out
-        g_pFullFileSystem->Write(&unicodeQuote, sizeof(wchar_t), file);
-        g_pFullFileSystem->Write(unicodeString, wcslen(unicodeString) * sizeof(wchar_t), file);
-        g_pFullFileSystem->Write(&unicodeQuote, sizeof(wchar_t), file);
+        WriteUtf16LE(file, L"\"");
+        WriteUtf16LE(file, unicodeString);
+        WriteUtf16LE(file, L"\"");
 
-        g_pFullFileSystem->Write(&unicodeTab, sizeof(wchar_t), file);
-        g_pFullFileSystem->Write(&unicodeTab, sizeof(wchar_t), file);
+        WriteUtf16LE(file, L"\t");
+        WriteUtf16LE(file, L"\t");
 
-        g_pFullFileSystem->Write(&unicodeQuote, sizeof(wchar_t), file);
-        g_pFullFileSystem->Write(value, wcslen(value) * sizeof(wchar_t), file);
-        g_pFullFileSystem->Write(&unicodeQuote, sizeof(wchar_t), file);
+        WriteUtf16LE(file, L"\"");
+        WriteUtf16LE(file, value);
+        WriteUtf16LE(file, L"\"");
 
-        g_pFullFileSystem->Write(&unicodeCR, sizeof(wchar_t), file);
-        g_pFullFileSystem->Write(&unicodeNewline, sizeof(wchar_t), file);
+        WriteUtf16LE(file, L"\r\n");
     }
 
     // write end string
-    strLength = ConvertANSIToUnicode(endStr, unicodeString, sizeof(unicodeString));
-    g_pFullFileSystem->Write(unicodeString, strLength * sizeof(wchar_t), file);
+    ConvertANSIToUnicode(endStr, unicodeString, sizeof(unicodeString));
+    WriteUtf16LE(file, unicodeString);
 
     g_pFullFileSystem->Close(file);
     return true;

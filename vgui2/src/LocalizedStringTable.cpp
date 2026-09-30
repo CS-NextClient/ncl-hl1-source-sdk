@@ -69,7 +69,7 @@ static void WriteUtf16LE(FileHandle_t file, const wchar_t* str)
 {
     for (int i = 0; str[i] != 0; i++)
     {
-        uint16_t small = (uint16_t)str[i];
+        uint16_t unit = (uint16_t)str[i];
         g_pFullFileSystem->Write(&small, 2, file);
     }
 }

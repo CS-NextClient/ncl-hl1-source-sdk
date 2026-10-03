@@ -1,5 +1,9 @@
-#include <Windows.h>
-#include <GL/GL.h>
+#ifdef _WIN32
+    #include <Windows.h>
+    #include <GL/GL.h>
+#else
+    #include <GL/gl.h>
+#endif
 
 #include <vgui/ISurfaceNext.h>
 #include <Color.h>

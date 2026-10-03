@@ -19,8 +19,8 @@
 #include <vgui_controls/FileOpenDialog.h>
 #include <vgui_controls/TextEntry.h>
 #include <html/ihtmlchrome.h>
-#include <tier1/UtlMap.h>
-#include <tier1/UtlString.h>
+#include <tier1/utlmap.h>
+#include <tier1/utlstring.h>
 #include <string>
 #include <vector>
 

@@ -14,7 +14,7 @@
 #endif
 
 
-#include "bitmap/imageformat.h"
+#include "bitmap/ImageFormat.h"
 
 
 //-----------------------------------------------------------------------------

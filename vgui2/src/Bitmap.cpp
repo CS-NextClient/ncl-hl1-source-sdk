@@ -11,7 +11,7 @@
 #include <vgui/ISurfaceNext.h>
 #include "Bitmap.h"
 #include "vgui_internal.h"
-#include "UtlBuffer.h"
+#include "utlbuffer.h"
 #include <tier0/dbg.h>
 
 // memdbgon must be the last include file in a .cpp file!!!

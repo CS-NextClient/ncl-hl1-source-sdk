@@ -125,7 +125,6 @@ set( VGUI_CONTROLS_SOURCE_FILES
 	FocusNavGroup.cpp
 	Frame.cpp
 	GraphPanel.cpp
-	HTML.cpp
 	Image.cpp
 	ImageList.cpp
 	ImagePanel.cpp
@@ -175,6 +174,10 @@ set( VGUI_CONTROLS_SOURCE_FILES
 	URLLabel.cpp
 	WizardPanel.cpp
 	WizardSubPanel.cpp)
+
+if ( WIN32 )
+	list( APPEND VGUI_CONTROLS_SOURCE_FILES HTML.cpp )
+endif()
 
 add_library( vgui_controls STATIC
 	${VGUI_CONTROLS_HEADER_FILES}

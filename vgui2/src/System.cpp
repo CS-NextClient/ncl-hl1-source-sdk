@@ -6,12 +6,25 @@
 //=============================================================================//
 
 
-#define WIN32_LEAN_AND_MEAN
-#define OEMRESOURCE
-#include <windows.h>
-#include <shellapi.h>
-#include <shlwapi.h>
-#include <shlobj.h>
+#ifdef _WIN32
+    #define WIN32_LEAN_AND_MEAN
+    #define OEMRESOURCE
+    #include <windows.h>
+    #include <shellapi.h>
+    #include <shlwapi.h>
+    #include <shlobj.h>
+#else
+    #include <cstddef> // the vendored SDL 2.0.0 headers expect size_t to be there already
+    #include <SDL_clipboard.h>
+    #include <algorithm>
+    #include <dlfcn.h>
+    #include <spawn.h>
+    #include <sys/statvfs.h>
+    #include <sys/wait.h>
+    #include <unistd.h>
+    #include <ctime>
+    #include <memory>
+#endif
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -41,18 +54,22 @@
 #include <vgui/IInputInternal.h>
 #include <vgui/ISurfaceNext.h>
 #include "tier0/vcrmode.h"
+#include "tier0/icommandline.h"
+#include <tier1/strtools.h>
+#include <utlvector.h>
 #include "FileSystem.h"
 
 #include "vgui_internal.h"
 #include "filesystem_helpers.h"
 #include "vgui_key_translation.h"
-#include "filesystem.h"
+#include "FileSystem.h"
 
 #define PROTECTED_THINGS_DISABLE
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
 
 
+#ifdef _WIN32
 //////////////////////////////////////////////////////////////////////////
 //
 // Service Windows routines
@@ -116,6 +133,8 @@ static HWND GetMainApplicationWindowHWND()
     return NULL;
 }
 
+
+#endif
 
 //////////////////////////////////////////////////////////////////////////
 //
@@ -189,8 +208,8 @@ public:
 private:
     // auto-away data
     bool m_bStaticWatchForComputerUse;
-    HHOOK m_hStaticKeyboardHook;
-    HHOOK m_hStaticMouseHook;
+    void* m_hStaticKeyboardHook;
+    void* m_hStaticMouseHook;
     double m_StaticLastComputerUseTime;
     int m_iStaticMouseOldX, m_iStaticMouseOldY;
 
@@ -290,6 +309,8 @@ long CSystem::GetTimeMillis()
 {
     return (long)(GetCurrentTime() * 1000);
 }
+
+#ifdef _WIN32
 
 void CSystem::ShellExecute(const char* command, const char* file)
 {
@@ -727,6 +748,218 @@ bool CSystem::DeleteRegistryKey(const char* key)
     return false;
 }
 
+#else
+
+namespace
+{
+    // No shell verbs on Linux: every command ends up as "open with the default app"
+    void OpenWithDefaultApp(const char* file)
+    {
+        if (!file || !*file)
+            return;
+
+        char* argv[] = { const_cast<char*>("xdg-open"), const_cast<char*>(file), nullptr };
+        pid_t pid;
+        if (posix_spawnp(&pid, "xdg-open", nullptr, nullptr, argv, environ) == 0)
+        {
+            // xdg-open returns as soon as it has handed the file over, so this doesn't block for long
+            waitpid(pid, nullptr, 0);
+        }
+    }
+
+    // SDL 2.0.0 announces the clipboard to the X server only when it doesn't own it yet, so
+    // from the second copy on nothing says the text changed, and whatever caches the text on
+    // that announcement (the compositor behind XWayland, clipboard managers) keeps handing
+    // out the first copy. Giving the ownership up first makes SDL announce every copy. libX11
+    // is loaded the way SDL loads it, so the build needs no X11 development files.
+    void DropClipboardOwnership()
+    {
+        using Display = struct _XDisplay;
+        using XOpenDisplayFn = Display* (*)(const char*);
+        using XInternAtomFn = unsigned long (*)(Display*, const char*, int);
+        using XSetSelectionOwnerFn = int (*)(Display*, unsigned long, unsigned long, unsigned long);
+        using XSyncFn = int (*)(Display*, int);
+
+        static bool loaded = false;
+        static Display* display = nullptr;
+        static unsigned long clipboard = 0;
+        static XSetSelectionOwnerFn set_selection_owner = nullptr;
+        static XSyncFn sync = nullptr;
+
+        if (!loaded)
+        {
+            loaded = true;
+
+            void* x11 = dlopen("libX11.so.6", RTLD_LAZY | RTLD_LOCAL);
+            if (!x11)
+                return;
+
+            auto open_display = reinterpret_cast<XOpenDisplayFn>(dlsym(x11, "XOpenDisplay"));
+            auto intern_atom = reinterpret_cast<XInternAtomFn>(dlsym(x11, "XInternAtom"));
+            set_selection_owner = reinterpret_cast<XSetSelectionOwnerFn>(dlsym(x11, "XSetSelectionOwner"));
+            sync = reinterpret_cast<XSyncFn>(dlsym(x11, "XSync"));
+
+            if (!open_display || !intern_atom || !set_selection_owner || !sync)
+                return;
+
+            // a connection of our own: SDL's isn't reachable from here
+            display = open_display(nullptr);
+            if (display)
+                clipboard = intern_atom(display, "CLIPBOARD", 0);
+        }
+
+        if (!display || !clipboard)
+            return;
+
+        // owner None at CurrentTime; the sync makes sure the server has it before SDL asks
+        set_selection_owner(display, clipboard, 0, 0);
+        sync(display, 0);
+    }
+
+    // The clipboard is UTF-8 on the SDL side and UTF-32 wchar_t on ours
+    std::unique_ptr<wchar_t[]> GetClipboardWide(int& len)
+    {
+        len = 0;
+
+        char* utf8 = SDL_GetClipboardText();
+        if (!utf8)
+            return nullptr;
+
+        // a UTF-8 string never has fewer bytes than code points
+        int capacity = V_strlen(utf8) + 1;
+        auto wide = std::make_unique<wchar_t[]>(capacity);
+        V_UTF8ToUnicode(utf8, wide.get(), capacity * sizeof(wchar_t));
+        SDL_free(utf8);
+
+        len = V_wcslen(wide.get());
+        return wide;
+    }
+}
+
+void CSystem::ShellExecute(const char* command, const char* file)
+{
+    OpenWithDefaultApp(file);
+}
+
+void CSystem::ShellExecuteEx(const char* command, const char* file, const char* pParams)
+{
+    OpenWithDefaultApp(file);
+}
+
+void CSystem::SetClipboardImage(void* pWnd, int x1, int y1, int x2, int y2)
+{
+}
+
+void CSystem::SetClipboardText(const char* text, int textLen)
+{
+    if (!text || textLen <= 0)
+        return;
+
+    CUtlVector<char> buf;
+    buf.SetCount(textLen + 1);
+    V_strncpy(buf.Base(), text, textLen + 1);
+    DropClipboardOwnership();
+    SDL_SetClipboardText(buf.Base());
+}
+
+void CSystem::SetClipboardText(const wchar_t* text, int textLen)
+{
+    if (!text || textLen <= 0)
+        return;
+
+    CUtlVector<wchar_t> wide;
+    wide.SetCount(textLen + 1);
+    V_wcsncpy(wide.Base(), text, (textLen + 1) * sizeof(wchar_t));
+
+    // worst case of 4 UTF-8 bytes per code point
+    CUtlVector<char> utf8;
+    utf8.SetCount(textLen * 4 + 1);
+    V_UnicodeToUTF8(wide.Base(), utf8.Base(), utf8.Count());
+    DropClipboardOwnership();
+    SDL_SetClipboardText(utf8.Base());
+}
+
+int CSystem::GetClipboardTextCount()
+{
+    int len;
+    GetClipboardWide(len);
+    return len > 0 ? len + 1 : 0;
+}
+
+int CSystem::GetClipboardText(int offset, char* buf, int bufLen)
+{
+    if (!buf || bufLen <= 0)
+        return 0;
+
+    char* utf8 = SDL_GetClipboardText();
+    if (!utf8)
+        return 0;
+
+    int count = V_strlen(utf8) + 1 - offset;
+    if (count <= 0)
+    {
+        count = 0;
+    }
+    else
+    {
+        count = std::min(count, bufLen);
+        memcpy(buf, utf8 + offset, count);
+    }
+
+    SDL_free(utf8);
+    return count;
+}
+
+// bufLen is in bytes and the result in characters, same as the Windows version
+int CSystem::GetClipboardText(int offset, wchar_t* buf, int bufLen)
+{
+    if (!buf || bufLen <= 0)
+        return 0;
+
+    int len;
+    auto wide = GetClipboardWide(len);
+
+    int count = len - offset;
+    if (count <= 0)
+        return 0;
+
+    count = std::min(count, bufLen / (int)sizeof(wchar_t));
+    memcpy(buf, wide.get() + offset, count * sizeof(wchar_t));
+    return count;
+}
+
+// The registry is a Windows thing; hw.so keeps its own settings in registry.vdf
+// and nothing on the vgui2 side needs persisting on Linux yet
+bool CSystem::SetRegistryString(const char* key, const char* value)
+{
+    return false;
+}
+
+bool CSystem::GetRegistryString(const char* key, char* value, int valueLen)
+{
+    if (value && valueLen > 0)
+        value[0] = 0;
+
+    return false;
+}
+
+bool CSystem::SetRegistryInteger(const char* key, int value)
+{
+    return false;
+}
+
+bool CSystem::GetRegistryInteger(const char* key, int& value)
+{
+    return false;
+}
+
+bool CSystem::DeleteRegistryKey(const char* key)
+{
+    return false;
+}
+
+#endif
+
 //-----------------------------------------------------------------------------
 // Purpose: sets whether or not the app watches for global computer use
 //-----------------------------------------------------------------------------
@@ -762,6 +995,7 @@ double CSystem::GetTimeSinceLastUse()
     return 0.0f;
 }
 
+#ifdef _WIN32
 //-----------------------------------------------------------------------------
 // Purpose: Get the drives a user has available on thier system
 //-----------------------------------------------------------------------------
@@ -791,6 +1025,31 @@ double CSystem::GetFreeDiskSpace(const char* path)
     }
     return 0.0;
 }
+
+#else
+
+int CSystem::GetAvailableDrives(char* buf, int bufLen)
+{
+    // same layout as GetLogicalDriveStrings: NUL-separated, double-NUL terminated
+    if (!buf || bufLen < 3)
+        return 0;
+
+    buf[0] = '/';
+    buf[1] = 0;
+    buf[2] = 0;
+    return 2;
+}
+
+double CSystem::GetFreeDiskSpace(const char* path)
+{
+    struct statvfs stats;
+    if (statvfs(path, &stats) != 0)
+        return 0.0;
+
+    return (double)stats.f_bavail * stats.f_frsize;
+}
+
+#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: user config
@@ -876,7 +1135,11 @@ bool CSystem::GetCommandLineParamValue(const char* paramName, char* value, int v
 //-----------------------------------------------------------------------------
 const char* CSystem::GetFullCommandLine()
 {
+#ifdef _WIN32
     return VCRHook_GetCommandLine();
+#else
+    return CommandLine()->GetCmdLine();
+#endif
 }
 
 
@@ -908,6 +1171,7 @@ const char* CSystem::GetAllUserStartMenuFolderPath()
     return nullptr;
 }
 
+#ifdef _WIN32
 //-----------------------------------------------------------------------------
 // Purpose: returns the current local time and date
 //-----------------------------------------------------------------------------
@@ -1110,3 +1374,61 @@ const char* CSystem::GetDesktopFolderPath()
 
     return NULL;
 }
+
+#else
+
+bool CSystem::GetCurrentTimeAndDate(int* year, int* month, int* dayOfWeek, int* day, int* hour, int* minute, int* second)
+{
+    time_t now = time(nullptr);
+    tm local;
+    if (!localtime_r(&now, &local))
+        return false;
+
+    if (year)
+        *year = local.tm_year + 1900;
+    if (month)
+        *month = local.tm_mon + 1;
+    if (dayOfWeek)
+        *dayOfWeek = local.tm_wday;
+    if (day)
+        *day = local.tm_mday;
+    if (hour)
+        *hour = local.tm_hour;
+    if (minute)
+        *minute = local.tm_min;
+    if (second)
+        *second = local.tm_sec;
+    return true;
+}
+
+// .lnk shortcuts don't exist on Linux
+bool CSystem::CreateShortcut(const char* linkFileName, const char* targetPath, const char* arguments, const char* workingDirectory, const char* iconFile)
+{
+    return false;
+}
+
+bool CSystem::GetShortcutTarget(const char* linkFileName, char* targetPath, char* arguments, int destBufferSizes)
+{
+    targetPath[0] = 0;
+    arguments[0] = 0;
+    return false;
+}
+
+bool CSystem::ModifyShortcutTarget(const char* linkFileName, const char* targetPath, const char* arguments, const char* workingDirectory)
+{
+    return false;
+}
+
+const char* CSystem::GetDesktopFolderPath()
+{
+    static char folderPath[MAX_PATH];
+
+    const char* home = getenv("HOME");
+    if (!home)
+        return NULL;
+
+    V_snprintf(folderPath, sizeof(folderPath), "%s/Desktop", home);
+    return folderPath;
+}
+
+#endif

@@ -32,10 +32,15 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
 
 target_compile_options(${PROJECT_NAME} PRIVATE
         ${SOURCE_SDK_WARNING_LEVEL}
-        /EHsc # NEVER catch SEH exceptions; c functions cannot throw exceptions
 )
 
-if (CMAKE_BUILD_TYPE MATCHES Release)
+if (MSVC)
+    target_compile_options(${PROJECT_NAME} PRIVATE
+            /EHsc # NEVER catch SEH exceptions; c functions cannot throw exceptions
+    )
+endif ()
+
+if (MSVC AND CMAKE_BUILD_TYPE MATCHES Release)
     target_compile_options(${PROJECT_NAME} PRIVATE
             /Zi # enables PDB generation
             /O2 # enables maximize speed optimizations

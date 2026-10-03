@@ -84,8 +84,8 @@ typedef enum
 //} xverbose_e;
 
 typedef unsigned short WORD;
-#ifndef POSIX
 typedef unsigned long DWORD;
+#ifndef POSIX
 typedef void* HANDLE;
 typedef unsigned __int64 ULONGLONG;
 #endif

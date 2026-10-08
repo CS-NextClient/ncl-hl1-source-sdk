@@ -12,7 +12,9 @@
 #include <vgui/IPanel.h>
 #include <FileSystem.h>
 
-#include <Windows.h>
+#ifdef _WIN32
+    #include <Windows.h>
+#endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -46,7 +48,9 @@ namespace vgui2
             return false;
         }
 
+#ifdef _WIN32
         g_MainWindow = GetActiveWindow();
+#endif
 
         return true;
     }

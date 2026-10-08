@@ -17,9 +17,9 @@
 #include <vgui/ISystem.h>
 #include <vstdlib/IKeyValuesSystem.h>
 
-#include <UtlVector.h>
-#include <UtlRBTree.h>
-#include <UtlSymbol.h>
+#include <utlvector.h>
+#include <utlrbtree.h>
+#include <utlsymbol.h>
 #include "vgui_border.h"
 #include "vgui_internal.h"
 #include "Bitmap.h"

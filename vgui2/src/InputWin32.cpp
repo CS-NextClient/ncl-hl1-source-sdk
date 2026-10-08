@@ -6,15 +6,17 @@
 //===========================================================================//
 
 
-#include <windows.h>
-#include <imm.h>
-#undef PostMessage
+#ifdef _WIN32
+    #include <windows.h>
+    #include <imm.h>
+    #undef PostMessage
+#endif
 
 #include <string.h>
 
 #include "vgui_internal.h"
 #include "VPanel.h"
-#include "UtlVector.h"
+#include "utlvector.h"
 #include <KeyValues.h>
 #include "tier0/vcrmode.h"
 
@@ -28,7 +30,7 @@
 #include <vgui/MouseCode.h>
 #include "vgui/Cursor.h"
 
-#include "UtlLinkedList.h"
+#include "utllinkedlist.h"
 #include "tier0/icommandline.h"
 #include "vgui_key_translation.h"
 
@@ -357,7 +359,7 @@ void CInputWin32::SetMouseFocus(VPANEL newMouseFocus)
     if (pNewMouseFocus)
     {
         if (!pCtx->_mouseCapture ||
-            pCtx->_mouseCapture->HasParent(pCtx->_mouseCapture))
+            pNewMouseFocus->HasParent(pCtx->_mouseCapture))
         {
             g_pIVgui->PostMessage(
                 VPanelToHandle(pCtx->_mouseOver),

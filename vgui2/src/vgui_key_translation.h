@@ -10,7 +10,7 @@
 #pragma once
 #endif
 
-#include <vgui/keycode.h>
+#include <vgui/KeyCode.h>
 
 void KeyCode_InitKeyTranslationTable();
 

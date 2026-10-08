@@ -630,7 +630,7 @@ void KeyValues::RecursiveSaveToFile( IBaseFileSystem *filesystem, FileHandle_t f
 					if ( dat->m_pwszValue )
 					{
 						static char buf[KEYVALUES_TOKEN_SIZE];
-						int result = Q_UnicodeToUTF8( m_pwszValue, buf, sizeof( buf ) );
+						int result = Q_UnicodeToUTF8( dat->m_pwszValue, buf, sizeof( buf ) );
 
 						if( result > 0 )
 						{

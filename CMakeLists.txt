@@ -147,7 +147,14 @@ add_subdirectory( tier2 )
 add_subdirectory( vgui2/src )
 add_subdirectory( vgui2/vgui_controls )
 add_subdirectory( mathlib )
-add_subdirectory( cef )
+
+if (WIN32)
+	add_subdirectory( cef )
+else()
+	# Real CEF isn't ported to Linux here yet; hl1_source_sdk_export still needs
+	# a libcef_dll target to link against, so provide an empty stand-in.
+	add_library( libcef_dll INTERFACE )
+endif()
 
 #-----------------------------------------------------------------
 # Export library

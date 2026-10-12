@@ -9,7 +9,7 @@
 #ifndef UTLRBTREE_H
 #define UTLRBTREE_H
 
-#include <MinMax.h>
+#include "tier0/minmax.h"
 #include "tier1/utlmemory.h"
 #include "tier1/utlfixedmemory.h"
 #include "tier1/utlblockmemory.h"

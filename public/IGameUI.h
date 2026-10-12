@@ -1,15 +1,16 @@
 #ifndef IGAMEUI_GS_H
 #define IGAMEUI_GS_H
+#include <cstddef>
+
+#include <goldsrc/fwd.h>
+
 #include <interface.h>
-#include <vmodes.h>
-#include <quakedef.h>
-#include <APIProxy.h>
 
 class IGameUI : public IBaseInterface
 {
 public:
 	virtual void Initialize(CreateInterfaceFn *factories, int count) = 0;
-	virtual void Start(cl_enginefunc_t *engineFuncs, int interfaceVersion, void *system) = 0;
+	virtual void Start(goldsrc::cl_enginefunc_t *engineFuncs, int interfaceVersion, void *system) = 0;
 	virtual void Shutdown(void) = 0;
 	virtual int ActivateGameUI(void) = 0;
 	virtual int ActivateDemoUI(void) = 0;

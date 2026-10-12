@@ -172,9 +172,9 @@ public:
 
 };
 
-#include "p5p6performancecounters.h"    
-#include "p4performancecounters.h"    
-#include "k8performancecounters.h"    
+#include "p5p6performancecounters.h"
+#include "p4performancecounters.h"
+#include "k8performancecounters.h"
 
 enum PerfErrors
 {

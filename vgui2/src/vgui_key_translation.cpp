@@ -64,7 +64,6 @@
     #define VK_NUMLOCK   0x90
     #define VK_SCROLL    0x91
 #endif
-#include "xbox/xboxstubs.h"
 #include "tier0/dbg.h"
 #include "vgui_key_translation.h"
 

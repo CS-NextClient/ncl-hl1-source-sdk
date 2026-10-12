@@ -20,6 +20,12 @@ target_include_directories( tier2 PRIVATE
 	${SOURCE_SDK_INCLUDE_PATHS}
 )
 
+# tier2.cpp includes IGameUI.h and IBaseUI.h, which name goldsrc types;
+# tier2.h only forward-declares the interfaces.
+target_link_libraries( tier2 PRIVATE
+	goldsrc::abi
+)
+
 target_compile_definitions( tier2 PRIVATE
 	${SOURCE_SDK_DEFINES}
 )

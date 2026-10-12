@@ -28,14 +28,15 @@
 
 #pragma once
 
+#include <cstdint>
+
+#include <goldsrc/fwd.h>
+#include <goldsrc/types.h>
+
 #include "IBSPModel.h"
 #include "IDirector.h"
 #include "ISystemModule.h"
 #include "common/ServerInfo.h"
-
-#include "pm_movevars.h"
-#include "usermsg.h"
-#include "entity_state.h"
 
 typedef struct frame_s
 {
@@ -101,7 +102,7 @@ public:
 	virtual IBSPModel *GetWorldModel() = 0;
 	virtual InfoString *GetServerInfoString() = 0;
 	virtual bool GetPlayerInfoString(int playerNum, InfoString *infoString) = 0;
-	virtual UserMsg *GetUserMsg(int msgNumber) = 0;
+	virtual goldsrc::UserMsg *GetUserMsg(int msgNumber) = 0;
 	virtual char *GetHostName() = 0;
 	virtual serverinfo_t *GetServerInfo() = 0;
 	virtual bool IsPlayerIndex(int index) = 0;
@@ -111,7 +112,7 @@ public:
 	virtual bool IsComplete() = 0;
 	virtual bool IsHLTV() = 0;
 	virtual void Reset() = 0;
-	virtual void SetServerInfo(int protocol, CRC32_t nserverCRC, byte *nclientdllmd5, int nmaxclients, int nplayernum, int ngametype, char *ngamedir, char *nservername, char *nlevelname) = 0;
+	virtual void SetServerInfo(int protocol, goldsrc::CRC32_t nserverCRC, uint8_t *nclientdllmd5, int nmaxclients, int nplayernum, int ngametype, char *ngamedir, char *nservername, char *nlevelname) = 0;
 	virtual void SetServerInfoString(char *infostring) = 0;
 	virtual void SetServerInfo(serverinfo_t *serverinfo) = 0;
 	virtual void UpdateServerInfo() = 0;
@@ -119,7 +120,7 @@ public:
 	virtual void SetTime(double newTime) = 0;
 	virtual void SetBufferSize(float seconds) = 0;
 	virtual void SetVoiceEnabled(bool state) = 0;
-	virtual void SetMoveVars(movevars_t *nmovevars) = 0;
+	virtual void SetMoveVars(goldsrc::movevars_s *nmovevars) = 0;
 	virtual void SetCDInfo(int ncdtrack, int nlooptrack) = 0;
 	virtual void SetHLTV(bool state) = 0;
 	virtual void SetExtraInfo(char *nclientfallback, int nallowCheats) = 0;
@@ -134,19 +135,19 @@ public:
 	virtual void ParseDeltaDescription(BitBuffer *stream) = 0;
 	virtual void ParseBaseline(BitBuffer *stream) = 0;
 	virtual void ParseEvent(BitBuffer *stream) = 0;
-	virtual void ParseClientData(BitBuffer *stream, unsigned int deltaSeqNr, BitBuffer *to, clientdata_t *clientData) = 0;
+	virtual void ParseClientData(BitBuffer *stream, unsigned int deltaSeqNr, BitBuffer *to, goldsrc::clientdata_t *clientData) = 0;
 	virtual bool GetUncompressedFrame(unsigned int seqNr, frame_t *frame) = 0;
 	virtual bool UncompressEntitiesFromStream(frame_t *frame, BitBuffer *stream) = 0;
 	virtual bool UncompressEntitiesFromStream(frame_t *frame, BitBuffer *stream, unsigned int from) = 0;
-	virtual bool GetClientData(unsigned int SeqNr, clientdata_t *clientData) = 0;
-	virtual bool GetClientData(frame_t *frame, clientdata_t *clientData) = 0;
+	virtual bool GetClientData(unsigned int SeqNr, goldsrc::clientdata_t *clientData) = 0;
+	virtual bool GetClientData(frame_t *frame, goldsrc::clientdata_t *clientData) = 0;
 	virtual int AddFrame(frame_t *newFrame) = 0;
-	virtual bool AddResource(resource_t *resource) = 0;
+	virtual bool AddResource(goldsrc::resource_t *resource) = 0;
 	virtual void AddLightStyle(int index, char *style) = 0;
 	virtual bool AddSignonData(unsigned char type, unsigned char *data, int size) = 0;
 	virtual bool AddUserMessage(int msgNumber, int size, char *name) = 0;
-	virtual void AddBaselineEntity(int index, entity_state_t *ent) = 0;
-	virtual void AddInstancedBaselineEntity(int index, entity_state_t *ent) = 0;
+	virtual void AddBaselineEntity(int index, goldsrc::entity_state_t *ent) = 0;
+	virtual void AddInstancedBaselineEntity(int index, goldsrc::entity_state_t *ent) = 0;
 	virtual void UpdatePlayer(int playerNum, int userId, char *infostring, char *hashedcdkey) = 0;
 	virtual void WriteFrame(frame_t *frame, unsigned int lastFrameSeqnr, BitBuffer *reliableStream, BitBuffer *unreliableStream, unsigned int deltaSeqNr, unsigned int clientDelta, bool addVoice) = 0;
 	virtual void WriteNewData(BitBuffer *stream) = 0;

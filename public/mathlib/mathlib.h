@@ -22,7 +22,7 @@
 #include <xmmintrin.h>
 #endif
 
-#include <MinMax.h>
+#include "tier0/minmax.h"
 
 // Uncomment this to enable FP exceptions in parts of the code.
 // This can help track down FP bugs. However the code is not

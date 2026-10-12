@@ -102,7 +102,6 @@ set( TIER1_SOURCE_FILES
 if( WIN32 )
 	set( TIER1_HEADER_FILES
 		${TIER1_HEADER_FILES}
-		${SOURCE_SDK_ROOT}/common/xbox/xboxstubs.h
 		${SOURCE_SDK_ROOT}/public/tier1/uniqueid.h
 	)
 	

@@ -34,6 +34,7 @@
 #include <mathlib/mathlib.h>
 #include <tier0/basetypes.h>
 #include <tier1/strtools.h>
+#include <goldsrc/hltv.h>
 
 // define DRC_CMD_*
 const char *DirectorCmd::m_CMD_Name[] =
@@ -69,7 +70,7 @@ DirectorCmd::~DirectorCmd()
 
 bool DirectorCmd::GetEventData(int &entity1, int &entity2, int &flags)
 {
-	if (m_Type != DRC_CMD_EVENT) {
+	if (m_Type != goldsrc::DRC_CMD_EVENT) {
 		return false;
 	}
 
@@ -83,7 +84,7 @@ bool DirectorCmd::GetEventData(int &entity1, int &entity2, int &flags)
 
 bool DirectorCmd::GetModeData(int &mode)
 {
-	if (m_Type != DRC_CMD_MODE) {
+	if (m_Type != goldsrc::DRC_CMD_MODE) {
 		return false;
 	}
 
@@ -95,7 +96,7 @@ bool DirectorCmd::GetModeData(int &mode)
 
 bool DirectorCmd::GetChaseData(int &entity1, int &entity2, float &distance, int &flags)
 {
-	if (m_Type != DRC_CMD_CHASE) {
+	if (m_Type != goldsrc::DRC_CMD_CHASE) {
 		return false;
 	}
 
@@ -110,7 +111,7 @@ bool DirectorCmd::GetChaseData(int &entity1, int &entity2, float &distance, int 
 
 bool DirectorCmd::GetInEyeData(int &player)
 {
-	if (m_Type != DRC_CMD_INEYE) {
+	if (m_Type != goldsrc::DRC_CMD_INEYE) {
 		return false;
 	}
 
@@ -122,7 +123,7 @@ bool DirectorCmd::GetInEyeData(int &player)
 
 bool DirectorCmd::GetMapData(int &entity, float &angle, float &distance)
 {
-	if (m_Type != DRC_CMD_MAP) {
+	if (m_Type != goldsrc::DRC_CMD_MAP) {
 		return false;
 	}
 
@@ -136,7 +137,7 @@ bool DirectorCmd::GetMapData(int &entity, float &angle, float &distance)
 
 bool DirectorCmd::GetCameraData(vec_t *position, vec_t *angles, float &fov, int &entity)
 {
-	if (m_Type != DRC_CMD_CAMERA) {
+	if (m_Type != goldsrc::DRC_CMD_CAMERA) {
 		return false;
 	}
 
@@ -158,7 +159,7 @@ bool DirectorCmd::GetCameraData(vec_t *position, vec_t *angles, float &fov, int 
 
 bool DirectorCmd::GetCamPathData(vec_t *position, vec_t *angles, float &fov, int &flags)
 {
-	if (m_Type != DRC_CMD_CAMPATH) {
+	if (m_Type != goldsrc::DRC_CMD_CAMPATH) {
 		return false;
 	}
 
@@ -180,7 +181,7 @@ bool DirectorCmd::GetCamPathData(vec_t *position, vec_t *angles, float &fov, int
 
 bool DirectorCmd::GetSoundData(char *name, float &volume)
 {
-	if (m_Type != DRC_CMD_SOUND) {
+	if (m_Type != goldsrc::DRC_CMD_SOUND) {
 		return false;
 	}
 
@@ -208,7 +209,7 @@ const char *DirectorCmd::GetName()
 
 bool DirectorCmd::GetTimeScaleData(float &factor)
 {
-	if (m_Type != DRC_CMD_TIMESCALE) {
+	if (m_Type != goldsrc::DRC_CMD_TIMESCALE) {
 		return false;
 	}
 
@@ -220,7 +221,7 @@ bool DirectorCmd::GetTimeScaleData(float &factor)
 
 bool DirectorCmd::GetWayPointsData(int &number)
 {
-	if (m_Type != DRC_CMD_WAYPOINTS) {
+	if (m_Type != goldsrc::DRC_CMD_WAYPOINTS) {
 		return false;
 	}
 
@@ -232,7 +233,7 @@ bool DirectorCmd::GetWayPointsData(int &number)
 
 bool DirectorCmd::GetMessageData(int &effect, int &color, vec_t *position, float &fadein, float &fadeout, float &holdtime, float &fxtime, char *text)
 {
-	if (m_Type != DRC_CMD_MESSAGE) {
+	if (m_Type != goldsrc::DRC_CMD_MESSAGE) {
 		return false;
 	}
 
@@ -255,7 +256,7 @@ bool DirectorCmd::GetMessageData(int &effect, int &color, vec_t *position, float
 
 bool DirectorCmd::GetStatusData(int &slots, int &spectators, int &proxies)
 {
-	if (m_Type != DRC_CMD_STATUS) {
+	if (m_Type != goldsrc::DRC_CMD_STATUS) {
 		return false;
 	}
 
@@ -269,7 +270,7 @@ bool DirectorCmd::GetStatusData(int &slots, int &spectators, int &proxies)
 
 bool DirectorCmd::GetBannerData(char *filename)
 {
-	if (m_Type != DRC_CMD_BANNER) {
+	if (m_Type != goldsrc::DRC_CMD_BANNER) {
 		return false;
 	}
 
@@ -281,7 +282,7 @@ bool DirectorCmd::GetBannerData(char *filename)
 
 bool DirectorCmd::GetStuffTextData(char *commands)
 {
-	if (m_Type != DRC_CMD_STUFFTEXT) {
+	if (m_Type != goldsrc::DRC_CMD_STUFFTEXT) {
 		return false;
 	}
 
@@ -293,7 +294,7 @@ bool DirectorCmd::GetStuffTextData(char *commands)
 
 void DirectorCmd::SetEventData(int entity1, int entity2, int flags)
 {
-	m_Type = DRC_CMD_EVENT;
+	m_Type = goldsrc::DRC_CMD_EVENT;
 	Resize(8);
 
 	m_Data.WriteWord(entity1);
@@ -303,7 +304,7 @@ void DirectorCmd::SetEventData(int entity1, int entity2, int flags)
 
 void DirectorCmd::SetChaseData(int entity1, int entity2, float distance, int flags)
 {
-	m_Type = DRC_CMD_CHASE;
+	m_Type = goldsrc::DRC_CMD_CHASE;
 	Resize(9);
 
 	m_Data.WriteWord(entity1);
@@ -314,7 +315,7 @@ void DirectorCmd::SetChaseData(int entity1, int entity2, float distance, int fla
 
 void DirectorCmd::SetInEyeData(int entity)
 {
-	m_Type = DRC_CMD_INEYE;
+	m_Type = goldsrc::DRC_CMD_INEYE;
 	Resize(2);
 
 	m_Data.WriteWord(entity);
@@ -322,7 +323,7 @@ void DirectorCmd::SetInEyeData(int entity)
 
 void DirectorCmd::SetMapData(int entity, float angle, float distance)
 {
-	m_Type = DRC_CMD_MAP;
+	m_Type = goldsrc::DRC_CMD_MAP;
 	Resize(10);
 
 	m_Data.WriteWord(entity);
@@ -332,13 +333,13 @@ void DirectorCmd::SetMapData(int entity, float angle, float distance)
 
 void DirectorCmd::SetStartData()
 {
-	m_Type = DRC_CMD_START;
+	m_Type = goldsrc::DRC_CMD_START;
 	Resize(0);
 }
 
 void DirectorCmd::SetModeData(int mode)
 {
-	m_Type = DRC_CMD_MODE;
+	m_Type = goldsrc::DRC_CMD_MODE;
 	Resize(1);
 
 	m_Data.WriteByte(mode);
@@ -346,7 +347,7 @@ void DirectorCmd::SetModeData(int mode)
 
 void DirectorCmd::SetCameraData(vec_t *position, vec_t *angles, float fov, int entity)
 {
-	m_Type = DRC_CMD_CAMERA;
+	m_Type = goldsrc::DRC_CMD_CAMERA;
 	Resize(15);
 
 	m_Data.WriteCoord(position[0]);
@@ -361,7 +362,7 @@ void DirectorCmd::SetCameraData(vec_t *position, vec_t *angles, float fov, int e
 
 void DirectorCmd::SetCamPathData(vec_t *position, vec_t *angles, float fov, int flags)
 {
-	m_Type = DRC_CMD_CAMPATH;
+	m_Type = goldsrc::DRC_CMD_CAMPATH;
 	Resize(14);
 
 	m_Data.WriteCoord(position[0]);
@@ -377,7 +378,7 @@ void DirectorCmd::SetCamPathData(vec_t *position, vec_t *angles, float fov, int 
 void DirectorCmd::SetSoundData(const char *name, float volume)
 {
 	int len = Q_strlen(name);
-	m_Type = DRC_CMD_SOUND;
+	m_Type = goldsrc::DRC_CMD_SOUND;
 	Resize(len + 5);
 
 	m_Data.WriteString(name);
@@ -386,7 +387,7 @@ void DirectorCmd::SetSoundData(const char *name, float volume)
 
 void DirectorCmd::SetTimeScaleData(float factor)
 {
-	m_Type = DRC_CMD_TIMESCALE;
+	m_Type = goldsrc::DRC_CMD_TIMESCALE;
 
 	Resize(sizeof(float));
 	m_Data.WriteFloat(factor);
@@ -400,7 +401,7 @@ void DirectorCmd::SetTime(float time)
 void DirectorCmd::SetMessageData(int effect, unsigned int color, vec_t *position, float fadein, float fadeout, float holdtime, float fxtime, const char *text)
 {
 	int len = Q_strlen(text);
-	m_Type = DRC_CMD_MESSAGE;
+	m_Type = goldsrc::DRC_CMD_MESSAGE;
 	Resize(len + 30);
 
 	m_Data.WriteByte(effect);
@@ -429,7 +430,7 @@ void DirectorCmd::Copy(DirectorCmd *cmd)
 
 void DirectorCmd::SetStatusData(int slots, int spectators, int proxies)
 {
-	m_Type = DRC_CMD_STATUS;
+	m_Type = goldsrc::DRC_CMD_STATUS;
 	Resize(10);
 
 	m_Data.WriteLong(slots);
@@ -439,7 +440,7 @@ void DirectorCmd::SetStatusData(int slots, int spectators, int proxies)
 
 void DirectorCmd::SetBannerData(const char *filename)
 {
-	m_Type = DRC_CMD_BANNER;
+	m_Type = goldsrc::DRC_CMD_BANNER;
 
 	int len = Q_strlen(filename);
 	Resize(len + 1);
@@ -448,7 +449,7 @@ void DirectorCmd::SetBannerData(const char *filename)
 
 void DirectorCmd::SetStuffTextData(const char *commands)
 {
-	m_Type = DRC_CMD_STUFFTEXT;
+	m_Type = goldsrc::DRC_CMD_STUFFTEXT;
 
 	int len = Q_strlen(commands);
 	Resize(len + 1);
@@ -457,7 +458,7 @@ void DirectorCmd::SetStuffTextData(const char *commands)
 
 void DirectorCmd::SetWayPoints(int number)
 {
-	m_Type = DRC_CMD_WAYPOINTS;
+	m_Type = goldsrc::DRC_CMD_WAYPOINTS;
 
 	Resize(1);
 	m_Data.WriteByte(number);
@@ -478,26 +479,26 @@ bool DirectorCmd::ReadFromStream(BitBuffer *stream)
 
 	switch (m_Type)
 	{
-	case DRC_CMD_START:
+	case goldsrc::DRC_CMD_START:
 		Resize(0);
 		break;
-	case DRC_CMD_EVENT:
+	case goldsrc::DRC_CMD_EVENT:
 		Resize(8);
 		m_Data.WriteBuf(stream, 8);
 		break;
-	case DRC_CMD_MODE:
+	case goldsrc::DRC_CMD_MODE:
 		Resize(1);
 		m_Data.WriteBuf(stream, 1);
 		break;
-	case DRC_CMD_CAMERA:
+	case goldsrc::DRC_CMD_CAMERA:
 		Resize(15);
 		m_Data.WriteBuf(stream, 15);
 		break;
-	case DRC_CMD_TIMESCALE:
+	case goldsrc::DRC_CMD_TIMESCALE:
 		Resize(4);
 		m_Data.WriteBuf(stream, 4);
 		break;
-	case DRC_CMD_MESSAGE:
+	case goldsrc::DRC_CMD_MESSAGE:
 	{
 		start = stream->m_CurByte;
 		stream->SkipBytes(29);
@@ -510,7 +511,7 @@ bool DirectorCmd::ReadFromStream(BitBuffer *stream)
 		m_Data.WriteBuf(string, length + 1);
 		break;
 	}
-	case DRC_CMD_SOUND:
+	case goldsrc::DRC_CMD_SOUND:
 	{
 		string = stream->ReadString();
 		length = Q_strlen(string);
@@ -521,11 +522,11 @@ bool DirectorCmd::ReadFromStream(BitBuffer *stream)
 
 		break;
 	}
-	case DRC_CMD_STATUS:
+	case goldsrc::DRC_CMD_STATUS:
 		Resize(10);
 		m_Data.WriteBuf(stream, 10);
 		break;
-	case DRC_CMD_BANNER:
+	case goldsrc::DRC_CMD_BANNER:
 	{
 		string = stream->ReadString();
 		length = Q_strlen(string) + 1;
@@ -534,7 +535,7 @@ bool DirectorCmd::ReadFromStream(BitBuffer *stream)
 		m_Data.WriteBuf(string, length);
 		break;
 	}
-	case DRC_CMD_STUFFTEXT:
+	case goldsrc::DRC_CMD_STUFFTEXT:
 	{
 		string = stream->ReadString();
 		length = Q_strlen(string) + 1;
@@ -543,23 +544,23 @@ bool DirectorCmd::ReadFromStream(BitBuffer *stream)
 		m_Data.WriteBuf(string, length);
 		break;
 	}
-	case DRC_CMD_CHASE:
+	case goldsrc::DRC_CMD_CHASE:
 		Resize(7);
 		m_Data.WriteBuf(stream, 7);
 		break;
-	case DRC_CMD_INEYE:
+	case goldsrc::DRC_CMD_INEYE:
 		Resize(1);
 		m_Data.WriteBuf(stream, 1);
 		break;
-	case DRC_CMD_MAP:
+	case goldsrc::DRC_CMD_MAP:
 		Resize(10);
 		m_Data.WriteBuf(stream, 15);
 		break;
-	case DRC_CMD_CAMPATH:
+	case goldsrc::DRC_CMD_CAMPATH:
 		Resize(14);
 		m_Data.WriteBuf(stream, 14);
 		break;
-	case DRC_CMD_WAYPOINTS:
+	case goldsrc::DRC_CMD_WAYPOINTS:
 	{
 		Resize(1);
 		length = stream->ReadByte();
@@ -568,7 +569,7 @@ bool DirectorCmd::ReadFromStream(BitBuffer *stream)
 		break;
 	}
 	default:
-	case DRC_CMD_NONE:
+	case goldsrc::DRC_CMD_NONE:
 		return false;
 	}
 
@@ -581,7 +582,7 @@ void DirectorCmd::WriteToStream(BitBuffer *stream)
 		return;
 	}
 
-	if ((m_Type > DRC_CMD_NONE && m_Type <= DRC_CMD_LAST) && m_Size < 255)
+	if ((m_Type > goldsrc::DRC_CMD_NONE && m_Type <= goldsrc::DRC_CMD_LAST) && m_Size < 255)
 	{
 		stream->WriteByte(svc_director);
 		stream->WriteByte(m_Size + 1);
@@ -604,67 +605,67 @@ const char *DirectorCmd::ToString()
 
 	switch (m_Type)
 	{
-	case DRC_CMD_START:
+	case goldsrc::DRC_CMD_START:
         V_snprintf(s, sizeof(s), "%s", t1);
 		break;
-	case DRC_CMD_EVENT:
+	case goldsrc::DRC_CMD_EVENT:
 		GetEventData(i1, i2, i3);
 		V_snprintf(s, sizeof(s), "%s %i %i %i", t1, i1, i2, i3);
 		break;
-	case DRC_CMD_MODE:
+	case goldsrc::DRC_CMD_MODE:
 		GetModeData(i1);
 		V_snprintf(s, sizeof(s), "%s %i", t1, i1);
 		break;
-	case DRC_CMD_CAMERA:
+	case goldsrc::DRC_CMD_CAMERA:
 		GetCameraData(v1, v2, f1, i1);
 		V_snprintf(s, sizeof(s), "%s (%.1f %.1f %.1f) (%.1f %.1f %.1f) %.1f %i", t1, v1[0], v1[1], v1[2], v2[0], v2[1], v2[2], f1, i1);
 		break;
-	case DRC_CMD_TIMESCALE:
+	case goldsrc::DRC_CMD_TIMESCALE:
 		GetTimeScaleData(f1);
 		V_snprintf(s, sizeof(s), "%s %.2f", t1, f1);
 		break;
-	case DRC_CMD_MESSAGE:
+	case goldsrc::DRC_CMD_MESSAGE:
 		GetMessageData(i1, i2, v1, f1, f2, f3, f4, t2);
 		V_snprintf(s, sizeof(s), "%s \"%s\" %i %x (%.2f %.2f) %.1f, %.1f %.1f %.1f", t1, t2, i1, i2, v1[0], v1[1], f1, f2, f3, f4);
 		break;
-	case DRC_CMD_SOUND:
+	case goldsrc::DRC_CMD_SOUND:
 		GetSoundData(t2, f1);
 		V_snprintf(s, sizeof(s), "%s \"%s\" %.2f", t1, t2, f1);
 		break;
-	case DRC_CMD_STATUS:
+	case goldsrc::DRC_CMD_STATUS:
 		GetStatusData(i1, i2, i3);
 		V_snprintf(s, sizeof(s), "%s %i %i %i", t1, i1, i2, i3);
 		break;
-	case DRC_CMD_BANNER:
+	case goldsrc::DRC_CMD_BANNER:
 		GetBannerData(t2);
 		V_snprintf(s, sizeof(s), "%s \"%s\"", t1, t2);
 		break;
-	case DRC_CMD_STUFFTEXT:
+	case goldsrc::DRC_CMD_STUFFTEXT:
 		GetStuffTextData(t2);
 		V_snprintf(s, sizeof(s), "%s \"%s\"", t1, t2);
 		break;
-	case DRC_CMD_CHASE:
+	case goldsrc::DRC_CMD_CHASE:
 		GetChaseData(i1, i2, f1, i3);
 		V_snprintf(s, sizeof(s), "%s %i %i %.1f %i", t1, i1, i2, f1, i3);
 		break;
-	case DRC_CMD_INEYE:
+	case goldsrc::DRC_CMD_INEYE:
 		GetInEyeData(i1);
 		V_snprintf(s, sizeof(s), "%s %i", t1, i1);
 		break;
-	case DRC_CMD_MAP:
+	case goldsrc::DRC_CMD_MAP:
 		GetMapData(i1, f1, f2);
 		V_snprintf(s, sizeof(s), "%s %i %.1f %.1f", t1, i1, f1, f2);
 		break;
-	case DRC_CMD_CAMPATH:
+	case goldsrc::DRC_CMD_CAMPATH:
 		GetCamPathData(v1, v2, f1, i1);
 		V_snprintf(s, sizeof(s), "%s (%.1f %.1f %.1f) (%.1f %.1f %.1f) %.1f %i", t1, v1[0], v1[1], v1[2], v2[0], v2[1], v2[2], f1, i1);
 		break;
-	case DRC_CMD_WAYPOINTS:
+	case goldsrc::DRC_CMD_WAYPOINTS:
 		GetWayPointsData(i1);
 		V_snprintf(s, sizeof(s), "%s %i", t1, i1);
 		break;
 	default:
-	case DRC_CMD_NONE:
+	case goldsrc::DRC_CMD_NONE:
 		return nullptr;
 	}
 

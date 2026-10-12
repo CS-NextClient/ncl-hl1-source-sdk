@@ -28,13 +28,6 @@ add_library(${PROJECT_NAME} SHARED
         ${SOURCE_SDK_ROOT}/public/filesystem_helpers.cpp
 )
 
-if (WIN32)
-    target_sources(${PROJECT_NAME} PRIVATE
-            FontReplace.h
-            FontReplace.cpp
-    )
-endif ()
-
 target_link_libraries(${PROJECT_NAME} PRIVATE
         steam_api
         tier0
@@ -47,7 +40,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 
 if (WIN32)
     target_link_libraries(${PROJECT_NAME} PRIVATE
-            vgui2_surfacelib
             Imm32.lib
             Winmm.dll
             Shlwapi.lib

@@ -23,9 +23,6 @@
 #include "vgui_border.h"
 #include "vgui_internal.h"
 #include "Bitmap.h"
-#ifdef _WIN32
-    #include "FontManager.h"
-#endif
 
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -780,16 +777,6 @@ void CScheme::ReloadFontGlyphs()
                         g_pSurfaceNext->AddGlyphSetToFont(m_FontAliases[i]._font, fallbackName, tall, fontWeight, blur, scanlines, flags, 0x0000, 0xFFFF);
                     }
                 }
-
-#ifdef _WIN32
-                // final fallback: the platform broad-coverage font, unless it already is the primary.
-                // Linux has no such step: fontconfig already falls back per glyph in the engine's surface
-                const char* lastResort = FontManager().GetForeignFallbackFontName();
-                if (lastResort && *lastResort && stricmp(lastResort, fontdata->GetString("name")) != 0)
-                {
-                    g_pSurfaceNext->AddGlyphSetToFont(m_FontAliases[i]._font, lastResort, tall, fontWeight, blur, scanlines, flags, 0x0000, 0xFFFF);
-                }
-#endif
             }
 
             // don't add any more

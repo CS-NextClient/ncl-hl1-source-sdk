@@ -7,10 +7,6 @@
 
 #include "vgui_internal.h"
 
-#ifdef _WIN32
-    #include "FontReplace.h"
-#endif
-
 #include <vgui/ISurfaceNext.h>
 #include <vgui/ILocalize.h>
 #include <vgui/IPanel.h>
@@ -53,8 +49,6 @@ namespace vgui2
         }
 
 #ifdef _WIN32
-        FontReplace_Install(g_pSurface);
-
         g_MainWindow = GetActiveWindow();
 #endif
 

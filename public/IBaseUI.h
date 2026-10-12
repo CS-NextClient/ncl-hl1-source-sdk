@@ -1,10 +1,9 @@
 #ifndef ENGINE_IBASEUI_H
 #define ENGINE_IBASEUI_H
 
+#include <goldsrc/fwd.h>
+
 #include "interface.h"
-#include <vmodes.h>
-#include <quakedef.h>
-#include <APIProxy.h>
 
 /**
 *	Interface to the engine's game UI controls.
@@ -24,7 +23,7 @@ public:
 	/**
 	*	Sets up the game UI.
 	*/
-	virtual void Start( cl_enginefunc_t* pEngfuncs, int iVersion ) = 0;
+	virtual void Start( goldsrc::cl_enginefunc_t* pEngfuncs, int iVersion ) = 0;
 
 	/**
 	*	Shuts down the UI. Unloads libraries used by the UI.

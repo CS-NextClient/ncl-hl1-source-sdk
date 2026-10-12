@@ -28,9 +28,9 @@
 
 #pragma once
 
-#include "hltv.h"
-#include "BitBuffer.h"
 #include <basetypes.h>
+
+#include "BitBuffer.h"
 
 class DirectorCmd {
 public:

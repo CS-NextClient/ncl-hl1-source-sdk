@@ -13,7 +13,11 @@
 #endif
 
 #include "tier0/platform.h"
+#ifdef _WIN32
 #include <winsock2.h>
+#else
+#include <netinet/in.h>
+#endif
 #undef SetPort
 
 typedef enum

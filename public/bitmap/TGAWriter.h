@@ -14,7 +14,7 @@
 
 
 #include "tier1/interface.h"
-#include "bitmap/imageformat.h" //ImageFormat enum definition
+#include "bitmap/ImageFormat.h" //ImageFormat enum definition
 
 class CUtlBuffer;
 

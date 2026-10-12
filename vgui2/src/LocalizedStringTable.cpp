@@ -7,7 +7,9 @@
 
 
 #pragma warning( disable: 4018 ) // '==' : signed/unsigned mismatch in rbtree
-#include <windows.h>
+#ifdef _WIN32
+    #include <windows.h>
+#endif
 #include <cwchar>
 
 #include "FileSystem.h"
@@ -20,10 +22,10 @@
 #include "vgui/ISystem.h"
 #include "vgui/ISurfaceNext.h"
 
-#include "tier1/UtlVector.h"
-#include "tier1/UtlRBTree.h"
-#include "tier1/UtlSymbol.h"
-#include "tier1/UtlString.h"
+#include "tier1/utlvector.h"
+#include "tier1/utlrbtree.h"
+#include "tier1/utlsymbol.h"
+#include "tier1/utlstring.h"
 #include "tier0/icommandline.h"
 #include "UnicodeFileHelpers.h"
 #include "byteswap.h"
@@ -34,6 +36,43 @@
 using namespace vgui2;
 
 #define MAX_LOCALIZED_CHARS	4096
+
+// Localization files are UTF-16LE on disk, while wchar_t is only 16-bit on Windows.
+// Returns a malloc'd, null-terminated copy in wchar_t, surrogate pairs combined where wchar_t is wider
+static wchar_t* Utf16LEToWide(const uint16_t* units, int count)
+{
+    wchar_t* result = (wchar_t*)malloc((count + 1) * sizeof(wchar_t));
+    int length = 0;
+
+    for (int i = 0; i < count; i++)
+    {
+        uint32_t ch = (uint16_t)LittleShort(units[i]);
+
+        if (sizeof(wchar_t) > 2 && ch >= 0xD800 && ch < 0xDC00 && i + 1 < count)
+        {
+            uint32_t low = (uint16_t)LittleShort(units[i + 1]);
+            if (low >= 0xDC00 && low < 0xE000)
+            {
+                ch = 0x10000 + ((ch - 0xD800) << 10) + (low - 0xDC00);
+                i++;
+            }
+        }
+
+        result[length++] = (wchar_t)ch;
+    }
+
+    result[length] = 0;
+    return result;
+}
+
+static void WriteUtf16LE(FileHandle_t file, const wchar_t* str)
+{
+    for (int i = 0; str[i] != 0; i++)
+    {
+        uint16_t unit = (uint16_t)str[i];
+        g_pFullFileSystem->Write(&unit, 2, file);
+    }
+}
 
 //-----------------------------------------------------------------------------
 //
@@ -327,14 +366,7 @@ bool CLocalizedStringTable::SaveToFile(IFileSystem* fileSystem, const char* szFi
     if (!strLength)
         return false;
 
-    g_pFullFileSystem->Write(unicodeString, wcslen(unicodeString) * sizeof(wchar_t), file);
-
-    // convert our spacing characters to unicode
-    //	wchar_t unicodeSpace = L' ';
-    wchar_t unicodeQuote = L'\"';
-    wchar_t unicodeCR = L'\r';
-    wchar_t unicodeNewline = L'\n';
-    wchar_t unicodeTab = L'\t';
+    WriteUtf16LE(file, unicodeString);
 
     // write out all the key/value pairs
     for (StringIndex_t idx = GetFirstStringIndex(); idx != INVALID_STRING_INDEX; idx = GetNextStringIndex(idx))
@@ -349,27 +381,26 @@ bool CLocalizedStringTable::SaveToFile(IFileSystem* fileSystem, const char* szFi
         // convert the name to a unicode string
         ConvertANSIToUnicode(name, unicodeString, sizeof(unicodeString));
 
-        g_pFullFileSystem->Write(&unicodeTab, sizeof(wchar_t), file);
+        WriteUtf16LE(file, L"\t");
 
         // write out
-        g_pFullFileSystem->Write(&unicodeQuote, sizeof(wchar_t), file);
-        g_pFullFileSystem->Write(unicodeString, wcslen(unicodeString) * sizeof(wchar_t), file);
-        g_pFullFileSystem->Write(&unicodeQuote, sizeof(wchar_t), file);
+        WriteUtf16LE(file, L"\"");
+        WriteUtf16LE(file, unicodeString);
+        WriteUtf16LE(file, L"\"");
 
-        g_pFullFileSystem->Write(&unicodeTab, sizeof(wchar_t), file);
-        g_pFullFileSystem->Write(&unicodeTab, sizeof(wchar_t), file);
+        WriteUtf16LE(file, L"\t");
+        WriteUtf16LE(file, L"\t");
 
-        g_pFullFileSystem->Write(&unicodeQuote, sizeof(wchar_t), file);
-        g_pFullFileSystem->Write(value, wcslen(value) * sizeof(wchar_t), file);
-        g_pFullFileSystem->Write(&unicodeQuote, sizeof(wchar_t), file);
+        WriteUtf16LE(file, L"\"");
+        WriteUtf16LE(file, value);
+        WriteUtf16LE(file, L"\"");
 
-        g_pFullFileSystem->Write(&unicodeCR, sizeof(wchar_t), file);
-        g_pFullFileSystem->Write(&unicodeNewline, sizeof(wchar_t), file);
+        WriteUtf16LE(file, L"\r\n");
     }
 
     // write end string
-    strLength = ConvertANSIToUnicode(endStr, unicodeString, sizeof(unicodeString));
-    g_pFullFileSystem->Write(unicodeString, strLength * sizeof(wchar_t), file);
+    ConvertANSIToUnicode(endStr, unicodeString, sizeof(unicodeString));
+    WriteUtf16LE(file, unicodeString);
 
     g_pFullFileSystem->Close(file);
     return true;
@@ -406,32 +437,27 @@ bool CLocalizedStringTable::AddFileInternal(const char* szFileName)
 
     // read into a memory block
     int fileSize = g_pFullFileSystem->Size(hFile);
+    int unitCount = fileSize / sizeof(uint16_t);
 
-    wchar_t* memBlock = (wchar_t*)malloc(fileSize + sizeof(wchar_t));
-    bool bReadOK = g_pFullFileSystem->Read(memBlock, fileSize, hFile);
+    uint16_t* rawBlock = (uint16_t*)malloc((unitCount + 1) * sizeof(uint16_t));
+    bool bReadOK = g_pFullFileSystem->Read(rawBlock, fileSize, hFile);
 
     // finished with file
     g_pFullFileSystem->Close(hFile);
 
-    // null-terminate the stream
-    memBlock[fileSize / sizeof(wchar_t)] = 0x0000;
-
     // check the first character, make sure this a little-endian unicode file
-    wchar_t* data = memBlock;
-    wchar_t signature = LittleShort(data[0]);
-    if (!bReadOK || signature != 0xFEFF)
+    if (!bReadOK || unitCount == 0 || (uint16_t)LittleShort(rawBlock[0]) != 0xFEFF)
     {
         Msg("Ignoring non-unicode close caption file %s\n", szFileName);
-        free(memBlock);
+        free(rawBlock);
         return false;
     }
 
-    // ensure little-endian unicode reads correctly on all platforms
-    CByteswap byteSwap;
-    byteSwap.SetTargetBigEndian(false);
-    byteSwap.SwapBufferToTargetEndian(data, data, fileSize / sizeof(wchar_t));
+    wchar_t* memBlock = Utf16LEToWide(rawBlock, unitCount);
+    free(rawBlock);
 
     // skip past signature
+    wchar_t* data = memBlock;
     data++;
 
     // parse out a token at a time
@@ -838,7 +864,11 @@ const char* CLocalizedStringTable::GetLocalizationFileName(int index)
 //-----------------------------------------------------------------------------
 int CLocalizedStringTable::ConvertANSIToUnicode(const char* ansi, wchar_t* unicode, int unicodeBufferSizeInBytes)
 {
+#ifdef _WIN32
     int chars = ::MultiByteToWideChar(CP_UTF8, 0, ansi, -1, unicode, unicodeBufferSizeInBytes / sizeof(wchar_t));
+#else
+    int chars = V_UTF8ToUnicode(ansi, unicode, unicodeBufferSizeInBytes) / sizeof(wchar_t);
+#endif
     unicode[(unicodeBufferSizeInBytes / sizeof(wchar_t)) - 1] = 0;
     return chars;
 }
@@ -848,12 +878,35 @@ int CLocalizedStringTable::ConvertANSIToUnicode(const char* ansi, wchar_t* unico
 //-----------------------------------------------------------------------------
 int CLocalizedStringTable::ConvertUnicodeToANSI(const wchar_t* unicode, char* ansi, int ansiBufferSize)
 {
+#ifdef _WIN32
     int result = ::WideCharToMultiByte(CP_UTF8, 0, unicode, -1, ansi, ansiBufferSize, NULL, NULL);
+#else
+    int result = V_UnicodeToUTF8(unicode, ansi, ansiBufferSize);
+#endif
     ansi[ansiBufferSize - 1] = 0;
     return result;
 }
 
+#ifdef _WIN32
 #define va_argByIndex(ap,t,i)    ( *(t *)(ap + i * _INTSIZEOF(t)) )
+#else
+// only MSVC's va_list is a plain pointer that can be indexed into, so walk a copy instead
+template <typename T>
+static T VaArgByIndex(va_list ap, int index)
+{
+    va_list copy;
+    va_copy(copy, ap);
+
+    T value{};
+    for (int i = 0; i <= index; i++)
+        value = va_arg(copy, T);
+
+    va_end(copy);
+    return value;
+}
+
+#define va_argByIndex(ap,t,i)    VaArgByIndex<t>(ap, i)
+#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: builds a localized formatted string

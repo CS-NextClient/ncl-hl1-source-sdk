@@ -25,6 +25,7 @@
 #ifdef POSIX
 // need this for _alloca
 #include <alloca.h>
+#include <limits.h>
 #endif
 
 //OSX has this elsewhere. - Solokiller
@@ -814,11 +815,7 @@ FORCEINLINE void StoreLittleDWord( unsigned long *base, unsigned int dwordIndex,
 	#define PLATFORM_INTERFACE	DLL_EXPORT
 	#define PLATFORM_OVERLOAD	DLL_GLOBAL_EXPORT
 #else
-    #ifdef WIN32
-        #define PLATFORM_INTERFACE	DLL_IMPORT
-    #else
-        #define PLATFORM_INTERFACE	DLL_GLOBAL_IMPORT
-    #endif
+	#define PLATFORM_INTERFACE	DLL_IMPORT
 	#define PLATFORM_OVERLOAD	DLL_GLOBAL_IMPORT
 #endif
 
@@ -865,7 +862,12 @@ struct CPUInformation
 #pragma clang diagnostic ignored "-Wreturn-type-c-linkage"
 #endif
 
+#ifdef _WIN32
 PLATFORM_INTERFACE const CPUInformation& GetCPUInformation();
+#else
+// GoldSrc's libtier0.so exports this one with C++ linkage, unlike the rest
+extern const CPUInformation& GetCPUInformation();
+#endif
 
 #ifdef __clang__
 #pragma clang diagnostic pop

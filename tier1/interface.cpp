@@ -119,7 +119,11 @@ void *Sys_GetProcAddress(const char *pModuleName, const char *pName)
 // hlds_run wants to use this function
 void *Sys_GetProcAddress(void *pModuleHandle, const char *pName)
 {
-    return GetProcAddress((HMODULE)pModuleHandle, pName);
+#ifdef _WIN32
+    return GetProcAddress(static_cast<HMODULE>(pModuleHandle), pName);
+#else
+    return GetProcAddress(pModuleHandle, pName);
+#endif
 }
 
 // Purpose: Loads a DLL/component from disk and returns a handle to it
@@ -130,7 +134,7 @@ CSysModule *Sys_LoadModule(const char *pModuleName)
 #ifdef _WIN32
     HMODULE hDLL = LoadLibraryA(pModuleName);
 #else
-    HMODULE hDLL  = nullptr;
+    void* hDLL = nullptr;
 	char szAbsoluteModuleName[1024];
 	if (pModuleName[0] != '/')
 	{
@@ -178,12 +182,11 @@ void Sys_UnloadModule(CSysModule *pModule)
     if (!pModule)
         return;
 
-    HMODULE hDLL = reinterpret_cast<HMODULE>(pModule);
-
 #ifdef _WIN32
+    HMODULE hDLL = reinterpret_cast<HMODULE>(pModule);
     FreeLibrary(hDLL);
 #else
-    dlclose(hDLL);
+    dlclose(pModule);
 #endif // _WIN32
 }
 

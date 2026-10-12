@@ -36,10 +36,20 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         optic::optic
 
         OpenGL::GL
-        Imm32.lib
-        Winmm.dll
-        Shlwapi.lib
 )
+
+if (WIN32)
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+            Imm32.lib
+            Winmm.dll
+            Shlwapi.lib
+    )
+else ()
+    # Text on Linux is left to the engine's own surface (fontconfig/FreeType),
+    # so no surfacelib here; SDL is the engine's, for the window and clipboard
+    find_package(SDL2 REQUIRED)
+    target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2 ${CMAKE_DL_LIBS})
+endif ()
 
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${SOURCE_SDK_INCLUDE_PATHS}
@@ -53,10 +63,15 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
 
 target_compile_options(${PROJECT_NAME} PRIVATE
         ${SOURCE_SDK_WARNING_LEVEL}
-        /EHsc # NEVER catch SEH exceptions; c functions cannot throw exceptions
 )
 
-if (CMAKE_BUILD_TYPE MATCHES Release)
+if (MSVC)
+    target_compile_options(${PROJECT_NAME} PRIVATE
+            /EHsc # NEVER catch SEH exceptions; c functions cannot throw exceptions
+    )
+endif ()
+
+if (MSVC AND CMAKE_BUILD_TYPE MATCHES Release)
     target_compile_options(${PROJECT_NAME} PRIVATE
             /Zi # enables PDB generation
             /O2 # enables maximize speed optimizations
@@ -70,9 +85,15 @@ if (CMAKE_BUILD_TYPE MATCHES Release)
     )
 endif()
 
+if (WIN32)
+    set(OUTPUT_SUFFIX ".dll")
+else ()
+    set(OUTPUT_SUFFIX ".so")
+endif ()
+
 set_target_properties(${PROJECT_NAME} PROPERTIES
         PREFIX ""
         OUTPUT_NAME ${OUTPUT_NAME}
-        SUFFIX ".dll"
+        SUFFIX ${OUTPUT_SUFFIX}
         PDB_NAME ${OUTPUT_NAME}
 )

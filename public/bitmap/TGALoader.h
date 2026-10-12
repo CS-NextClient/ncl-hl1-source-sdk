@@ -14,7 +14,7 @@
 #pragma once
 #endif
 
-#include "bitmap/imageformat.h"
+#include "bitmap/ImageFormat.h"
 #include "tier1/utlmemory.h"
 
 

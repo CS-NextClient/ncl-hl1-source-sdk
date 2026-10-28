@@ -1,8 +1,6 @@
 project(vgui2)
 set(OUTPUT_NAME "vgui2")
 
-find_package(optic REQUIRED)
-
 add_library(${PROJECT_NAME} SHARED
         Bitmap.h
         Bitmap.cpp
@@ -33,7 +31,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         tier0
         tier1
         vstdlib
-        optic::optic
 
         OpenGL::GL
 )
@@ -58,7 +55,6 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 target_compile_definitions(${PROJECT_NAME} PRIVATE
         ${SOURCE_SDK_DEFINES}
         NOMINMAX
-        USE_OPTICK=$<BOOL:${USE_PROFILER}>
 )
 
 target_compile_options(${PROJECT_NAME} PRIVATE
